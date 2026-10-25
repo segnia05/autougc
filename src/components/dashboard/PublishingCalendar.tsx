@@ -6,10 +6,7 @@ import { Button } from "@/components/ui/Button";
 import {
   Calendar,
   Clock,
-  CheckCircle2,
-  AlertCircle,
   RefreshCw,
-  ExternalLink,
   Film,
 } from "lucide-react";
 
@@ -50,7 +47,26 @@ export function PublishingCalendar() {
   };
 
   useEffect(() => {
-    fetchPosts();
+    let ignore = false;
+    async function loadInitial() {
+      try {
+        const res = await fetch("/api/v1/social/schedule");
+        const data = await res.json();
+        if (!ignore && data.posts) {
+          setPosts(data.posts);
+        }
+      } catch (err) {
+        console.warn("Failed to load scheduled posts:", err);
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+    loadInitial();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const filteredPosts = posts.filter((p) => {

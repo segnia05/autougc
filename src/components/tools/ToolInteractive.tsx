@@ -181,7 +181,12 @@ export function ToolInteractive({ slug, tool }: ToolInteractiveProps) {
                   className="flex-1 bg-[var(--bg-app)] border border-subtle rounded-lg px-4 py-2.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] transition-colors"
                   placeholder="e.g. Ergonomic lumbar desk chair for software engineers"
                 />
-                <Button variant="primary" size="sm" onClick={handleGenerateHooks}>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleGenerateHooks}
+                  leftIcon={<Sparkles className="h-3.5 w-3.5" />}
+                >
                   Generate
                 </Button>
               </div>

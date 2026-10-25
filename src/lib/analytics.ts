@@ -13,6 +13,12 @@ export interface EventProperties {
   [key: string]: string | number | boolean | undefined | null;
 }
 
+interface PostHogWindow extends Window {
+  posthog?: {
+    capture: (event: string, properties?: Record<string, unknown>) => void;
+  };
+}
+
 /**
  * High-performance telemetry dispatcher for conversion funnels and user actions.
  * Zero render blocking, non-intrusive error handling.
@@ -38,8 +44,9 @@ export function trackEvent(
     };
 
     // If PostHog is loaded on the window object:
-    if ((window as any).posthog && typeof (window as any).posthog.capture === "function") {
-      (window as any).posthog.capture(event, payload.properties);
+    const posthogWin = window as unknown as PostHogWindow;
+    if (posthogWin.posthog && typeof posthogWin.posthog.capture === "function") {
+      posthogWin.posthog.capture(event, payload.properties);
     }
 
     if (process.env.NODE_ENV === "development") {

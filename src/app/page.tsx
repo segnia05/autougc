@@ -2,10 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge } from "@/components/ui";
-import { Sparkles, ArrowRight, Video, Zap, CheckCircle2, Play, Shield, BarChart3 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Button, Input, Card, CardHeader, CardTitle, CardContent, Badge } from "@/components/ui";
+import { Sparkles, ArrowRight, Video, Zap, CheckCircle2, Play, BarChart3 } from "lucide-react";
 
 export default function Home() {
+  const router = useRouter();
   const [productUrl, setProductUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeHook, setActiveHook] = useState(0);
@@ -56,9 +58,9 @@ export default function Home() {
       }
 
       // 2. Navigate straight into Studio
-      window.location.href = `/studio?url=${encodeURIComponent(productUrl)}&brand=${encodeURIComponent(
+      router.push(`/studio?url=${encodeURIComponent(productUrl)}&brand=${encodeURIComponent(
         scrapeJson.data.brandName
-      )}`;
+      )}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Scraping failed";
       setErrorMessage(msg);

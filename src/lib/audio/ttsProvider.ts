@@ -1,4 +1,4 @@
-import { WordTimestamp, AudioSynthesisResult, CREATOR_VOICE_PRESETS } from "./types";
+import { WordTimestamp, AudioSynthesisResult } from "./types";
 
 /**
  * Calculates high-precision word timestamps and audio synthesis metadata.
@@ -28,7 +28,7 @@ export async function synthesizeVoiceover(
   for (const word of rawWords) {
     // Base duration dependent on character length
     const charCount = word.length;
-    let wordDuration = Math.max(0.18, Math.min(0.55, charCount * 0.048));
+    const wordDuration = Math.max(0.18, Math.min(0.55, charCount * 0.048));
 
     // Punctuation adds natural breathing pause
     const hasPunctuation = /[.,!?;:]$/.test(word);

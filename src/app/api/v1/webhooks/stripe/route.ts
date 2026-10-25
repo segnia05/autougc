@@ -87,7 +87,11 @@ export async function POST(request: NextRequest) {
 
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        const subscriptionId = (invoice as any).subscription as string;
+        interface InvoiceWithSubscription {
+          subscription?: string | { id: string } | null;
+        }
+        const subField = (invoice as unknown as InvoiceWithSubscription).subscription;
+        const subscriptionId = typeof subField === "string" ? subField : subField?.id;
 
         if (subscriptionId) {
           try {

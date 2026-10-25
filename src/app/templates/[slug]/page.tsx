@@ -2,10 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Link from "next/link";
-import {
-  TEMPLATES_CATALOG,
-  TemplateData,
-} from "@/lib/seo/templatesData";
+import { TEMPLATES_CATALOG } from "@/lib/seo/templatesData";
 import {
   buildSoftwareAppJsonLd,
   buildFaqJsonLd,
@@ -14,13 +11,9 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
-  Sparkles,
   ArrowRight,
-  TrendingUp,
-  CheckCircle2,
   Film,
   HelpCircle,
-  Play,
   ArrowLeft,
 } from "lucide-react";
 

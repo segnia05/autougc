@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { Music, Volume2, Sparkles, Check } from "lucide-react";
+import { Music, Volume2, Check } from "lucide-react";
 
 export interface BackgroundTrack {
   id: string;

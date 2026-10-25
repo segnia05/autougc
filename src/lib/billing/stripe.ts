@@ -3,7 +3,7 @@ import Stripe from "stripe";
 export const stripe = new Stripe(
   process.env.STRIPE_SECRET_KEY || "sk_test_mock_stripe_secret_key_autougc",
   {
-    apiVersion: "2025-02-24.acacia" as any,
+    apiVersion: "2025-02-24.acacia" as unknown as Stripe.LatestApiVersion,
     typescript: true,
   }
 );

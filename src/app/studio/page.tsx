@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { CanvasPlayer } from "@/components/studio/CanvasPlayer";
 import { ScriptEditor } from "@/components/studio/ScriptEditor";
 import { VoiceSelector } from "@/components/studio/VoiceSelector";
@@ -20,7 +21,6 @@ import {
   ArrowLeft,
   Share2,
   CheckCircle2,
-  Video,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -39,16 +39,11 @@ export default function StudioPage() {
 }
 
 function StudioContent() {
-  const [brandName, setBrandName] = useState("Lumina");
-  const [hookText, setHookText] = useState(
-    "Stop coding under harsh fluorescent lights in 2026."
-  );
-  const [bodyText, setBodyText] = useState(
-    "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour deep work sprints."
-  );
-  const [ctaText, setCtaText] = useState(
-    "Click the link below and get $30 off your setup today."
-  );
+  const searchParams = useSearchParams();
+  const [brandName, setBrandName] = useState(() => searchParams.get("brand") || "Lumina");
+  const [hookText, setHookText] = useState(() => searchParams.get("hook") || "Stop coding under harsh fluorescent lights in 2026.");
+  const [bodyText, setBodyText] = useState(() => searchParams.get("body") || "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour deep work sprints.");
+  const [ctaText, setCtaText] = useState(() => searchParams.get("cta") || "Click the link below and get $30 off your setup today.");
   const [brandColor, setBrandColor] = useState("#F59E0B");
   const [selectedVoiceId, setSelectedVoiceId] = useState("alex_casual_dtc");
   const [selectedTrackId, setSelectedTrackId] = useState("lofi_focus");
@@ -171,6 +166,19 @@ function StudioContent() {
 
         {/* Right Pane: Precision Editing Controls (7 cols) */}
         <div className="lg:col-span-7 flex flex-col gap-6">
+          <div className="bg-[var(--bg-surface)] border border-subtle rounded-xl p-4 flex items-center justify-between gap-4">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+              Brand / Product Name:
+            </label>
+            <input
+              type="text"
+              value={brandName}
+              onChange={(e) => setBrandName(e.target.value)}
+              className="bg-[var(--bg-app)] border border-subtle rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] font-medium focus:outline-none focus:border-[var(--accent-primary)] max-w-xs"
+              placeholder="e.g. Lumina"
+            />
+          </div>
+
           <ScriptEditor
             hookText={hookText}
             bodyText={bodyText}

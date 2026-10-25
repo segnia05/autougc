@@ -106,7 +106,7 @@ export async function deductCredit(
         creditsRemaining: updated.creditsRemaining,
       };
     });
-  } catch (err: unknown) {
+  } catch {
     // If DB is offline in development/unit-test environment:
     const current = devBalances[orgId] ?? 24;
     if (current < amount) {

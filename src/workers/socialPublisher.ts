@@ -135,6 +135,10 @@ export async function dispatchToYouTube(
 ): Promise<PublishResult> {
   const token = decryptToken(encryptedToken);
 
+  if (!videoUrl || !caption) {
+    return { success: false, error: "Missing videoUrl or caption for YouTube upload" };
+  }
+
   if (token.startsWith("mock_") || !process.env.GOOGLE_CLIENT_ID) {
     const mockPostId = `yt_short_${Date.now()}`;
     return {

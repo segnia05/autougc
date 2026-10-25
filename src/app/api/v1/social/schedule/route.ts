@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/db/client";
 import { encryptToken } from "@/lib/social/crypto";
-import { processScheduledPostsOnce } from "@/workers/socialPublisher";
 
 const ScheduleRequestSchema = z.object({
   videoId: z.string().min(1, "videoId is required"),
@@ -72,7 +71,7 @@ export async function POST(request: NextRequest) {
           scheduledFor: scheduledPost.scheduledFor,
           publishStatus: scheduledPost.publishStatus,
         });
-      } catch (dbErr) {
+      } catch {
         // Fallback for dev mode without live Postgres container
         createdPosts.push({
           id: `mock_post_${platform}_${Date.now()}`,

@@ -41,8 +41,9 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                <span className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
                   {voice.name}
+                  {isSelected && <Volume2 className="h-3.5 w-3.5 text-[var(--accent-primary)] animate-pulse" />}
                 </span>
                 <span className="text-[11px] font-mono text-[var(--text-muted)] capitalize">
                   {voice.gender}

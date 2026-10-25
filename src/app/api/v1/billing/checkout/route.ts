@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { stripe, BILLING_PLANS, SubscriptionTier } from "@/lib/billing/stripe";
+import { stripe, BILLING_PLANS } from "@/lib/billing/stripe";
 
 const CheckoutRequestSchema = z.object({
   planId: z.enum(["starter", "growth", "scale"]),

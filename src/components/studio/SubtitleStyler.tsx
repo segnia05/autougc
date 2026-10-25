@@ -87,6 +87,28 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
           className="w-full accent-[var(--accent-primary)] cursor-pointer"
         />
       </div>
+
+      {/* Brand Accent Color */}
+      <div className="flex flex-col gap-2 pt-2 border-t border-subtle">
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-1.5 text-[var(--text-secondary)] font-medium">
+            <Palette className="h-3.5 w-3.5" />
+            <span>Brand Accent Color</span>
+          </div>
+          <span className="font-mono text-[var(--text-muted)]">{brandColor}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={brandColor}
+            onChange={(e) => onBrandColorChange(e.target.value)}
+            className="h-8 w-14 rounded border border-subtle bg-transparent cursor-pointer"
+          />
+          <span className="text-xs text-[var(--text-muted)]">
+            Applied to brand badge overlays and video highlights.
+          </span>
+        </div>
+      </div>
     </div>
   );
 };

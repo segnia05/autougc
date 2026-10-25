@@ -3,14 +3,9 @@
 import React, { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import {
   Calendar,
-  Clock,
-  Sparkles,
   CheckCircle2,
-  Share2,
-  Video,
   Hash,
   AlertCircle,
 } from "lucide-react";
