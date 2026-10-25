@@ -8,6 +8,9 @@ import {
   CheckCircle2,
   Hash,
   AlertCircle,
+  Music2,
+  Camera,
+  Play,
 } from "lucide-react";
 import { SocialPlatform } from "@/lib/social/oauth";
 
@@ -139,12 +142,13 @@ export function ScheduleModal({
             <div className="grid grid-cols-3 gap-2.5">
               {(
                 [
-                  { id: "tiktok", label: "TikTok", icon: "🎵" },
-                  { id: "instagram", label: "Instagram Reels", icon: "📸" },
-                  { id: "youtube", label: "YouTube Shorts", icon: "▶️" },
+                  { id: "tiktok", label: "TikTok", icon: Music2 },
+                  { id: "instagram", label: "Instagram Reels", icon: Camera },
+                  { id: "youtube", label: "YouTube Shorts", icon: Play },
                 ] as const
               ).map((p) => {
                 const isSelected = selectedPlatforms.includes(p.id);
+                const IconComponent = p.icon;
                 return (
                   <button
                     key={p.id}
@@ -157,7 +161,7 @@ export function ScheduleModal({
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-base">{p.icon}</span>
+                      <IconComponent className="h-4 w-4 text-[var(--accent-primary)]" />
                       <span className="text-xs font-medium">{p.label}</span>
                     </div>
                     {isSelected && (

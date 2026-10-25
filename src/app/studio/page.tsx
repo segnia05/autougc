@@ -23,6 +23,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
+import { Footer } from "@/components/layout/Footer";
 
 export default function StudioPage() {
   return (
@@ -111,45 +112,49 @@ function StudioContent() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-primary)]">
       {/* Studio Header */}
-      <header className="sticky top-0 z-40 border-b border-subtle bg-[var(--bg-app)]/85 backdrop-blur-md px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-40 border-b border-subtle bg-[var(--bg-app)]/85 backdrop-blur-md px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3 sm:gap-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="flex items-center gap-1.5 sm:gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to Home</span>
+            <span className="hidden sm:inline">Back to Home</span>
           </Link>
-          <div className="h-4 w-[1px] bg-zinc-800" />
+          <div className="h-4 w-[1px] bg-zinc-800 hidden sm:block" />
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold font-[family-name:var(--font-display)]">
               AutoUGC Studio
             </span>
-            <Badge variant="amber" size="sm">
+            <Badge variant="amber" size="sm" className="hidden sm:inline-flex text-[10px] font-mono">
               Creative Editor
             </Badge>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Badge variant="emerald" size="sm" pulse>
-            24 / 25 Credits
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Badge variant="emerald" size="sm" pulse className="font-mono text-[10px] sm:text-xs">
+            24 / 25
           </Badge>
           <Button
             variant="secondary"
             size="sm"
             onClick={() => setIsScheduleModalOpen(true)}
-            leftIcon={<Calendar className="h-4 w-4" />}
+            leftIcon={<Calendar className="h-3.5 w-3.5" />}
+            className="text-xs px-2.5 sm:px-3"
           >
-            Schedule Post
+            <span className="hidden sm:inline">Schedule Post</span>
+            <span className="sm:hidden">Schedule</span>
           </Button>
           <Button
             variant="primary"
             size="sm"
             onClick={() => setIsExportModalOpen(true)}
-            leftIcon={<Download className="h-4 w-4" />}
+            leftIcon={<Download className="h-3.5 w-3.5" />}
+            className="text-xs px-2.5 sm:px-3 shadow-glow-amber font-semibold"
           >
-            Export 1080p Ad
+            <span className="hidden sm:inline">Export 1080p Ad</span>
+            <span className="sm:hidden">Export</span>
           </Button>
         </div>
       </header>
@@ -299,6 +304,8 @@ function StudioContent() {
           )}
         </div>
       </Modal>
+
+      <Footer />
     </div>
   );
 }

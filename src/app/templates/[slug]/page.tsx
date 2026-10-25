@@ -10,11 +10,12 @@ import {
 } from "@/lib/seo/schema";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import {
   ArrowRight,
   Film,
   HelpCircle,
-  ArrowLeft,
 } from "lucide-react";
 
 interface TemplatePageProps {
@@ -96,28 +97,25 @@ export default async function TemplatePage({ params }: TemplatePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      {/* Navigation Header */}
-      <header className="border-b border-subtle bg-[var(--bg-app)]/80 backdrop-blur-md sticky top-0 z-40 px-6 h-16 flex items-center justify-between max-w-7xl mx-auto">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>AutoUGC</span>
-          </Link>
-          <div className="h-4 w-[1px] bg-zinc-800" />
-          <span className="text-xs font-mono text-[var(--text-secondary)]">
-            /templates/{slug}
-          </span>
-        </div>
+      <Navbar />
 
-        <Link href={studioUrl}>
-          <Button variant="primary" size="sm" rightIcon={<ArrowRight className="h-4 w-4" />}>
-            Use This Template Free
-          </Button>
-        </Link>
-      </header>
+      <div className="border-b border-subtle bg-[var(--bg-surface)] py-3 px-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)]">
+            <Link href="/templates" className="hover:text-[var(--text-primary)] transition-colors">
+              Templates
+            </Link>
+            <span>/</span>
+            <span className="text-[var(--text-primary)]">{slug}</span>
+          </div>
+
+          <Link href={studioUrl}>
+            <Button variant="primary" size="sm" className="text-xs" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
+              Open in Studio
+            </Button>
+          </Link>
+        </div>
+      </div>
 
       {/* Hero Section */}
       <main className="max-w-5xl mx-auto px-6 py-16 flex flex-col gap-12">
@@ -272,6 +270,8 @@ export default async function TemplatePage({ params }: TemplatePageProps) {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

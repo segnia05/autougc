@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import {
   Sparkles,
   ArrowRight,
-  ArrowLeft,
   Copy,
   Check,
 } from "lucide-react";
@@ -60,28 +61,23 @@ export function ToolInteractive({ slug, tool }: ToolInteractiveProps) {
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)]">
-      {/* Header */}
-      <header className="border-b border-subtle bg-[var(--bg-app)]/80 backdrop-blur-md sticky top-0 z-40 px-6 h-16 flex items-center justify-between max-w-7xl mx-auto">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>AutoUGC Tools</span>
-          </Link>
-          <div className="h-4 w-[1px] bg-zinc-800" />
-          <Badge variant="amber" size="sm">
-            100% Free Tool
+      <Navbar />
+
+      <div className="border-b border-subtle bg-[var(--bg-surface)] py-3 px-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)]">
+            <Link href="/tools" className="hover:text-[var(--text-primary)] transition-colors">
+              Tools
+            </Link>
+            <span>/</span>
+            <span className="text-[var(--text-primary)]">{slug}</span>
+          </div>
+
+          <Badge variant="amber" size="sm" className="font-mono text-[10px]">
+            100% Free Utility
           </Badge>
         </div>
-
-        <Link href="/studio">
-          <Button variant="primary" size="sm" rightIcon={<ArrowRight className="h-4 w-4" />}>
-            Open Studio
-          </Button>
-        </Link>
-      </header>
+      </div>
 
       <main className="max-w-4xl mx-auto px-6 py-16 flex flex-col gap-10">
         <div className="flex flex-col gap-3 text-center items-center">
@@ -240,6 +236,8 @@ export function ToolInteractive({ slug, tool }: ToolInteractiveProps) {
           </div>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 }

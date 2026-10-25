@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "npx tsx tests/scraper.test.ts && npx tsx tests/scriptGen.test.ts && npx tsx tests/audioSynthesis.test.ts && npx tsx tests/studioSync.test.ts && npx tsx tests/socialOAuth.test.ts && npx tsx tests/socialScheduler.test.ts && npx tsx tests/billingCredits.test.ts && npx tsx tests/seoValidation.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.31.0",
