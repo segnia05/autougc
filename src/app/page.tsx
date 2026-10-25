@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge } from "@/components/ui";
 import { Sparkles, ArrowRight, Video, Zap, CheckCircle2, Play, Shield, BarChart3 } from "lucide-react";
 
@@ -33,14 +34,36 @@ export default function Home() {
     },
   ];
 
-  const handleStartGeneration = (e: React.FormEvent) => {
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleStartGeneration = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!productUrl) return;
     setIsSubmitting(true);
-    // Simulation / route to generation studio in Phase 3
-    setTimeout(() => {
+    setErrorMessage("");
+
+    try {
+      // 1. Scrape URL
+      const scrapeRes = await fetch("/api/v1/projects/scrape", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: productUrl }),
+      });
+
+      const scrapeJson = await scrapeRes.json();
+      if (!scrapeRes.ok || !scrapeJson.success) {
+        throw new Error(scrapeJson.error?.message || "Failed to analyze URL");
+      }
+
+      // 2. Navigate straight into Studio
+      window.location.href = `/studio?url=${encodeURIComponent(productUrl)}&brand=${encodeURIComponent(
+        scrapeJson.data.brandName
+      )}`;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Scraping failed";
+      setErrorMessage(msg);
       setIsSubmitting(false);
-    }, 1200);
+    }
   };
 
   return (
@@ -76,9 +99,11 @@ export default function Home() {
             <Button variant="ghost" size="sm">
               Sign In
             </Button>
-            <Button variant="primary" size="sm" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-              Start Free
-            </Button>
+            <Link href="/studio">
+              <Button variant="primary" size="sm" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
+                Start Free
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -130,6 +155,12 @@ export default function Home() {
             </Button>
           </form>
         </div>
+
+        {errorMessage && (
+          <div className="mb-4 px-4 py-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-[var(--accent-rose)] font-medium">
+            {errorMessage}
+          </div>
+        )}
 
         {/* Micro-copy Trust Points */}
         <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-[var(--text-muted)] mb-16">
