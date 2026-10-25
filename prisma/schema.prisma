@@ -1,0 +1,309 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ============================================================================
+// 1. TENANCY & USERS
+// ============================================================================
+
+enum Role {
+  owner
+  admin
+  editor
+  viewer
+}
+
+model Organization {
+  id            String   @id @default(uuid())
+  name          String
+  slug          String   @unique
+  billingEmail  String   @map("billing_email")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  members            OrganizationMember[]
+  subscription       Subscription?
+  creditTransactions CreditTransaction[]
+  projects           Project[]
+  videos             Video[]
+  socialAccounts     SocialAccount[]
+  scheduledPosts     ScheduledPost[]
+
+  @@index([slug])
+  @@map("organizations")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  fullName        String?   @map("full_name")
+  avatarUrl       String?   @map("avatar_url")
+  passwordHash    String?   @map("password_hash")
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  memberships        OrganizationMember[]
+  createdProjects    Project[]
+  creditTransactions CreditTransaction[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model OrganizationMember {
+  id             String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  userId         String   @map("user_id")
+  role           Role     @default(editor)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@index([organizationId])
+  @@map("organization_members")
+}
+
+// ============================================================================
+// 2. SUBSCRIPTIONS, QUOTAS & USAGE LEDGER
+// ============================================================================
+
+enum PlanTier {
+  free
+  starter
+  growth
+  scale
+}
+
+enum SubscriptionStatus {
+  active
+  trialing
+  past_due
+  canceled
+  unpaid
+}
+
+model Subscription {
+  id                       String             @id @default(uuid())
+  organizationId           String             @unique @map("organization_id")
+  stripeCustomerId         String             @unique @map("stripe_customer_id")
+  stripeSubscriptionId     String?            @unique @map("stripe_subscription_id")
+  planTier                 PlanTier           @default(free) @map("plan_tier")
+  status                   SubscriptionStatus @default(active)
+  creditsMonthlyAllowance  Int                @default(3) @map("credits_monthly_allowance")
+  creditsRemaining         Int                @default(3) @map("credits_remaining")
+  currentPeriodStart       DateTime           @default(now()) @map("current_period_start")
+  currentPeriodEnd         DateTime           @map("current_period_end")
+  cancelAtPeriodEnd        Boolean            @default(false) @map("cancel_at_period_end")
+  createdAt                DateTime           @default(now()) @map("created_at")
+  updatedAt                DateTime           @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([stripeSubscriptionId])
+  @@map("subscriptions")
+}
+
+model CreditTransaction {
+  id             String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  userId         String?  @map("user_id")
+  amount         Int // Negative for deduction, positive for purchase/refund
+  balanceAfter   Int      @map("balance_after")
+  reason         String // 'render_deduction', 'monthly_grant', 'purchase', 'render_failed_refund'
+  referenceId    String?  @map("reference_id") // Links to video ID or payment intent
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@map("credit_transactions")
+}
+
+// ============================================================================
+// 3. PROJECTS & SCRAPED ASSETS
+// ============================================================================
+
+enum AssetType {
+  image
+  logo
+  heading
+  benefit
+  review
+}
+
+model Project {
+  id              String   @id @default(uuid())
+  organizationId  String   @map("organization_id")
+  createdByUserId String   @map("created_by_user_id")
+  name            String
+  targetUrl       String   @map("target_url")
+  brandName       String   @map("brand_name")
+  brandLogoUrl    String?  @map("brand_logo_url")
+  primaryColor    String   @default("#10B981") @map("primary_color")
+  accentColor     String   @default("#F59E0B") @map("accent_color")
+  summary         String?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdByUser User          @relation(fields: [createdByUserId], references: [id])
+  assets       ScrapedAsset[]
+  scripts      Script[]
+  videos       Video[]
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@map("projects")
+}
+
+model ScrapedAsset {
+  id          String    @id @default(uuid())
+  projectId   String    @map("project_id")
+  assetType   AssetType @map("asset_type")
+  url         String?
+  contentText String?   @map("content_text")
+  metadata    Json?     @default("{}")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("scraped_assets")
+}
+
+// ============================================================================
+// 4. VIRAL SCRIPTS & VIDEO CREATIVES
+// ============================================================================
+
+enum AngleType {
+  negative_hook
+  secret_hack
+  problem_agitation
+}
+
+enum RenderStatus {
+  draft
+  queued
+  rendering
+  completed
+  failed
+}
+
+model Script {
+  id                 String    @id @default(uuid())
+  projectId          String    @map("project_id")
+  angleType          AngleType @map("angle_type")
+  hookText           String    @map("hook_text")
+  bodyText           String    @map("body_text")
+  ctaText            String    @map("cta_text")
+  fullScriptText     String    @map("full_script_text")
+  suggestedVisualCues Json     @default("[]") @map("suggested_visual_cues")
+  captionCopy        String    @map("caption_copy")
+  hashtags           String[]  @default([])
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  videos  Video[]
+
+  @@index([projectId])
+  @@map("scripts")
+}
+
+model Video {
+  id              String       @id @default(uuid())
+  projectId       String       @map("project_id")
+  organizationId  String       @map("organization_id")
+  scriptId        String       @map("script_id")
+  voiceId         String       @default("alex_casual_dtc") @map("voice_id")
+  aspectRatio     String       @default("9:16") @map("aspect_ratio")
+  durationSeconds Decimal      @default(15.00) @map("duration_seconds") @db.Decimal(4, 2)
+  hasWatermark    Boolean      @default(false) @map("has_watermark")
+  audioUrl        String?      @map("audio_url")
+  videoUrl        String?      @map("video_url")
+  thumbnailUrl    String?      @map("thumbnail_url")
+  renderStatus    RenderStatus @default(draft) @map("render_status")
+  renderJobId     String?      @map("render_job_id")
+  errorMessage    String?      @map("error_message")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  script         Script          @relation(fields: [scriptId], references: [id], onDelete: Cascade)
+  scheduledPosts ScheduledPost[]
+
+  @@index([organizationId, renderStatus])
+  @@index([createdAt(sort: Desc)])
+  @@map("videos")
+}
+
+// ============================================================================
+// 5. SOCIAL ACCOUNTS & AUTOMATED SCHEDULER
+// ============================================================================
+
+enum SocialPlatform {
+  tiktok
+  instagram
+  youtube
+}
+
+enum PublishStatus {
+  pending
+  processing
+  published
+  failed
+}
+
+model SocialAccount {
+  id                   String         @id @default(uuid())
+  organizationId       String         @map("organization_id")
+  platform             SocialPlatform
+  platformUserId       String         @map("platform_user_id")
+  accountHandle        String         @map("account_handle")
+  encryptedAccessToken String         @map("encrypted_access_token")
+  encryptedRefreshToken String?       @map("encrypted_refresh_token")
+  tokenExpiresAt       DateTime?      @map("token_expires_at")
+  isActive             Boolean        @default(true) @map("is_active")
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @updatedAt @map("updated_at")
+
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  scheduledPosts ScheduledPost[]
+
+  @@unique([organizationId, platform, platformUserId])
+  @@index([organizationId])
+  @@map("social_accounts")
+}
+
+model ScheduledPost {
+  id              String        @id @default(uuid())
+  videoId         String        @map("video_id")
+  organizationId  String        @map("organization_id")
+  socialAccountId String        @map("social_account_id")
+  caption         String
+  scheduledFor    DateTime      @map("scheduled_for")
+  publishStatus   PublishStatus @default(pending) @map("publish_status")
+  platformPostId  String?       @map("platform_post_id")
+  errorLog        String?       @map("error_log")
+  retryCount      Int           @default(0) @map("retry_count")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  video         Video         @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  organization  Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@index([publishStatus, scheduledFor])
+  @@map("scheduled_posts")
+}
