@@ -6,6 +6,8 @@ import { ScriptEditor } from "@/components/studio/ScriptEditor";
 import { VoiceSelector } from "@/components/studio/VoiceSelector";
 import { SubtitleStyler } from "@/components/studio/SubtitleStyler";
 import { MusicPicker } from "@/components/studio/MusicPicker";
+import { ScheduleModal } from "@/components/studio/ScheduleModal";
+import { PublishingCalendar } from "@/components/dashboard/PublishingCalendar";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
@@ -74,6 +76,7 @@ function StudioContent() {
 
   const [estimatedDuration, setEstimatedDuration] = useState(14.5);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
 
@@ -140,7 +143,7 @@ function StudioContent() {
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => setIsExportModalOpen(true)}
+            onClick={() => setIsScheduleModalOpen(true)}
             leftIcon={<Calendar className="h-4 w-4" />}
           >
             Schedule Post
@@ -197,7 +200,19 @@ function StudioContent() {
         </div>
       </div>
 
-      {/* Export & Schedule Modal */}
+      {/* Automated Publishing Calendar Section */}
+      <div className="max-w-7xl mx-auto w-full px-6 pb-16">
+        <PublishingCalendar />
+      </div>
+
+      {/* Schedule Modal */}
+      <ScheduleModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        defaultCaption={`${hookText} ${bodyText} ${ctaText}`}
+      />
+
+      {/* Export & Render Modal */}
       <Modal
         isOpen={isExportModalOpen}
         onClose={() => {
