@@ -18,4 +18,5 @@ if (process.env.NODE_ENV !== "production") {
   global.prisma = db;
 }
 
+export const prisma = db;
 export default db;

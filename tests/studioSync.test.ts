@@ -25,8 +25,8 @@ async function runStudioTests() {
   }
 
   // Check first word and last word
-  const firstWord = audioSync.words[0];
-  const lastWord = audioSync.words[audioSync.words.length - 1];
+  const firstWord = audioSync.words[0]!;
+  const lastWord = audioSync.words[audioSync.words.length - 1]!;
 
   if (firstWord.word !== "Stop") {
     console.error(`✗ Failed: Expected first word 'Stop', got '${firstWord.word}'`);
