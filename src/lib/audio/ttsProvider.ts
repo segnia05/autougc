@@ -48,16 +48,7 @@ export async function synthesizeVoiceover(
 
   const durationSeconds = Number((currentTime + 0.3).toFixed(2));
 
-  // In production, if OPENAI_API_KEY is configured, call OpenAI TTS or Deepgram
-  let audioUrl = "";
-  if (process.env.OPENAI_API_KEY) {
-    try {
-      // Production external TTS hook
-      audioUrl = `https://cdn.autougc.com/audio/${voiceId}_${Date.now()}.mp3`;
-    } catch {
-      audioUrl = "";
-    }
-  }
+  const audioUrl = "";
 
   return {
     voiceId,
