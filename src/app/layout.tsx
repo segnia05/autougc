@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -57,7 +58,9 @@ export default function RootLayout({
         <meta name="theme-color" content="#09090B" />
       </head>
       <body className="min-h-full bg-[var(--bg-app)] text-[var(--text-primary)] font-[family-name:var(--font-body)] selection:bg-[var(--accent-primary)] selection:text-black">
-        {children}
+        <ClerkProvider>
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );

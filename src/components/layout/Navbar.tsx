@@ -7,6 +7,14 @@ import { Video, ArrowRight, Menu, X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 
+import {
+  SignInButton,
+  SignUpButton,
+  Show,
+  UserButton,
+} from "@clerk/nextjs";
+import { Suspense } from "react";
+
 export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -68,25 +76,58 @@ export function Navbar() {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/studio">
-            <Button
-              variant="secondary"
-              size="sm"
-              className="text-xs font-medium"
-            >
-              Sign In
-            </Button>
-          </Link>
-          <Link href="/studio">
-            <Button
-              variant="primary"
-              size="sm"
-              className="text-xs font-semibold shadow-glow-amber"
-              rightIcon={<ArrowRight className="h-3.5 w-3.5" />}
-            >
-              Launch Studio
-            </Button>
-          </Link>
+          <Suspense fallback={<div className="h-8 w-20 bg-zinc-800 rounded animate-pulse" />}>
+            <Show when="signed-out">
+              <SignInButton mode="modal">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="text-xs font-medium cursor-pointer"
+                >
+                  Sign In
+                </Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="text-xs font-semibold shadow-glow-amber cursor-pointer"
+                  rightIcon={<ArrowRight className="h-3.5 w-3.5" />}
+                >
+                  Get Started
+                </Button>
+              </SignUpButton>
+            </Show>
+
+            <Show when="signed-in">
+              <Link href="/dashboard">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="text-xs font-semibold"
+                >
+                  Dashboard
+                </Button>
+              </Link>
+              <Link href="/studio">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="text-xs font-semibold shadow-glow-amber"
+                  rightIcon={<ArrowRight className="h-3.5 w-3.5" />}
+                >
+                  Launch Studio
+                </Button>
+              </Link>
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "h-8 w-8 ring-1 ring-zinc-700",
+                  },
+                }}
+              />
+            </Show>
+          </Suspense>
         </div>
 
         {/* Mobile Hamburger Toggle */}
