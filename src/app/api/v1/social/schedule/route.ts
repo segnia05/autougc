@@ -96,50 +96,128 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const orgId = request.headers.get("x-organization-id") || "org_dev_default_123";
+    const { searchParams } = new URL(request.url);
+    const accountId = searchParams.get("accountId");
+    const status = searchParams.get("status");
 
     try {
+      const whereClause: Record<string, unknown> = { organizationId: orgId };
+      if (accountId && accountId !== "all") {
+        whereClause.socialAccountId = accountId;
+      }
+      if (status && status !== "all") {
+        whereClause.publishStatus = status;
+      }
+
       const posts = await prisma.scheduledPost.findMany({
-        where: { organizationId: orgId },
+        where: whereClause,
         include: {
-          socialAccount: true,
+          socialAccount: {
+            select: {
+              id: true,
+              platform: true,
+              accountHandle: true,
+              accountNickname: true,
+              isBurner: true,
+            },
+          },
           video: true,
+          campaign: {
+            select: {
+              id: true,
+              name: true,
+              cadence: true,
+            },
+          },
         },
-        orderBy: { scheduledFor: "desc" },
-        take: 50,
+        orderBy: { scheduledFor: "asc" },
+        take: 100,
       });
 
       return NextResponse.json({ posts });
     } catch {
-      // Mock fallback data for studio UI when DB is in memory
+      // Mock fallback data for development mode
       const samplePosts = [
         {
           id: "sched_01",
           caption: "Stop coding under harsh fluorescent lights in 2026 #developer #setup #ugc",
           scheduledFor: new Date(Date.now() + 1000 * 60 * 60 * 4).toISOString(),
+          localScheduledTime: "Today @ 4:00 PM EST",
           publishStatus: "pending",
-          socialAccount: { platform: "tiktok", accountHandle: "@lumina_official" },
+          hookAngle: "pattern_interrupt",
+          postUrl: null,
+          socialAccount: {
+            id: "acc_main_brand",
+            platform: "tiktok",
+            accountHandle: "@lumina_official",
+            accountNickname: "Main Brand (Official)",
+            isBurner: false,
+          },
           video: { durationSeconds: 14.5, thumbnailUrl: null },
         },
         {
           id: "sched_02",
           caption: "The $80 monitor upgrade nobody is talking about #desksetup #wfh",
           scheduledFor: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
+          localScheduledTime: "Tomorrow @ 4:00 PM EST",
           publishStatus: "pending",
-          socialAccount: { platform: "instagram", accountHandle: "@luminalight" },
+          hookAngle: "curiosity_hack",
+          postUrl: null,
+          socialAccount: {
+            id: "acc_burner_1",
+            platform: "tiktok",
+            accountHandle: "@desk_hacks_daily",
+            accountNickname: "Burner #1 (Desk Setups)",
+            isBurner: true,
+          },
           video: { durationSeconds: 15.0, thumbnailUrl: null },
         },
         {
           id: "sched_03",
           caption: "Say goodbye to 3 PM eye fatigue #productivity #techshorts",
           scheduledFor: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+          localScheduledTime: "Yesterday @ 4:00 PM EST",
           publishStatus: "published",
-          platformPostId: "yt_short_99281",
-          socialAccount: { platform: "youtube", accountHandle: "@LuminaTech" },
+          platformPostId: "tt_v_889211",
+          postUrl: "https://www.tiktok.com/@creator/video/tt_v_889211",
+          hookAngle: "problem_agitation",
+          socialAccount: {
+            id: "acc_burner_2",
+            platform: "tiktok",
+            accountHandle: "@focus_tools_2026",
+            accountNickname: "Burner #2 (Productivity)",
+            isBurner: true,
+          },
           video: { durationSeconds: 13.8, thumbnailUrl: null },
+        },
+        {
+          id: "sched_04",
+          caption: "Over 10,000 developers switched their workspace light this month #software #saas",
+          scheduledFor: new Date(Date.now() + 1000 * 60 * 60 * 48).toISOString(),
+          localScheduledTime: "Wed @ 4:00 PM EST",
+          publishStatus: "pending",
+          hookAngle: "social_proof",
+          postUrl: null,
+          socialAccount: {
+            id: "acc_reels_main",
+            platform: "instagram",
+            accountHandle: "@luminalight",
+            accountNickname: "Instagram Reels (Main)",
+            isBurner: false,
+          },
+          video: { durationSeconds: 15.0, thumbnailUrl: null },
         },
       ];
 
-      return NextResponse.json({ posts: samplePosts });
+      let filtered = samplePosts;
+      if (accountId && accountId !== "all") {
+        filtered = filtered.filter((p) => p.socialAccount.id === accountId);
+      }
+      if (status && status !== "all") {
+        filtered = filtered.filter((p) => p.publishStatus === status);
+      }
+
+      return NextResponse.json({ posts: filtered });
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Error fetching scheduled posts";
