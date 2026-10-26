@@ -93,8 +93,8 @@ export default function CustomerDashboardPage() {
   const [connectingAccount, setConnectingAccount] = useState(false);
   const [accountError, setAccountError] = useState<string | null>(null);
 
-  // Current organization plan simulation
-  const currentPlan = {
+  // Current organization plan details
+  const [currentPlan, setCurrentPlan] = useState({
     tier: "growth" as const,
     name: "Growth Plan",
     priceUsd: 89,
@@ -105,7 +105,27 @@ export default function CustomerDashboardPage() {
     cadence: "~2 posts / day automated drip",
     renewalDate: "November 26, 2026",
     maxSeats: 3,
-  };
+  });
+
+  // Load Subscription
+  useEffect(() => {
+    let ignore = false;
+    async function fetchSubscription() {
+      try {
+        const res = await fetch("/api/v1/billing/subscription");
+        const data = await res.json();
+        if (!ignore && data.subscription) {
+          setCurrentPlan(data.subscription);
+        }
+      } catch (err) {
+        console.warn("Error loading subscription details:", err);
+      }
+    }
+    fetchSubscription();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   // Load Videos
   useEffect(() => {

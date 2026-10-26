@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/db/client";
 import { encryptToken } from "@/lib/social/crypto";
+import { getAuthContext } from "@/lib/auth/getAuthContext";
 
 const ScheduleRequestSchema = z.object({
   videoId: z.string().min(1, "videoId is required"),
@@ -14,7 +15,12 @@ const ScheduleRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const orgId = request.headers.get("x-organization-id") || "org_dev_default_123";
+    const authContext = await getAuthContext(request);
+    const orgId = authContext?.orgId || request.headers.get("x-organization-id");
+
+    if (!orgId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const body = await request.json();
     const parsed = ScheduleRequestSchema.safeParse(body);
 
@@ -95,7 +101,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const orgId = request.headers.get("x-organization-id") || "org_dev_default_123";
+    const authContext = await getAuthContext(request);
+    const orgId = authContext?.orgId || request.headers.get("x-organization-id");
+
+    if (!orgId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { searchParams } = new URL(request.url);
     const accountId = searchParams.get("accountId");
     const status = searchParams.get("status");

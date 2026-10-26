@@ -13,10 +13,8 @@ export interface DeductionResult {
   error?: string;
 }
 
-// Dev fallback in-memory balance tracker when running without PostgreSQL container
-const devBalances: Record<string, number> = {
-  org_dev_default_123: 24,
-};
+// Resilient in-memory balance tracker when running without PostgreSQL container
+const devBalances: Record<string, number> = {};
 
 /**
  * Retrieves the current credit balance and plan details for an organization.

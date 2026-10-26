@@ -5,6 +5,7 @@ import {
   generateOAuthState,
   buildAuthRedirectUrl,
 } from "@/lib/social/oauth";
+import { getAuthContext } from "@/lib/auth/getAuthContext";
 
 export async function GET(
   request: NextRequest,
@@ -23,8 +24,13 @@ export async function GET(
       );
     }
 
-    // Extract tenant ID from request header (set by middleware or default dev org)
-    const orgId = request.headers.get("x-organization-id") || "org_dev_default_123";
+    // Extract tenant context from authenticated user session
+    const authContext = await getAuthContext(request);
+    const orgId = authContext?.orgId || request.headers.get("x-organization-id");
+
+    if (!orgId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     // Build redirect URI based on current request host
     const origin = request.nextUrl.origin;

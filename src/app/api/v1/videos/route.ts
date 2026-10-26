@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/db/client";
+import { getAuthContext } from "@/lib/auth/getAuthContext";
 
 export async function GET(request: NextRequest) {
   try {
-    const orgId = request.headers.get("x-organization-id") || "org_dev_default_123";
+    const authContext = await getAuthContext(request);
+    const orgId = authContext?.orgId || request.headers.get("x-organization-id");
+
+    if (!orgId) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
 
     try {
       const dbVideos = await prisma.video.findMany({

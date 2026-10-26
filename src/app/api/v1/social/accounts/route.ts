@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/db/client";
 import { encryptToken } from "@/lib/social/crypto";
+import { getAuthContext } from "@/lib/auth/getAuthContext";
 
 const CreateAccountSchema = z.object({
   platform: z.enum(["tiktok", "instagram", "youtube"]),
@@ -12,7 +13,12 @@ const CreateAccountSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const orgId = request.headers.get("x-organization-id") || "org_dev_default_123";
+    const authContext = await getAuthContext(request);
+    const orgId = authContext?.orgId || request.headers.get("x-organization-id");
+
+    if (!orgId) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
 
     try {
       const accounts = await prisma.socialAccount.findMany({
@@ -88,7 +94,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const orgId = request.headers.get("x-organization-id") || "org_dev_default_123";
+    const authContext = await getAuthContext(request);
+    const orgId = authContext?.orgId || request.headers.get("x-organization-id");
+
+    if (!orgId) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
     const body = await request.json();
     const parsed = CreateAccountSchema.safeParse(body);
 
