@@ -15,6 +15,8 @@ export interface PlanConfig {
   name: string;
   priceUsd: number;
   monthlyCredits: number;
+  maxConnectedAccounts: number;
+  postingCadence: string;
   stripePriceId: string;
   description: string;
   features: string[];
@@ -25,14 +27,17 @@ export const BILLING_PLANS: Record<SubscriptionTier, PlanConfig> = {
     id: "starter",
     name: "Starter",
     priceUsd: 49,
-    monthlyCredits: 25,
+    monthlyCredits: 20,
+    maxConnectedAccounts: 1,
+    postingCadence: "~4 posts / week (Mon/Wed/Fri/Sun drip)",
     stripePriceId: process.env.STRIPE_STARTER_PRICE_ID || "price_starter_49_usd",
     description: "Ideal for solo founders and bootstrapping creators testing viral ads.",
     features: [
-      "25 1080p vertical video ads / month",
-      "6 conversational creator voices",
-      "Dynamic kinetic word-level subtitles",
-      "1-click TikTok & Instagram Reels publishing",
+      "20 Videos / month",
+      "1 Brand Account connected",
+      "~4 posts / week (Mon/Wed/Fri/Sun drip)",
+      "Autopilot Scheduler & Peak-Hour Timing",
+      "1080p MP4 Downloads & Permanent Vault",
       "Zero watermarks & commercial license",
     ],
   },
@@ -41,14 +46,18 @@ export const BILLING_PLANS: Record<SubscriptionTier, PlanConfig> = {
     name: "Growth",
     priceUsd: 89,
     monthlyCredits: 60,
+    maxConnectedAccounts: 5,
+    postingCadence: "~2 posts / day automated drip",
     stripePriceId: process.env.STRIPE_GROWTH_PRICE_ID || "price_growth_89_usd",
     description: "For scaling DTC brands and SaaS teams running always-on creative testing.",
     features: [
-      "60 1080p vertical video ads / month",
-      "All Starter features + YouTube Shorts",
-      "Dynamic background audio & auto-ducking",
-      "Priority background rendering pipeline",
-      "Custom brand typography & color presets",
+      "60 Videos / month",
+      "Up to 5 Accounts (Main + Satellites)",
+      "~2 posts / day automated drip",
+      "Multi-Account Clipping Army",
+      "Anti-Duplicate Shadowban Engine",
+      "All 12 Conversational creator voices",
+      "Priority GPU cloud rendering",
     ],
   },
   scale: {
@@ -56,14 +65,17 @@ export const BILLING_PLANS: Record<SubscriptionTier, PlanConfig> = {
     name: "Scale",
     priceUsd: 199,
     monthlyCredits: 180,
+    maxConnectedAccounts: 15,
+    postingCadence: "~6 posts / day high-velocity blitz",
     stripePriceId: process.env.STRIPE_SCALE_PRICE_ID || "price_scale_199_usd",
     description: "For agencies and high-volume performance marketing operations.",
     features: [
-      "180 1080p vertical video ads / month",
-      "All Growth features included",
-      "Multi-tenant brand workspaces",
-      "Dedicated GPU rendering node",
-      "Direct API access & custom webhooks",
+      "180 Videos / month",
+      "Up to 15 Accounts (Multi-Brand / Team)",
+      "~6 posts / day high-velocity blitz",
+      "Agency Multi-Brand Workspaces",
+      "Priority GPU Rendering Node & API",
+      "Dedicated campaign & account support",
     ],
   },
 };

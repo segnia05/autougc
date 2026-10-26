@@ -178,8 +178,12 @@ export function generateDistributionPlan(input: DistributionPlanInput): Distribu
         const voiceId = CREATOR_VOICE_ROTATION[(slotIndex + accountIndex) % CREATOR_VOICE_ROTATION.length] ?? CREATOR_VOICE_ROTATION[0];
         const subtitleStyle = SUBTITLE_STYLE_ROTATION[(slotIndex + accountIndex) % SUBTITLE_STYLE_ROTATION.length] ?? SUBTITLE_STYLE_ROTATION[0];
 
-        // Stagger hours if multiple posts on same day (e.g., 12 PM and 7 PM)
-        const hourForPost = postsToday > 1 && p > 0 ? (preferredHour + 4) % 24 : preferredHour;
+        // Stagger hours if multiple posts on same day (e.g., Growth: 12 PM & 6 PM; Scale: every 2 hours)
+        let hourForPost = preferredHour;
+        if (postsToday > 1 && p > 0) {
+          const step = postsToday <= 2 ? 6 : Math.max(2, Math.floor(12 / (postsToday - 1)));
+          hourForPost = (preferredHour + (p * step)) % 24;
+        }
 
         // Calculate UTC scheduled timestamp
         // UTC = Local Hour - Offset

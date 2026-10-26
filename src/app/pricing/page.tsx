@@ -25,19 +25,17 @@ export default function PricingPage() {
       tagline: "For solo founders & DTC bootstrappers",
       monthlyPrice: 49,
       annualPrice: 39,
-      credits: "25 ads / mo",
-      costPerAd: "$1.56 / ad",
+      credits: "20 Videos / mo",
+      costPerAd: "$2.45 / video",
       badge: null,
       highlight: false,
       features: [
-        "25 High-res 1080p vertical video exports",
-        "3 Conversational creator AI voices",
-        "Kinetic subtitle engine with word highlights",
-        "Commercial usage rights on all exports",
-        "1 Connected account per social network",
-        "Auto-scheduling to TikTok & Instagram",
-        "Zero watermarks",
-        "Standard rendering queue",
+        "20 Videos / month",
+        "1 Brand Account connected",
+        "~4 posts / week (Mon/Wed/Fri/Sun drip)",
+        "Autopilot Scheduler & Peak-Hour Timing",
+        "1080p MP4 Downloads & Permanent Vault",
+        "Zero watermarks & commercial license",
       ],
       ctaText: "Start Free Trial",
       ctaVariant: "secondary" as const,
@@ -48,20 +46,18 @@ export default function PricingPage() {
       tagline: "For scaling brands & high-velocity teams",
       monthlyPrice: 89,
       annualPrice: 69,
-      credits: "60 ads / mo",
-      costPerAd: "$1.15 / ad",
+      credits: "60 Videos / mo",
+      costPerAd: "$1.48 / video",
       badge: "MOST POPULAR",
       highlight: true,
       features: [
-        "60 High-res 1080p 60fps vertical exports",
+        "60 Videos / month",
+        "Up to 5 Accounts (Main + Satellites)",
+        "~2 posts / day automated drip",
+        "Multi-Account Army distribution",
+        "Anti-Duplicate Shadowban Engine",
         "All 12 Conversational creator voices",
-        "Commercial music library with auto-ducking",
-        "3 Connected accounts per platform",
-        "Automated multi-platform publishing calendar",
-        "Custom brand fonts & hex color presets",
-        "Priority GPU cloud rendering (under 30s)",
-        "Ad fatigue variation tester (3 angles/URL)",
-        "Priority chat support",
+        "Priority GPU cloud rendering",
       ],
       ctaText: "Unlock Growth Plan",
       ctaVariant: "primary" as const,
@@ -72,19 +68,18 @@ export default function PricingPage() {
       tagline: "For agencies & aggressive media buyers",
       monthlyPrice: 199,
       annualPrice: 159,
-      credits: "180 ads / mo",
-      costPerAd: "$0.88 / ad",
+      credits: "180 Videos / mo",
+      costPerAd: "$1.11 / video",
       badge: "BEST VALUE",
       highlight: false,
       features: [
-        "180 High-res 1080p 60fps vertical exports",
-        "Unlimited social accounts connected",
-        "5 Team member seats included",
-        "Webhook & REST API access for automation",
-        "Custom creator voice clone integration",
-        "White-label client review links",
-        "Dedicated cloud GPU rendering queue",
-        "1-on-1 Creative strategy consultation",
+        "180 Videos / month",
+        "Up to 15 Accounts (Multi-Brand / Team)",
+        "~6 posts / day high-velocity blitz",
+        "Agency Multi-Brand Workspaces",
+        "Anti-Duplicate Matrix on all variants",
+        "Priority GPU Rendering Node & API",
+        "Dedicated campaign & account support",
       ],
       ctaText: "Get Scale Access",
       ctaVariant: "secondary" as const,
@@ -95,7 +90,7 @@ export default function PricingPage() {
   const monthlyAds = adsPerWeek * 4;
   const traditionalAgencyCost = monthlyAds * 350; // $350 avg per UGC video
   const autoUgcCost =
-    monthlyAds <= 25 ? (billingCycle === "annual" ? 39 : 49) :
+    monthlyAds <= 20 ? (billingCycle === "annual" ? 39 : 49) :
     monthlyAds <= 60 ? (billingCycle === "annual" ? 69 : 89) :
     (billingCycle === "annual" ? 159 : 199);
   const netSavings = traditionalAgencyCost - autoUgcCost;
@@ -288,15 +283,15 @@ export default function PricingPage() {
             <input
               type="range"
               min="1"
-              max="20"
+              max="45"
               value={adsPerWeek}
               onChange={(e) => setAdsPerWeek(parseInt(e.target.value, 10))}
               className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
             />
             <div className="flex justify-between text-[11px] text-[var(--text-muted)] font-mono mt-2">
-              <span>1 ad / wk (bootstrap)</span>
-              <span>10 ads / wk (growth)</span>
-              <span>20 ads / wk (scale)</span>
+              <span>~5 ads / wk (Starter: 20/mo)</span>
+              <span>~15 ads / wk (Growth: 60/mo)</span>
+              <span>~45 ads / wk (Scale: 180/mo)</span>
             </div>
           </div>
 
@@ -315,7 +310,7 @@ export default function PricingPage() {
                 ${autoUgcCost} / mo
               </span>
               <span className="text-[10px] text-[var(--text-muted)] block mt-1">
-                {monthlyAds <= 25 ? "Starter plan" : monthlyAds <= 60 ? "Growth plan" : "Scale plan"}
+                {monthlyAds <= 20 ? "Starter plan" : monthlyAds <= 60 ? "Growth plan" : "Scale plan"}
               </span>
             </div>
 
@@ -357,12 +352,42 @@ export default function PricingPage() {
               <tbody className="divide-y divide-subtle">
                 <tr>
                   <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Monthly Video Renders</td>
-                  <td className="py-3 px-4 text-center font-mono">25</td>
+                  <td className="py-3 px-4 text-center font-mono">20</td>
                   <td className="py-3 px-4 text-center font-mono text-[var(--accent-primary)] font-bold">60</td>
                   <td className="py-3 px-4 text-center font-mono">180</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Export Resolution</td>
+                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Connected Brand Accounts</td>
+                  <td className="py-3 px-4 text-center">1 Account</td>
+                  <td className="py-3 px-4 text-center text-[var(--accent-primary)] font-bold">Up to 5 Accounts</td>
+                  <td className="py-3 px-4 text-center">Up to 15 Accounts</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Posting Cadence</td>
+                  <td className="py-3 px-4 text-center font-mono">~4 posts / week</td>
+                  <td className="py-3 px-4 text-center font-mono text-[var(--accent-primary)] font-bold">~2 posts / day</td>
+                  <td className="py-3 px-4 text-center font-mono">~6 posts / day</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Autopilot Scheduler</td>
+                  <td className="py-3 px-4 text-center">Peak-Hour Timing</td>
+                  <td className="py-3 px-4 text-center text-[var(--accent-primary)]">Multi-Account Balancing</td>
+                  <td className="py-3 px-4 text-center">Agency Multi-Brand</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Multi-Account Army</td>
+                  <td className="py-3 px-4 text-center text-[var(--text-muted)]">-</td>
+                  <td className="py-3 px-4 text-center text-[var(--accent-primary)] font-bold">Included (5 Burners)</td>
+                  <td className="py-3 px-4 text-center font-bold">Included (15 Burners)</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Anti-Duplicate Tech</td>
+                  <td className="py-3 px-4 text-center text-[var(--text-muted)]">Standard Variety</td>
+                  <td className="py-3 px-4 text-center text-[var(--accent-primary)] font-bold">4-Layer Permutation</td>
+                  <td className="py-3 px-4 text-center font-bold">Enterprise Permutation</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">1080p MP4 Downloads</td>
                   <td className="py-3 px-4 text-center">1080p 30fps</td>
                   <td className="py-3 px-4 text-center text-[var(--accent-primary)]">1080p 60fps</td>
                   <td className="py-3 px-4 text-center">1080p 60fps</td>
@@ -374,34 +399,22 @@ export default function PricingPage() {
                   <td className="py-3 px-4 text-center">All + Custom Clone</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Multi-Channel Publishing</td>
-                  <td className="py-3 px-4 text-center">TikTok & IG</td>
-                  <td className="py-3 px-4 text-center text-[var(--accent-primary)]">TikTok, IG, Shorts</td>
-                  <td className="py-3 px-4 text-center">All Channels</td>
-                </tr>
-                <tr>
-                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Kinetic Subtitle Styles</td>
-                  <td className="py-3 px-4 text-center">Standard</td>
-                  <td className="py-3 px-4 text-center text-[var(--accent-primary)]">All Custom Fonts</td>
-                  <td className="py-3 px-4 text-center">Custom CSS/Fonts</td>
-                </tr>
-                <tr>
-                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Render Cloud Queue</td>
+                  <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Cloud Rendering Queue</td>
                   <td className="py-3 px-4 text-center text-[var(--text-muted)]">Standard (~2m)</td>
-                  <td className="py-3 px-4 text-center text-[var(--accent-primary)]">Priority (~25s)</td>
-                  <td className="py-3 px-4 text-center">Dedicated (~15s)</td>
+                  <td className="py-3 px-4 text-center text-[var(--accent-primary)]">Priority Cloud (~25s)</td>
+                  <td className="py-3 px-4 text-center">Dedicated Node (~15s)</td>
                 </tr>
                 <tr>
                   <td className="py-3 px-4 font-medium text-[var(--text-primary)]">Team Member Seats</td>
                   <td className="py-3 px-4 text-center">1 Seat</td>
-                  <td className="py-3 px-4 text-center text-[var(--accent-primary)]">2 Seats</td>
-                  <td className="py-3 px-4 text-center">5 Seats Included</td>
+                  <td className="py-3 px-4 text-center text-[var(--accent-primary)]">3 Seats</td>
+                  <td className="py-3 px-4 text-center">10 Seats / Agency</td>
                 </tr>
                 <tr>
                   <td className="py-3 px-4 font-medium text-[var(--text-primary)]">API & Webhook Access</td>
                   <td className="py-3 px-4 text-center text-[var(--text-muted)]">-</td>
                   <td className="py-3 px-4 text-center text-[var(--text-muted)]">-</td>
-                  <td className="py-3 px-4 text-center text-emerald-400">Full REST/Webhook</td>
+                  <td className="py-3 px-4 text-center text-emerald-400">Full REST & Webhook</td>
                 </tr>
               </tbody>
             </table>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/db/client";
 import { generateDistributionPlan, CampaignCadence, ConnectedAccountInput } from "@/lib/social/distributionEngine";
+import { BILLING_PLANS, SubscriptionTier } from "@/lib/billing/stripe";
 
 const AutoScheduleSchema = z.object({
   projectId: z.string().min(1, "projectId is required"),
@@ -35,6 +36,71 @@ export async function POST(request: NextRequest) {
       socialAccountIds,
       campaignName,
     } = parsed.data;
+
+    // Plan tier verification & quota checks (Starter: 1 acc / 20 vids, Growth: 5 accs / 60 vids, Scale: 15 accs / 180 vids)
+    try {
+      const sub = await prisma.subscription.findUnique({
+        where: { organizationId: orgId },
+      });
+      const planTier = (request.headers.get("x-plan-tier") || sub?.planTier || "starter") as SubscriptionTier;
+      const planConfig = BILLING_PLANS[planTier] || BILLING_PLANS.starter;
+
+      if (socialAccountIds.length > planConfig.maxConnectedAccounts) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Your ${planConfig.name} plan supports up to ${planConfig.maxConnectedAccounts} connected account(s). You selected ${socialAccountIds.length} accounts. Upgrade to Growth (up to 5 accounts) or Scale (up to 15 accounts) for multi-account distribution.`,
+            upgradeRequired: true,
+            currentTier: planTier,
+            maxAllowedAccounts: planConfig.maxConnectedAccounts,
+          },
+          { status: 403 }
+        );
+      }
+
+      if (totalVideos > planConfig.monthlyCredits) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Your ${planConfig.name} plan includes up to ${planConfig.monthlyCredits} videos per month. You requested ${totalVideos} videos. Upgrade to Growth (60 videos/mo) or Scale (180 videos/mo) to unlock higher monthly volume.`,
+            upgradeRequired: true,
+            currentTier: planTier,
+            maxMonthlyVideos: planConfig.monthlyCredits,
+          },
+          { status: 403 }
+        );
+      }
+    } catch {
+      // In offline/dev fallback, verify against header if explicitly passed
+      const explicitTier = request.headers.get("x-plan-tier") as SubscriptionTier;
+      if (explicitTier && BILLING_PLANS[explicitTier]) {
+        const planConfig = BILLING_PLANS[explicitTier];
+        if (socialAccountIds.length > planConfig.maxConnectedAccounts) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Your ${planConfig.name} plan supports up to ${planConfig.maxConnectedAccounts} connected account(s). You selected ${socialAccountIds.length} accounts. Upgrade to Growth (up to 5 accounts) or Scale (up to 15 accounts) for multi-account distribution.`,
+              upgradeRequired: true,
+              currentTier: explicitTier,
+              maxAllowedAccounts: planConfig.maxConnectedAccounts,
+            },
+            { status: 403 }
+          );
+        }
+        if (totalVideos > planConfig.monthlyCredits) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Your ${planConfig.name} plan includes up to ${planConfig.monthlyCredits} videos per month. You requested ${totalVideos} videos. Upgrade to Growth (60 videos/mo) or Scale (180 videos/mo) to unlock higher monthly volume.`,
+              upgradeRequired: true,
+              currentTier: explicitTier,
+              maxMonthlyVideos: planConfig.monthlyCredits,
+            },
+            { status: 403 }
+          );
+        }
+      }
+    }
 
     // Fetch connected accounts or synthesize mock accounts in development
     let connectedAccounts: ConnectedAccountInput[] = [];

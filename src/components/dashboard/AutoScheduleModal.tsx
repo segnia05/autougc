@@ -161,9 +161,9 @@ export function AutoScheduleModal({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
               { id: "mon_wed_fri", label: "Mon/Wed/Fri", desc: "12-14 posts/mo" },
-              { id: "mon_wed_fri_sun", label: "Mon/Wed/Fri/Sun", desc: "16-18 posts/mo" },
+              { id: "mon_wed_fri_sun", label: "Mon/Wed/Fri/Sun", desc: "~4 posts/wk (Starter)" },
               { id: "weekdays", label: "Weekdays Only", desc: "20-22 posts/mo" },
-              { id: "daily_30", label: "Daily Blitz", desc: "30-60 posts/mo" },
+              { id: "daily_30", label: "Daily Blitz", desc: "2-6 posts/day (Growth/Scale)" },
             ].map((item) => {
               const isSelected = cadence === item.id;
               return (
@@ -184,20 +184,24 @@ export function AutoScheduleModal({
             })}
           </div>
 
-          <div className="flex items-center gap-2 pt-1">
-            <span className="text-xs text-[var(--text-secondary)]">Volume:</span>
-            {[20, 40, 60, 90].map((num) => (
+          <div className="flex items-center gap-2 pt-1 flex-wrap">
+            <span className="text-xs text-[var(--text-secondary)]">Plan Volume:</span>
+            {[
+              { count: 20, label: "20 (Starter)" },
+              { count: 60, label: "60 (Growth)" },
+              { count: 180, label: "180 (Scale)" },
+            ].map((item) => (
               <button
-                key={num}
+                key={item.count}
                 type="button"
-                onClick={() => setTotalVideos(num)}
+                onClick={() => setTotalVideos(item.count)}
                 className={`px-2.5 py-1 text-xs rounded border transition-colors cursor-pointer ${
-                  totalVideos === num
+                  totalVideos === item.count
                     ? "bg-[var(--accent-primary)] text-black font-bold border-transparent"
                     : "bg-[var(--bg-surface)] text-[var(--text-secondary)] border-subtle hover:border-[var(--border-strong)]"
                 }`}
               >
-                {num} Videos
+                {item.label}
               </button>
             ))}
           </div>

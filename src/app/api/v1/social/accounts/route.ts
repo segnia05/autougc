@@ -103,6 +103,39 @@ export async function POST(request: NextRequest) {
     const cleanHandle = accountHandle.startsWith("@") ? accountHandle : `@${accountHandle}`;
     const generatedUserId = `user_${platform}_${Date.now()}`;
 
+    // Enforce tier account limits: Starter: 1, Growth: 5, Scale: 15
+    const PLAN_LIMITS: Record<string, number> = {
+      free: 1,
+      starter: 1,
+      growth: 5,
+      scale: 15,
+    };
+
+    try {
+      const sub = await prisma.subscription.findUnique({
+        where: { organizationId: orgId },
+      });
+      const planTier = request.headers.get("x-plan-tier") || sub?.planTier || "starter";
+      const maxAllowed = PLAN_LIMITS[planTier] ?? 1;
+
+      const currentCount = await prisma.socialAccount.count({
+        where: { organizationId: orgId, isActive: true },
+      });
+
+      if (currentCount >= maxAllowed) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Account limit reached. Your ${planTier.toUpperCase()} plan allows up to ${maxAllowed} connected account(s). Upgrade to Growth (5 accounts) or Scale (15 accounts) to add more.`,
+            upgradeRequired: true,
+          },
+          { status: 403 }
+        );
+      }
+    } catch {
+      // Dev mode without DB passes through
+    }
+
     try {
       const newAccount = await prisma.socialAccount.create({
         data: {

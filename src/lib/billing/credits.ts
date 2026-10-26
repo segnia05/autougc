@@ -42,8 +42,8 @@ export async function getOrganizationCredits(
   }
 
   return {
-    creditsRemaining: devBalances[orgId] ?? 24,
-    monthlyAllowance: 25,
+    creditsRemaining: devBalances[orgId] ?? 20,
+    monthlyAllowance: 20,
     planTier: "starter",
     status: "active",
   };

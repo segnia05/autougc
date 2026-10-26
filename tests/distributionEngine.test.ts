@@ -127,7 +127,42 @@ async function runTests() {
     console.log("✓ Test 4 Passed: Local 4:00 PM EST converted accurately to 21:00 UTC");
   }
 
-  console.log("=== ALL 4 DISTRIBUTION ENGINE TESTS PASSED CLEANLY! ===");
+  // Test 5: Scale Plan Blitz (180 Videos across 15 Accounts = 12 videos/account, 6 posts/day)
+  {
+    const fifteenAccounts: ConnectedAccountInput[] = Array.from({ length: 15 }, (_, i) => ({
+      id: `acc_scale_${i + 1}`,
+      accountHandle: `@scale_brand_${i + 1}`,
+      accountNickname: i === 0 ? "Main Agency Brand" : `Satellite Army #${i}`,
+      platform: "tiktok",
+      isBurner: i > 0,
+    }));
+
+    const scalePlan = generateDistributionPlan({
+      projectId: "proj_test_scale",
+      totalVideos: 180,
+      cadence: "daily_30",
+      targetTimezone: "America/New_York",
+      preferredHour: 10,
+      startDate: new Date("2026-11-01T00:00:00Z"),
+      connectedAccounts: fifteenAccounts,
+    });
+
+    if (scalePlan.totalScheduled !== 180) {
+      throw new Error(`Expected 180 scheduled slots for Scale tier, got ${scalePlan.totalScheduled}`);
+    }
+
+    // Verify all 15 accounts received exactly 12 posts (180 / 15 = 12)
+    for (const acc of fifteenAccounts) {
+      const count = scalePlan.accountBreakdown[acc.id]?.count;
+      if (count !== 12) {
+        throw new Error(`Expected exactly 12 posts for account ${acc.id}, got ${count}`);
+      }
+    }
+
+    console.log("✓ Test 5 Passed: Scale Plan blitz correctly generated 180 slots across 15 accounts (12/account)");
+  }
+
+  console.log("=== ALL 5 DISTRIBUTION ENGINE TESTS PASSED CLEANLY! ===");
 }
 
 runTests().catch((err) => {

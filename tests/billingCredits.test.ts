@@ -11,7 +11,7 @@ async function runBillingTests() {
   // 1. Verify Plan Configurations
   if (
     BILLING_PLANS.starter.priceUsd !== 49 ||
-    BILLING_PLANS.starter.monthlyCredits !== 25
+    BILLING_PLANS.starter.monthlyCredits !== 20
   ) {
     console.error("✗ Failed Starter plan pricing verification:", BILLING_PLANS.starter);
     process.exit(1);
