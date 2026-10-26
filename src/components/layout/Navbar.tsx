@@ -12,10 +12,11 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/studio", label: "Studio" },
+    { href: "/pricing", label: "Pricing" },
     { href: "/templates", label: "Templates" },
     { href: "/tools", label: "Free Tools" },
-    { href: "/pricing", label: "Pricing" },
-    { href: "/studio", label: "Studio" },
   ];
 
   const isActive = (href: string) => {

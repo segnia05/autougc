@@ -115,11 +115,11 @@ function StudioContent() {
       <header className="sticky top-0 z-40 border-b border-subtle bg-[var(--bg-app)]/85 backdrop-blur-md px-4 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3 sm:gap-4">
           <Link
-            href="/"
+            href="/dashboard"
             className="flex items-center gap-1.5 sm:gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Back to Home</span>
+            <span className="hidden sm:inline">Command Center</span>
           </Link>
           <div className="h-4 w-[1px] bg-zinc-800 hidden sm:block" />
           <div className="flex items-center gap-2">
@@ -133,9 +133,11 @@ function StudioContent() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <Badge variant="emerald" size="sm" pulse className="font-mono text-[10px] sm:text-xs">
-            24 / 25
-          </Badge>
+          <Link href="/dashboard">
+            <Badge variant="emerald" size="sm" pulse className="font-mono text-[10px] sm:text-xs cursor-pointer hover:bg-emerald-950/60">
+              42 / 60 Credits
+            </Badge>
+          </Link>
           <Button
             variant="secondary"
             size="sm"
