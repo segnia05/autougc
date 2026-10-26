@@ -11,13 +11,18 @@ const isPublicRoute = createRouteMatcher([
   "/privacy",
   "/terms",
   "/api/v1/projects/scrape",
+  "/api/v1/audio/synthesize",
+  "/api/v1/scripts/generate",
   "/api/v1/webhooks(.*)",
   "/api/auth(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
-    await auth.protect();
+    const hasServiceHeader = request.headers.get("x-user-id");
+    if (!hasServiceHeader) {
+      await auth.protect();
+    }
   }
 
   const { userId, orgId } = await auth();

@@ -13,6 +13,8 @@
   "dependencies": {
     "@clerk/nextjs": "^7.9.20",
     "@google/genai": "^2.31.0",
+    "@neon/config": "^1.9.4",
+    "@neon/env": "^1.6.5",
     "@prisma/client": "^6.4.1",
     "@remotion/player": "^4.0.538",
     "cheerio": "^1.2.0",

@@ -135,12 +135,33 @@ export async function grantCredits(
 ): Promise<{ success: boolean; newBalance: number }> {
   try {
     return await prisma.$transaction(async (tx) => {
-      const sub = await tx.subscription.update({
+      const org = await tx.organization.findUnique({ where: { id: orgId } });
+      if (!org) {
+        await tx.organization.create({
+          data: {
+            id: orgId,
+            name: "Organization",
+            slug: `org-${orgId.toLowerCase().replace(/[^a-z0-9]/g, "").slice(-12)}`,
+            billingEmail: `${orgId}@autougc.com`,
+          },
+        });
+      }
+
+      const sub = await tx.subscription.upsert({
         where: { organizationId: orgId },
-        data: {
+        update: {
           creditsRemaining: {
             increment: amount,
           },
+        },
+        create: {
+          organizationId: orgId,
+          stripeCustomerId: `cus_${orgId.slice(-12)}`,
+          planTier: "starter",
+          status: "active",
+          creditsMonthlyAllowance: 20,
+          creditsRemaining: amount,
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       });
 
