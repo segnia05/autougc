@@ -232,6 +232,8 @@ model Video {
   organizationId  String       @map("organization_id")
   scriptId        String       @map("script_id")
   voiceId         String       @default("alex_casual_dtc") @map("voice_id")
+  creatorId       String?      @map("creator_id")
+  archetype       String       @default("selfie_handheld")
   aspectRatio     String       @default("9:16") @map("aspect_ratio")
   durationSeconds Decimal      @default(15.00) @map("duration_seconds") @db.Decimal(4, 2)
   hasWatermark    Boolean      @default(false) @map("has_watermark")
@@ -269,6 +271,15 @@ enum PublishStatus {
   processing
   published
   failed
+  held
+}
+
+enum ApprovalStatus {
+  none
+  awaiting_approval
+  approved
+  rejected
+  expired
 }
 
 model SocialAccount {
@@ -303,6 +314,8 @@ model ScheduledPost {
   socialAccountId String        @map("social_account_id")
   hookAngle       String?       @map("hook_angle")
   voiceId         String?       @map("voice_id")
+  creatorId       String?       @map("creator_id")
+  archetype       String?
   targetTimezone  String?       @map("target_timezone")
   localScheduledTime String?    @map("local_scheduled_time")
   postUrl         String?       @map("post_url")
@@ -312,13 +325,18 @@ model ScheduledPost {
   platformPostId  String?       @map("platform_post_id")
   errorLog        String?       @map("error_log")
   retryCount      Int           @default(0) @map("retry_count")
+  requireApproval Boolean       @default(true) @map("require_approval")
+  approvalStatus  ApprovalStatus @default(none) @map("approval_status")
+  approvedAt      DateTime?     @map("approved_at")
+  approvedByIp    String?       @map("approved_by_ip")
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
 
-  video         Video         @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  organization  Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
-  campaign      Campaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  video          Video           @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  socialAccount  SocialAccount   @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  campaign       Campaign?       @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  approvalTokens ApprovalToken[]
 
   @@index([publishStatus, scheduledFor])
   @@index([campaignId])
@@ -349,5 +367,72 @@ model Campaign {
 
   @@index([organizationId, status])
   @@map("campaigns")
+}
+
+// ============================================================================
+// 7. CREATOR PERSONAS, STEMS & 1-HOUR PRE-PUBLISH APPROVAL
+// ============================================================================
+
+model CreatorPersona {
+  id                  String        @id @default(uuid())
+  name                String
+  role                String
+  demographicTag      String        @map("demographic_tag")
+  targetNiche         String        @map("target_niche")
+  avatarUrl           String        @map("avatar_url")
+  defaultVoiceId      String        @map("default_voice_id")
+  colorGradingProfile String        @default("natural_daylight") @map("color_grading_profile")
+  isActive            Boolean       @default(true) @map("is_active")
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  stems               CreatorStem[]
+
+  @@map("creator_personas")
+}
+
+model CreatorStem {
+  id              String         @id @default(uuid())
+  personaId       String         @map("persona_id")
+  archetype       String         // "studio_minimalist" | "organic_selfie" | "meme_reaction"
+  stemUrl         String         @map("stem_url")
+  durationSeconds Decimal        @default(15.00) @map("duration_seconds") @db.Decimal(4, 2)
+  resolution      String         @default("1080x1920")
+  framerate       Int            @default(30)
+  hasAlphaChannel Boolean        @default(false) @map("has_alpha_channel")
+  createdAt       DateTime       @default(now()) @map("created_at")
+
+  persona         CreatorPersona @relation(fields: [personaId], references: [id], onDelete: Cascade)
+
+  @@map("creator_stems")
+}
+
+model VoiceModel {
+  id              String   @id // e.g. "sarah_dtc_founder"
+  name            String
+  accent          String
+  gender          String
+  energyLevel     String   @map("energy_level")
+  provider        String   @default("google_neural")
+  providerVoiceId String   @map("provider_voice_id")
+  sampleAudioUrl  String?  @map("sample_audio_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("voice_models")
+}
+
+model ApprovalToken {
+  id              String        @id @default(uuid())
+  scheduledPostId String        @map("scheduled_post_id")
+  tokenHash       String        @unique @map("token_hash")
+  expiresAt       DateTime      @map("expires_at")
+  consumed        Boolean       @default(false)
+  consumedAt      DateTime?     @map("consumed_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  scheduledPost   ScheduledPost @relation(fields: [scheduledPostId], references: [id], onDelete: Cascade)
+
+  @@index([tokenHash, consumed])
+  @@map("approval_tokens")
 }
 

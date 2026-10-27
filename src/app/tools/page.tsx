@@ -4,9 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import {
   ArrowRight,
   Calculator,
@@ -26,7 +23,6 @@ export default function ToolsIndexPage() {
       category: "Ad Creative",
       metric: "4.2% Avg CTR",
       icon: Zap,
-      accentColor: "text-amber-400",
       stats: "Used 18,400+ times this month",
     },
     {
@@ -38,7 +34,6 @@ export default function ToolsIndexPage() {
       category: "Copywriting",
       metric: "82% Completion",
       icon: Film,
-      accentColor: "text-emerald-400",
       stats: "Used 12,900+ times this month",
     },
     {
@@ -50,29 +45,25 @@ export default function ToolsIndexPage() {
       category: "Financial ROI",
       metric: "92% Cost Reduction",
       icon: Calculator,
-      accentColor: "text-blue-400",
       stats: "Used 9,200+ times this month",
     },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-primary)]">
+    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-24 w-full">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <Badge variant="amber" size="sm" className="mb-4 font-mono">
-            100% FREE GROWTH UTILITIES
-          </Badge>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight font-[family-name:var(--font-display)] mb-4">
-            Free AI Tools for{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500">
-              High-Velocity Ad Teams
-            </span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4] mb-4 text-xs font-semibold uppercase tracking-wider">
+            SaaS Growth Utilities
+          </div>
+          <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B] mb-4">
+            AI ad utilities for <span className="italic">high-velocity</span> SaaS teams.
           </h1>
-          <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed">
-            Free standalone utilities to test hooks, generate scripts, and analyze ad creative production economics. No credit card required.
+          <p className="text-sm sm:text-base text-[#4A544A] leading-relaxed">
+            Standalone utilities to test viral hook formulas, generate high-retention script copy, and calculate UGC production economics.
           </p>
         </div>
 
@@ -82,35 +73,34 @@ export default function ToolsIndexPage() {
             const IconComponent = tool.icon;
 
             return (
-              <Card
+              <div
                 key={tool.slug}
-                hoverEffect
-                className="flex flex-col justify-between border border-subtle hover:border-[var(--accent-primary)]/50 transition-all bg-[var(--bg-surface)] p-6"
+                className="flex flex-col justify-between border border-[#CBD5C4]/70 hover:border-[#1F3824]/60 transition-all bg-white rounded-3xl p-7 shadow-sm group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="h-10 w-10 rounded-xl bg-[var(--bg-surface-elevated)] border border-subtle flex items-center justify-center">
-                      <IconComponent className={`h-5 w-5 ${tool.accentColor}`} />
+                    <div className="h-10 w-10 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center">
+                      <IconComponent className="h-5 w-5" />
                     </div>
-                    <Badge variant="neutral" size="sm" className="font-mono text-[10px]">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#ECEFE7] text-[#4A544A] border border-[#CBD5C4]/60">
                       {tool.category}
-                    </Badge>
+                    </span>
                   </div>
 
-                  <h2 className="text-xl font-bold font-[family-name:var(--font-display)] mb-1">
+                  <h2 className="text-xl font-bold text-[#1B231B] group-hover:text-[#1F3824] transition-colors mb-1">
                     {tool.name}
                   </h2>
-                  <p className="text-xs text-[var(--accent-primary)] font-mono mb-3">
+                  <p className="text-xs text-[#1F3824] font-semibold mb-3">
                     {tool.tagline}
                   </p>
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed mb-6">
+                  <p className="text-xs text-[#4A544A] leading-relaxed mb-6">
                     {tool.description}
                   </p>
 
-                  <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-subtle flex items-center justify-between text-xs font-mono mb-6">
-                    <span className="text-[var(--text-muted)]">Benchmark:</span>
-                    <span className="text-[var(--accent-emerald)] font-bold flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3" />
+                  <div className="p-3 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]/60 flex items-center justify-between text-xs mb-6">
+                    <span className="text-[#717E6C]">Benchmark:</span>
+                    <span className="text-[#1F3824] font-bold flex items-center gap-1">
+                      <TrendingUp className="h-3.5 w-3.5" />
                       {tool.metric}
                     </span>
                   </div>
@@ -118,59 +108,55 @@ export default function ToolsIndexPage() {
 
                 <div>
                   <Link href={`/tools/${tool.slug}`}>
-                    <Button
-                      variant="primary"
-                      size="md"
-                      className="w-full justify-center font-semibold text-xs"
-                      rightIcon={<ArrowRight className="h-4 w-4" />}
-                    >
-                      Launch Free Tool
-                    </Button>
+                    <button className="w-full py-3 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                      <span>Open Tool</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
                   </Link>
-                  <span className="text-[11px] text-[var(--text-muted)] text-center block mt-3 font-mono">
+                  <span className="text-[11px] text-[#717E6C] text-center block mt-3">
                     {tool.stats}
                   </span>
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>
 
         {/* Feature Highlights Section */}
-        <div className="rounded-2xl bg-[var(--bg-surface)] border border-subtle p-8 sm:p-10 max-w-5xl mx-auto mb-20">
+        <div className="rounded-3xl bg-white border border-[#CBD5C4]/70 p-8 sm:p-12 max-w-5xl mx-auto mb-20 shadow-sm">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold font-[family-name:var(--font-display)]">
-              Why Performance Marketers Use AutoUGC Tools
+            <h2 className="text-2xl sm:text-3xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
+              Why performance marketers use AutoUGC tools
             </h2>
-            <p className="text-xs text-[var(--text-secondary)] mt-1">
+            <p className="text-xs sm:text-sm text-[#4A544A] mt-1">
               Built on data from 500,000+ vertical video ad impressions.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="p-4 rounded-xl bg-[var(--bg-app)] border border-subtle flex flex-col gap-2">
-              <span className="text-xs font-semibold text-[var(--text-primary)]">
+            <div className="p-5 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]/60 flex flex-col gap-2">
+              <span className="text-xs font-bold text-[#1B231B]">
                 Zero AI Hallucinations
               </span>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+              <p className="text-xs text-[#4A544A] leading-relaxed">
                 Hooks and scripts are constrained to proven direct-response marketing formulas that drive conversions, not generic fluff.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-[var(--bg-app)] border border-subtle flex flex-col gap-2">
-              <span className="text-xs font-semibold text-[var(--text-primary)]">
+            <div className="p-5 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]/60 flex flex-col gap-2">
+              <span className="text-xs font-bold text-[#1B231B]">
                 Native Short-Form Pacing
               </span>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+              <p className="text-xs text-[#4A544A] leading-relaxed">
                 Word counts and sentence breaks are optimized specifically for 12 to 18 second TikTok and Reels retention curves.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-[var(--bg-app)] border border-subtle flex flex-col gap-2">
-              <span className="text-xs font-semibold text-[var(--text-primary)]">
+            <div className="p-5 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]/60 flex flex-col gap-2">
+              <span className="text-xs font-bold text-[#1B231B]">
                 1-Click Studio Transition
               </span>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+              <p className="text-xs text-[#4A544A] leading-relaxed">
                 Send any generated hook directly into the 1080p Studio with voice synthesis and kinetic subtitles in a single click.
               </p>
             </div>
@@ -178,22 +164,18 @@ export default function ToolsIndexPage() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 p-8 sm:p-12 text-center max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-[family-name:var(--font-display)] mb-3">
-            Ready to Render Your First Video Ad?
+        <div className="rounded-3xl bg-[#ECEFE7] border border-[#CBD5C4]/70 p-8 sm:p-12 text-center max-w-4xl mx-auto shadow-sm">
+          <h2 className="text-2xl sm:text-3xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B] mb-3">
+            Ready to render your first video ad?
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)] max-w-xl mx-auto mb-6">
+          <p className="text-xs sm:text-sm text-[#4A544A] max-w-xl mx-auto mb-6">
             Hop into AutoUGC Studio. Create 9:16 vertical video variations with natural voice synthesis and auto-scheduling.
           </p>
           <Link href="/studio">
-            <Button
-              variant="primary"
-              size="lg"
-              className="font-semibold text-xs shadow-glow-amber"
-              rightIcon={<ArrowRight className="h-4 w-4" />}
-            >
-              Open Studio Editor
-            </Button>
+            <button className="px-8 py-3.5 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-widest transition-all shadow-sm cursor-pointer inline-flex items-center gap-2">
+              <span>Open Studio Editor</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
           </Link>
         </div>
       </main>

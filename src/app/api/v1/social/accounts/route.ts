@@ -38,54 +38,11 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: "asc" },
       });
 
-      if (accounts.length > 0) {
-        return NextResponse.json({ success: true, accounts });
-      }
-    } catch {
-      // Fallback below
+      return NextResponse.json({ success: true, accounts });
+    } catch (dbErr) {
+      console.warn("DB query notice in /api/v1/social/accounts:", dbErr);
+      return NextResponse.json({ success: true, accounts: [] });
     }
-
-    // Default development accounts if DB is empty or offline
-    const devAccounts = [
-      {
-        id: "acc_main_brand",
-        platform: "tiktok" as const,
-        accountHandle: "@luminalight_official",
-        accountNickname: "Main Brand (Official)",
-        isBurner: false,
-        dailyPostLimit: 1,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "acc_burner_1",
-        platform: "tiktok" as const,
-        accountHandle: "@desk_hacks_daily",
-        accountNickname: "Burner #1 (Desk Setups)",
-        isBurner: true,
-        dailyPostLimit: 2,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "acc_burner_2",
-        platform: "tiktok" as const,
-        accountHandle: "@focus_tools_2026",
-        accountNickname: "Burner #2 (Productivity)",
-        isBurner: true,
-        dailyPostLimit: 2,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "acc_reels_main",
-        platform: "instagram" as const,
-        accountHandle: "@luminalight",
-        accountNickname: "Instagram Reels (Main)",
-        isBurner: false,
-        dailyPostLimit: 1,
-        createdAt: new Date().toISOString(),
-      },
-    ];
-
-    return NextResponse.json({ success: true, accounts: devAccounts });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to fetch accounts";
     return NextResponse.json({ success: false, error: message }, { status: 500 });

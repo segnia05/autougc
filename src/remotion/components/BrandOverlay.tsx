@@ -27,16 +27,17 @@ export const BrandOverlay: React.FC<BrandOverlayProps> = ({
         padding: "60px 48px",
       }}
     >
-      {/* Top Header Brand Badge */}
+      {/* Top Header Brand Badge - Modern Frosted Luxury Pill */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "14px",
+          gap: "12px",
           alignSelf: "flex-start",
-          background: "rgba(18, 18, 21, 0.75)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255, 255, 255, 0.12)",
+          background: "rgba(255, 255, 255, 0.94)",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(27, 35, 27, 0.12)",
+          boxShadow: "0 6px 20px rgba(0, 0, 0, 0.12)",
           padding: "10px 20px",
           borderRadius: "9999px",
         }}
@@ -64,30 +65,45 @@ export const BrandOverlay: React.FC<BrandOverlayProps> = ({
         )}
         <span
           style={{
-            color: "#F4F4F6",
+            color: "#1B231B",
             fontSize: "20px",
-            fontWeight: 700,
+            fontWeight: 800,
             fontFamily: "Plus Jakarta Sans, sans-serif",
             letterSpacing: "-0.01em",
           }}
         >
           {brandName}
         </span>
+        <span
+          style={{
+            fontSize: "14px",
+            color: "#1F3824",
+            fontWeight: 700,
+            backgroundColor: "#E2E9DC",
+            padding: "2px 8px",
+            borderRadius: "9999px",
+            letterSpacing: "0.04em",
+          }}
+        >
+          UGC AD
+        </span>
       </div>
 
-      {/* Free Tier Watermark */}
+      {/* Preview Watermark */}
       {hasWatermark && (
         <div
           style={{
             alignSelf: "flex-end",
-            background: "rgba(9, 9, 11, 0.8)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
+            background: "rgba(255, 255, 255, 0.92)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(27, 35, 27, 0.15)",
             padding: "8px 16px",
-            borderRadius: "8px",
-            color: "rgba(255, 255, 255, 0.6)",
-            fontSize: "16px",
-            fontWeight: 600,
+            borderRadius: "9999px",
+            color: "#1B231B",
+            fontSize: "15px",
+            fontWeight: 700,
             fontFamily: "Geist Mono, monospace",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
           }}
         >
           Made with AutoUGC.com

@@ -8,7 +8,7 @@ export const stripe = new Stripe(
   }
 );
 
-export type SubscriptionTier = "starter" | "growth" | "scale";
+export type SubscriptionTier = "free" | "starter" | "growth" | "scale";
 
 export interface PlanConfig {
   id: SubscriptionTier;
@@ -23,6 +23,22 @@ export interface PlanConfig {
 }
 
 export const BILLING_PLANS: Record<SubscriptionTier, PlanConfig> = {
+  free: {
+    id: "free",
+    name: "Subscription Required",
+    priceUsd: 0,
+    monthlyCredits: 3,
+    maxConnectedAccounts: 1,
+    postingCadence: "Manual export only",
+    stripePriceId: "",
+    description: "Subscribe to an active plan to render and publish viral video ads.",
+    features: [
+      "Select Starter, Growth, or Scale to begin",
+      "Full Studio Canvas & Subtitle Styler",
+      "1 Brand Account preview",
+      "Standard cloud render queue",
+    ],
+  },
   starter: {
     id: "starter",
     name: "Starter",

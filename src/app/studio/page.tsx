@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { CanvasPlayer } from "@/components/studio/CanvasPlayer";
+import { CreatorVisualPicker, CREATOR_PERSONAS, CreatorPersona } from "@/components/studio/CreatorVisualPicker";
+import { VideoTemplatePicker } from "@/components/studio/VideoTemplatePicker";
+import { VideoTemplateArchetype, VIDEO_TEMPLATES } from "@/lib/templates/videoTemplates";
 import { ScriptEditor } from "@/components/studio/ScriptEditor";
 import { VoiceSelector } from "@/components/studio/VoiceSelector";
 import { SubtitleStyler } from "@/components/studio/SubtitleStyler";
@@ -21,16 +24,21 @@ import {
   ArrowLeft,
   Share2,
   CheckCircle2,
+  AlertCircle,
+  ExternalLink,
+  Layers,
+  Palette,
 } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
+import { UpgradePaywallModal, PaywallTriggerReason } from "@/components/billing/UpgradePaywallModal";
 
 export default function StudioPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#09090B] flex items-center justify-center text-xs font-mono text-[var(--text-muted)]">
-          Loading AutoUGC Studio...
+        <div className="min-h-screen bg-[#F6F7F2] flex items-center justify-center text-xs font-mono text-[#717E6C]">
+          Loading AutoUGC Creative Studio...
         </div>
       }
     >
@@ -40,18 +48,33 @@ export default function StudioPage() {
 }
 
 function StudioContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const scheduledPostId = searchParams.get("scheduledPostId");
+  const [scheduledPostMeta, setScheduledPostMeta] = useState<{
+    id: string;
+    channelHandle: string;
+    scheduledTime: string;
+    approvalStatus: string;
+    caption: string;
+  } | null>(null);
+  const [isSavingScheduledPost, setIsSavingScheduledPost] = useState(false);
+  const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<VideoTemplateArchetype>("organic_selfie");
+
   const [brandName, setBrandName] = useState(() => searchParams.get("brand") || "Lumina");
   const [hookText, setHookText] = useState(() => searchParams.get("hook") || "Stop coding under harsh fluorescent lights in 2026.");
   const [bodyText, setBodyText] = useState(() => searchParams.get("body") || "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour deep work sprints.");
   const [ctaText, setCtaText] = useState(() => searchParams.get("cta") || "Click the link below and get $30 off your setup today.");
-  const [brandColor, setBrandColor] = useState("#F59E0B");
-  const [selectedVoiceId, setSelectedVoiceId] = useState("alex_casual_dtc");
+  const [brandColor, setBrandColor] = useState("#1F3824");
+  const [selectedVoiceId, setSelectedVoiceId] = useState("sarah_dtc_founder");
   const [selectedTrackId, setSelectedTrackId] = useState("lofi_focus");
+  const [selectedVisualUrl, setSelectedVisualUrl] = useState(() => searchParams.get("image") || "/images/creator-glasses.jpg");
+
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyleConfig>({
-    fontSize: 52,
+    fontSize: 54,
     primaryColor: "#FFFFFF",
-    highlightColor: "#F59E0B",
+    highlightColor: "#FFE600",
   });
 
   const [compositionProps, setCompositionProps] =
@@ -61,12 +84,13 @@ function StudioContent() {
       bodyText:
         "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
       ctaText: "Click the link below and get $30 off your setup today.",
-      brandColor: "#F59E0B",
+      brandColor: "#1F3824",
+      productImageUrl: "/images/creator-glasses.jpg",
       words: [],
       subtitleStyle: {
-        fontSize: 52,
+        fontSize: 54,
         primaryColor: "#FFFFFF",
-        highlightColor: "#F59E0B",
+        highlightColor: "#FFE600",
       },
     });
 
@@ -75,6 +99,139 @@ function StudioContent() {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
+  const [renderedVideoUrl, setRenderedVideoUrl] = useState<string | null>(null);
+  const [renderError, setRenderError] = useState<string | null>(null);
+
+  // Live Subscription & Paywall State
+  const [subscription, setSubscription] = useState<{
+    tier: string;
+    name: string;
+    creditsRemaining: number;
+    creditsTotal: number;
+  } | null>(null);
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  const [paywallReason, setPaywallReason] = useState<PaywallTriggerReason>("credits_exhausted");
+
+  const fetchSubscription = React.useCallback(async () => {
+    try {
+      const res = await fetch("/api/v1/billing/subscription");
+      const data = await res.json();
+      if (data.subscription) {
+        setSubscription({
+          tier: data.subscription.tier,
+          name: data.subscription.name,
+          creditsRemaining: data.subscription.creditsRemaining,
+          creditsTotal: data.subscription.creditsTotal,
+        });
+      }
+    } catch (err) {
+      console.warn("Could not load subscription details:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    fetch("/api/v1/billing/subscription")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!ignore && data?.subscription) {
+          setSubscription({
+            tier: data.subscription.tier,
+            name: data.subscription.name,
+            creditsRemaining: data.subscription.creditsRemaining,
+            creditsTotal: data.subscription.creditsTotal,
+          });
+        }
+      })
+      .catch((err) => console.warn("Could not load subscription details:", err));
+
+    return () => {
+      ignore = true;
+    };
+  }, [searchParams]);
+
+  // Load scheduled post data when editing an upcoming post
+  useEffect(() => {
+    if (!scheduledPostId) return;
+
+    let ignore = false;
+    async function fetchScheduledPost() {
+      try {
+        const res = await fetch(`/api/v1/campaigns/post-details?id=${scheduledPostId}`);
+        const json = await res.json();
+        if (!ignore && json.success && json.data) {
+          const d = json.data;
+          setBrandName(d.brandName || "My Brand");
+          setHookText(d.hookText || "Stop doing this manually in 2026.");
+          setBodyText(d.bodyText || "This software handles your entire workflow automatically.");
+          setCtaText(d.ctaText || "Try it out today.");
+          if (d.voiceId) setSelectedVoiceId(d.voiceId);
+          if (d.archetype && (d.archetype in VIDEO_TEMPLATES)) {
+            setSelectedTemplate(d.archetype as VideoTemplateArchetype);
+          }
+          if (d.creatorId) {
+            const persona = CREATOR_PERSONAS.find((p) => p.id === d.creatorId || p.id.includes(d.creatorId));
+            if (persona) setSelectedVisualUrl(persona.imageUrl);
+          }
+          setScheduledPostMeta({
+            id: d.id,
+            channelHandle: d.socialAccount?.accountHandle || "@yourchannel",
+            scheduledTime: d.localScheduledTime || new Date(d.scheduledFor).toLocaleString(),
+            approvalStatus: d.approvalStatus || "awaiting_approval",
+            caption: d.caption,
+          });
+        }
+      } catch (err) {
+        console.warn("Failed to load scheduled post details:", err);
+      }
+    }
+
+    fetchScheduledPost();
+    return () => {
+      ignore = true;
+    };
+  }, [scheduledPostId]);
+
+  const handleSaveAndApproveScheduledPost = async () => {
+    if (!scheduledPostId) return;
+    setIsSavingScheduledPost(true);
+    setSaveSuccessMessage(null);
+
+    try {
+      const activeP = CREATOR_PERSONAS.find((p) => p.imageUrl === selectedVisualUrl);
+      const res = await fetch("/api/v1/campaigns/edit-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scheduledPostId,
+          brandName,
+          hookText,
+          bodyText,
+          ctaText,
+          caption: scheduledPostMeta?.caption || `${hookText} #${brandName.toLowerCase()} #ugc`,
+          voiceId: selectedVoiceId,
+          creatorId: activeP?.id || "pers_sarah_01",
+          archetype: selectedTemplate,
+          approveNow: true,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || "Failed to save edits and approve post");
+      }
+
+      setSaveSuccessMessage("Post updated and approved! Redirecting to calendar...");
+      setTimeout(() => {
+        router.push("/dashboard?tab=calendar");
+      }, 1400);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error saving post";
+      alert(msg);
+    } finally {
+      setIsSavingScheduledPost(false);
+    }
+  };
 
   // Synchronize words whenever hook/body/cta or voice changes
   useEffect(() => {
@@ -90,8 +247,12 @@ function StudioContent() {
           bodyText,
           ctaText,
           brandColor,
+          productImageUrl: selectedVisualUrl,
           words: res.words,
           subtitleStyle,
+          archetype: selectedTemplate,
+          hasVoiceover: selectedTemplate !== "meme_reaction",
+          audioMode: selectedTemplate === "meme_reaction" ? "music_only" : "narration_ducked",
         });
       }
     });
@@ -99,49 +260,134 @@ function StudioContent() {
     return () => {
       isCancelled = true;
     };
-  }, [hookText, bodyText, ctaText, brandName, brandColor, selectedVoiceId, subtitleStyle]);
+  }, [hookText, bodyText, ctaText, brandName, brandColor, selectedVoiceId, subtitleStyle, selectedVisualUrl, selectedTemplate]);
 
-  const handleStartExport = () => {
-    setIsExporting(true);
-    setTimeout(() => {
-      setIsExporting(false);
-      setExportComplete(true);
-    }, 2000);
+  const handleSelectPersona = (persona: CreatorPersona) => {
+    setSelectedVisualUrl(persona.imageUrl);
+    setSelectedVoiceId(persona.voiceId);
   };
 
+  const handleStartExport = async () => {
+    setIsExporting(true);
+    setRenderError(null);
+
+    try {
+      const res = await fetch("/api/v1/videos/render", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brandName,
+          hookText,
+          bodyText,
+          ctaText,
+          voiceId: selectedVoiceId,
+          aspectRatio: "9:16",
+          productImageUrl: selectedVisualUrl,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 402 || data.upgradeRequired) {
+        setIsExportModalOpen(false);
+        setIsExporting(false);
+        setPaywallReason("credits_exhausted");
+        setIsPaywallOpen(true);
+        return;
+      }
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || data.error || "Failed to render video ad");
+      }
+
+      setRenderedVideoUrl(data.videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4");
+      setExportComplete(true);
+      if (typeof data.creditsRemaining === "number") {
+        setSubscription((prev) =>
+          prev ? { ...prev, creditsRemaining: data.creditsRemaining } : null
+        );
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Video render failed";
+      setRenderError(msg);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleOpenSchedule = () => {
+    if (subscription?.tier === "free") {
+      setPaywallReason("autopilot_locked");
+      setIsPaywallOpen(true);
+    } else {
+      setIsScheduleModalOpen(true);
+    }
+  };
+
+  // Find active persona metadata for footer info
+  const activePersona = CREATOR_PERSONAS.find((p) => p.imageUrl === selectedVisualUrl) || CREATOR_PERSONAS[0];
+
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-primary)]">
+    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B]">
       {/* Studio Header */}
-      <header className="sticky top-0 z-40 border-b border-subtle bg-[var(--bg-app)]/85 backdrop-blur-md px-4 sm:px-6 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-40 border-b border-[#CBD5C4]/70 bg-[#F6F7F2]/90 backdrop-blur-md px-4 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3 sm:gap-4">
           <Link
             href="/dashboard"
-            className="flex items-center gap-1.5 sm:gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-[#4A544A] hover:text-[#1F3824] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="hidden sm:inline">Command Center</span>
           </Link>
-          <div className="h-4 w-[1px] bg-zinc-800 hidden sm:block" />
+          <div className="h-4 w-[1px] bg-[#CBD5C4] hidden sm:block" />
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold font-[family-name:var(--font-display)]">
+            <span className="text-[#1F3824] text-lg font-bold">✻</span>
+            <span className="text-sm font-bold text-[#1B231B]">
               AutoUGC Studio
             </span>
-            <Badge variant="amber" size="sm" className="hidden sm:inline-flex text-[10px] font-mono">
+            <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-[#E2E9DC] text-[#1F3824]">
               Creative Editor
-            </Badge>
+            </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <Link href="/dashboard">
-            <Badge variant="emerald" size="sm" pulse className="font-mono text-[10px] sm:text-xs cursor-pointer hover:bg-emerald-950/60">
-              42 / 60 Credits
-            </Badge>
-          </Link>
+          {subscription ? (
+            subscription.creditsRemaining > 0 ? (
+              <Badge
+                variant="emerald"
+                size="sm"
+                pulse
+                className="font-mono text-[10px] sm:text-xs cursor-pointer hover:bg-[#E2E9DC] transition-colors"
+                onClick={() => {
+                  setPaywallReason("general");
+                  setIsPaywallOpen(true);
+                }}
+              >
+                {subscription.creditsRemaining} / {subscription.creditsTotal} Credits
+              </Badge>
+            ) : (
+              <Badge
+                variant="rose"
+                size="sm"
+                pulse
+                className="font-mono text-[10px] sm:text-xs cursor-pointer hover:bg-rose-100 transition-colors"
+                onClick={() => {
+                  setPaywallReason("credits_exhausted");
+                  setIsPaywallOpen(true);
+                }}
+              >
+                0 Credits (Upgrade)
+              </Badge>
+            )
+          ) : (
+            <div className="h-6 w-24 bg-[#E2E9DC] rounded animate-pulse" />
+          )}
+
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => setIsScheduleModalOpen(true)}
+            onClick={handleOpenSchedule}
             leftIcon={<Calendar className="h-3.5 w-3.5" />}
             className="text-xs px-2.5 sm:px-3"
           >
@@ -151,9 +397,18 @@ function StudioContent() {
           <Button
             variant="primary"
             size="sm"
-            onClick={() => setIsExportModalOpen(true)}
+            onClick={() => {
+              if (subscription && subscription.creditsRemaining <= 0) {
+                setPaywallReason("credits_exhausted");
+                setIsPaywallOpen(true);
+              } else {
+                setRenderError(null);
+                setExportComplete(false);
+                setIsExportModalOpen(true);
+              }
+            }}
             leftIcon={<Download className="h-3.5 w-3.5" />}
-            className="text-xs px-2.5 sm:px-3 shadow-glow-amber font-semibold"
+            className="text-xs px-2.5 sm:px-3 font-semibold"
           >
             <span className="hidden sm:inline">Export 1080p Ad</span>
             <span className="sm:hidden">Export</span>
@@ -161,31 +416,161 @@ function StudioContent() {
         </div>
       </header>
 
+      {/* Scheduled Post Live Edit & Approval Notification Banner */}
+      {scheduledPostMeta && (
+        <div className="bg-[#E2E9DC] border-b border-[#CBD5C4] px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-full bg-[#1F3824] text-white flex items-center justify-center shrink-0">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-[#1B231B]">
+                  Editing Scheduled Post for {scheduledPostMeta.channelHandle}
+                </span>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#1F3824] text-white font-semibold">
+                  {scheduledPostMeta.approvalStatus === "approved" ? "Approved" : "Awaiting Approval"}
+                </span>
+              </div>
+              <p className="text-[11px] text-[#4A544A]">
+                Due: {scheduledPostMeta.scheduledTime} • Customize hooks, body, voice, or format, then approve below
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-center">
+            <Link
+              href="/dashboard?tab=calendar"
+              className="text-xs font-semibold text-[#4A544A] hover:text-[#1F3824] px-3 py-1.5 rounded-full border border-[#CBD5C4] bg-white transition-colors"
+            >
+              Cancel
+            </Link>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSaveAndApproveScheduledPost}
+              isLoading={isSavingScheduledPost}
+              leftIcon={<CheckCircle2 className="h-3.5 w-3.5" />}
+              className="text-xs"
+            >
+              Save Changes & Approve
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {saveSuccessMessage && (
+        <div className="bg-[#1F3824] text-white text-xs py-2 px-4 text-center font-semibold">
+          {saveSuccessMessage}
+        </div>
+      )}
+
       {/* Main Studio Canvas Layout */}
-      <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Pane: Interactive 9:16 Canvas Mockup (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col items-center sticky top-24">
+        <div className="lg:col-span-5 flex flex-col items-center sticky top-24 gap-3">
           <CanvasPlayer compositionProps={compositionProps} />
-          <p className="text-xs text-[var(--text-muted)] mt-4 font-mono text-center">
-            Preview is rendered client-side at 30 FPS • Native 1080x1920 9:16 vertical layout
+
+          {/* Quick Creator Persona Presets Bar under Phone */}
+          <div className="w-full max-w-[370px] bg-white border border-[#CBD5C4]/70 rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-[#1B231B] flex items-center gap-1.5 text-[11px]">
+                <Layers className="h-3.5 w-3.5 text-[#1F3824]" />
+                Visual Persona:
+              </span>
+              <span className="font-mono text-[10px] text-[#1F3824] bg-[#E2E9DC] px-2 py-0.5 rounded-full font-bold">
+                {activePersona?.name || "Sarah Miller"}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-4 gap-1.5">
+              {CREATOR_PERSONAS.map((p) => {
+                const isSelected = selectedVisualUrl === p.imageUrl;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handleSelectPersona(p)}
+                    className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-semibold border transition-all cursor-pointer truncate ${isSelected
+                        ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
+                        : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4]/60 hover:bg-[#E2E9DC]"
+                      }`}
+                  >
+                    {p.name.split(" ")[0]}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <p className="text-[11px] text-[#717E6C] font-mono text-center">
+            Native 1080x1920 9:16 vertical • Client Remotion 30 FPS • TikTok Safe Zone
           </p>
         </div>
 
         {/* Right Pane: Precision Editing Controls (7 cols) */}
         <div className="lg:col-span-7 flex flex-col gap-6">
-          <div className="bg-[var(--bg-surface)] border border-subtle rounded-xl p-4 flex items-center justify-between gap-4">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-              Brand / Product Name:
-            </label>
-            <input
-              type="text"
-              value={brandName}
-              onChange={(e) => setBrandName(e.target.value)}
-              className="bg-[var(--bg-app)] border border-subtle rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] font-medium focus:outline-none focus:border-[var(--accent-primary)] max-w-xs"
-              placeholder="e.g. Lumina"
-            />
+          {/* Brand Identity & Theme Control */}
+          <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#1F3824] flex items-center gap-1.5">
+                <Palette className="h-3.5 w-3.5 text-[#1F3824]" />
+                Brand / Product Name
+              </label>
+              <p className="text-[11px] text-[#717E6C]">
+                Used for watermarks, handles, and subtitle color accents
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <input
+                type="text"
+                value={brandName}
+                onChange={(e) => setBrandName(e.target.value)}
+                className="bg-[#F6F7F2] border border-[#CBD5C4] rounded-full px-4 py-2 text-xs text-[#1B231B] font-bold focus:outline-none focus:border-[#1F3824] focus:bg-white w-full sm:w-44 transition-all"
+                placeholder="e.g. Lumina"
+              />
+
+              {/* Accent Color Circles */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                {[
+                  { name: "Forest", hex: "#1F3824" },
+                  { name: "Emerald", hex: "#10B981" },
+                  { name: "Cyan", hex: "#06B6D4" },
+                  { name: "Amber", hex: "#F59E0B" },
+                ].map((c) => (
+                  <button
+                    key={c.hex}
+                    type="button"
+                    onClick={() => setBrandColor(c.hex)}
+                    style={{ backgroundColor: c.hex }}
+                    title={c.name}
+                    className={`h-6 w-6 rounded-full border transition-all cursor-pointer ${brandColor === c.hex
+                        ? "ring-2 ring-[#1F3824] ring-offset-2 ring-offset-white scale-110"
+                        : "border-[#CBD5C4] opacity-80 hover:opacity-100"
+                      }`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
+          {/* Video Format & Template Archetype Selector */}
+          <VideoTemplatePicker
+            selectedTemplate={selectedTemplate}
+            onSelectTemplate={(tmpl) => {
+              setSelectedTemplate(tmpl.id);
+              if (tmpl.defaultMusicTrack) setSelectedTrackId(tmpl.defaultMusicTrack);
+            }}
+          />
+
+          {/* Creator Visual & B-Roll Persona Picker */}
+          <CreatorVisualPicker
+            selectedImageUrl={selectedVisualUrl}
+            onSelectPersona={handleSelectPersona}
+          />
+
+          {/* Script Copy & Pacing */}
           <ScriptEditor
             hookText={hookText}
             bodyText={bodyText}
@@ -196,11 +581,13 @@ function StudioContent() {
             estimatedDuration={estimatedDuration}
           />
 
+          {/* Creator Voice Selector */}
           <VoiceSelector
             selectedVoiceId={selectedVoiceId}
             onVoiceChange={setSelectedVoiceId}
           />
 
+          {/* Kinetic Subtitle Styler */}
           <SubtitleStyler
             subtitleStyle={subtitleStyle}
             brandColor={brandColor}
@@ -208,6 +595,7 @@ function StudioContent() {
             onBrandColorChange={setBrandColor}
           />
 
+          {/* Dynamic B-Roll Music Picker */}
           <MusicPicker
             selectedTrackId={selectedTrackId}
             onTrackChange={setSelectedTrackId}
@@ -216,7 +604,7 @@ function StudioContent() {
       </div>
 
       {/* Automated Publishing Calendar Section */}
-      <div className="max-w-7xl mx-auto w-full px-6 pb-16">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pb-16">
         <PublishingCalendar />
       </div>
 
@@ -241,20 +629,29 @@ function StudioContent() {
         <div className="flex flex-col gap-5 py-2">
           {!exportComplete ? (
             <>
-              <div className="p-4 rounded-xl bg-[var(--bg-app)] border border-subtle flex flex-col gap-2">
+              <div className="p-4 rounded-2xl bg-[#ECEFE7] border border-[#CBD5C4]/70 flex flex-col gap-2.5 text-[#1B231B]">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-secondary)]">Resolution:</span>
-                  <span className="font-mono text-[var(--text-primary)]">1080 x 1920 (9:16 Vertical)</span>
+                  <span className="text-[#4A544A]">Resolution:</span>
+                  <span className="font-mono text-[#1B231B] font-bold">1080 x 1920 (9:16 Vertical)</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-secondary)]">Framerate:</span>
-                  <span className="font-mono text-[var(--text-primary)]">30 FPS (H.264 / AAC)</span>
+                  <span className="text-[#4A544A]">Framerate:</span>
+                  <span className="font-mono text-[#1B231B] font-bold">30 FPS (H.264 / AAC)</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-secondary)]">Credit Cost:</span>
-                  <span className="font-mono text-[var(--accent-emerald)] font-semibold">1 Credit</span>
+                  <span className="text-[#4A544A]">Credit Cost:</span>
+                  <span className="font-mono text-[#1F3824] font-bold bg-[#E2E9DC] px-2 py-0.5 rounded-full">
+                    1 Video Credit
+                  </span>
                 </div>
               </div>
+
+              {renderError && (
+                <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{renderError}</span>
+                </div>
+              )}
 
               <div className="flex justify-end gap-3 mt-2">
                 <Button
@@ -275,37 +672,87 @@ function StudioContent() {
             </>
           ) : (
             <div className="flex flex-col items-center gap-4 py-4 text-center">
-              <div className="h-12 w-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-[var(--accent-emerald)]">
+              <div className="h-12 w-12 rounded-full bg-[#E2E9DC] border border-[#CBD5C4] flex items-center justify-center text-[#1F3824]">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <div className="flex flex-col gap-1">
-                <h4 className="text-base font-bold text-[var(--text-primary)]">
+                <h4 className="text-base font-bold text-[#1B231B]">
                   Video Render Complete!
                 </h4>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Your vertical ad is ready. You can download the MP4 now or schedule directly to your social feeds.
+                <p className="text-xs text-[#4A544A]">
+                  Your 1080x1920 vertical ad has been generated and saved to your Video Vault.
                 </p>
               </div>
-              <div className="flex gap-3 mt-2 w-full">
+
+              {renderedVideoUrl && (
+                <div className="w-full max-w-xs aspect-[9/16] max-h-60 bg-[#ECEFE7] rounded-3xl overflow-hidden border border-[#CBD5C4] my-2 mx-auto flex items-center justify-center p-2 shadow-inner">
+                  <div className="w-full h-full rounded-2xl overflow-hidden bg-black flex items-center justify-center">
+                    <video
+                      src={renderedVideoUrl}
+                      controls
+                      autoPlay
+                      muted
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-2.5 mt-2 w-full">
                 <Button
                   variant="secondary"
-                  className="flex-1"
+                  className="flex-1 text-xs"
+                  onClick={() => {
+                    setIsExportModalOpen(false);
+                    handleOpenSchedule();
+                  }}
                   leftIcon={<Share2 className="h-4 w-4" />}
                 >
                   Push to Socials
                 </Button>
                 <Button
                   variant="primary"
-                  className="flex-1"
+                  className="flex-1 text-xs"
+                  onClick={() => {
+                    if (renderedVideoUrl) {
+                      const a = document.createElement("a");
+                      a.href = renderedVideoUrl;
+                      a.download = `${brandName.toLowerCase().replace(/[^a-z0-9]/g, "_")}_ad_1080p.mp4`;
+                      a.target = "_blank";
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }
+                  }}
                   leftIcon={<Download className="h-4 w-4" />}
                 >
                   Download MP4
                 </Button>
               </div>
+
+              <Link
+                href="/dashboard"
+                className="text-xs text-[#1F3824] hover:underline inline-flex items-center gap-1 pt-1 font-semibold"
+              >
+                <span>View all videos in Command Center</span>
+                <ExternalLink className="h-3 w-3" />
+              </Link>
             </div>
           )}
         </div>
       </Modal>
+
+      {/* Upgrade Paywall Modal */}
+      <UpgradePaywallModal
+        isOpen={isPaywallOpen}
+        onClose={() => setIsPaywallOpen(false)}
+        triggerReason={paywallReason}
+        currentPlanTier={subscription?.tier}
+        onUpgradeSuccess={() => {
+          setIsPaywallOpen(false);
+          fetchSubscription();
+        }}
+      />
 
       <Footer />
     </div>

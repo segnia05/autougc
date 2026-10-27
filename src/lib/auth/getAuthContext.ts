@@ -7,6 +7,9 @@ export interface AuthContext {
   role: "owner" | "admin" | "editor" | "viewer";
   email: string;
   fullName: string;
+  planTier: "free" | "starter" | "growth" | "scale";
+  creditsRemaining: number;
+  creditsMonthlyAllowance: number;
 }
 
 /**
@@ -46,7 +49,11 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
       include: {
         memberships: {
           include: {
-            organization: true,
+            organization: {
+              include: {
+                subscription: true,
+              },
+            },
           },
         },
       },
@@ -83,7 +90,11 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
         include: {
           memberships: {
             include: {
-              organization: true,
+              organization: {
+                include: {
+                  subscription: true,
+                },
+              },
             },
           },
         },
@@ -92,15 +103,21 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
 
     let resolvedOrgId = orgId;
     let userRole: "owner" | "admin" | "editor" | "viewer" = "owner";
+    let orgSubscription: {
+      planTier: string;
+      creditsRemaining: number;
+      creditsMonthlyAllowance: number;
+    } | null = null;
 
     if (resolvedOrgId) {
       // User has an explicit Clerk Organization selected
       const existingOrg = await prisma.organization.findUnique({
         where: { id: resolvedOrgId },
+        include: { subscription: true },
       });
 
       if (!existingOrg) {
-        await prisma.organization.create({
+        const createdOrg = await prisma.organization.create({
           data: {
             id: resolvedOrgId,
             name: `${dbUser.fullName || "Team"}'s Organization`,
@@ -109,10 +126,10 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
             subscription: {
               create: {
                 stripeCustomerId: `cus_${resolvedOrgId.slice(-12)}`,
-                planTier: "starter",
+                planTier: "free",
                 status: "active",
-                creditsMonthlyAllowance: 20,
-                creditsRemaining: 20,
+                creditsMonthlyAllowance: 3,
+                creditsRemaining: 3,
                 currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
               },
             },
@@ -123,8 +140,11 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
               },
             },
           },
+          include: { subscription: true },
         });
+        orgSubscription = createdOrg.subscription;
       } else {
+        orgSubscription = existingOrg.subscription;
         const membership = await prisma.organizationMember.findUnique({
           where: {
             organizationId_userId: {
@@ -152,6 +172,7 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
       if (existingMembership) {
         resolvedOrgId = existingMembership.organizationId;
         userRole = existingMembership.role as "owner" | "admin" | "editor" | "viewer";
+        orgSubscription = existingMembership.organization.subscription;
       } else {
         const personalOrgId = `org_${userId.replace(/^user_/, "")}`;
         const createdOrg = await prisma.organization.create({
@@ -163,10 +184,10 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
             subscription: {
               create: {
                 stripeCustomerId: `cus_${userId.slice(-12)}`,
-                planTier: "starter",
+                planTier: "free",
                 status: "active",
-                creditsMonthlyAllowance: 20,
-                creditsRemaining: 20,
+                creditsMonthlyAllowance: 3,
+                creditsRemaining: 3,
                 currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
               },
             },
@@ -177,10 +198,33 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
               },
             },
           },
+          include: { subscription: true },
         });
         resolvedOrgId = createdOrg.id;
+        orgSubscription = createdOrg.subscription;
       }
     }
+
+    // If organization exists but subscription was deleted or not yet created, self-heal
+    if (!orgSubscription && resolvedOrgId) {
+      orgSubscription = await prisma.subscription.upsert({
+        where: { organizationId: resolvedOrgId },
+        update: {},
+        create: {
+          organizationId: resolvedOrgId,
+          stripeCustomerId: `cus_${resolvedOrgId.slice(-12)}`,
+          planTier: "free",
+          status: "active",
+          creditsMonthlyAllowance: 3,
+          creditsRemaining: 3,
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        },
+      });
+    }
+
+    const planTier = (orgSubscription?.planTier || "free") as "free" | "starter" | "growth" | "scale";
+    const creditsRemaining = orgSubscription?.creditsRemaining ?? 3;
+    const creditsMonthlyAllowance = orgSubscription?.creditsMonthlyAllowance ?? 3;
 
     return {
       userId: dbUser.id,
@@ -188,6 +232,9 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
       role: userRole,
       email: dbUser.email,
       fullName: dbUser.fullName || "AutoUGC Creator",
+      planTier,
+      creditsRemaining,
+      creditsMonthlyAllowance,
     };
   } catch {
     // Resilient offline/dev fallback: deterministic tenant mapped to userId
@@ -198,6 +245,9 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
       role: "owner",
       email: `creator_${userId.slice(-6)}@autougc.com`,
       fullName: "AutoUGC Creator",
+      planTier: "free",
+      creditsRemaining: 3,
+      creditsMonthlyAllowance: 3,
     };
   }
 }

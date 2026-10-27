@@ -2,11 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Video, ArrowRight, Menu, X, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-
+import { ChevronDown, Menu, X } from "lucide-react";
 import {
   SignInButton,
   SignUpButton,
@@ -16,113 +12,161 @@ import {
 import { Suspense } from "react";
 
 export function Navbar() {
-  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const navLinks = [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/studio", label: "Studio" },
-    { href: "/pricing", label: "Pricing" },
-    { href: "/templates", label: "Templates" },
-    { href: "/tools", label: "Free Tools" },
-  ];
-
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-subtle bg-[var(--bg-app)]/85 backdrop-blur-md transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
-        <Link
-          href="/"
-          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-lg p-1"
-          aria-label="AutoUGC Home"
-        >
-          <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-glow-amber transition-transform duration-200 group-hover:scale-105">
-            <Video className="h-5 w-5 text-black" />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold tracking-tight font-[family-name:var(--font-display)] text-[var(--text-primary)]">
-              Auto<span className="text-[var(--accent-primary)]">UGC</span>
+    <header className="sticky top-0 z-50 border-b border-[#E2E6DC] bg-[#F6F7F2]/90 backdrop-blur-md transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
+        {/* Left: Brand Identity + Navigation Links */}
+        <div className="flex items-center gap-6 lg:gap-8">
+          {/* Website Name AutoUGC placed at the first position on the left of Solutions */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 group focus:outline-none shrink-0"
+            aria-label="AutoUGC Home"
+          >
+            <span className="text-2xl font-light text-[#1B231B] group-hover:rotate-45 transition-transform duration-300">
+              ✻
             </span>
-            <Badge variant="neutral" size="sm" className="hidden sm:inline-flex text-[10px] font-mono px-1.5 py-0.5">
-              v2.4
-            </Badge>
-          </div>
-        </Link>
+            <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#1B231B] font-[family-name:var(--font-serif)]">
+              AutoUGC
+            </span>
+            <span className="inline-flex text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4]/60">
+              Autopilot
+            </span>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
-          {navLinks.map((link) => {
-            const active = isActive(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-3.5 py-1.5 rounded-lg transition-colors ${
-                  active
-                    ? "text-[var(--text-primary)] bg-[var(--bg-surface-elevated)] border border-subtle"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
-                }`}
+          {/* Navigation Links to the right of the Brand Name */}
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-[#1B231B]">
+            {/* Solutions Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setSolutionsOpen(true)}
+              onMouseLeave={() => setSolutionsOpen(false)}
+            >
+              <button
+                type="button"
+                className="flex items-center gap-1 py-2 hover:text-[#1F3824] transition-colors cursor-pointer"
               >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
+                <span>SOLUTIONS</span>
+                <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${solutionsOpen ? "rotate-180" : ""}`} />
+              </button>
 
-        {/* Desktop Actions */}
-        <div className="hidden md:flex items-center gap-3">
-          <Suspense fallback={<div className="h-8 w-20 bg-zinc-800 rounded animate-pulse" />}>
+              {solutionsOpen && (
+                <div className="absolute top-full left-0 w-64 pt-2 z-50">
+                  <div className="rounded-2xl border border-[#D8DFD2] bg-white p-3 shadow-xl">
+                    <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#738072]">
+                      Platforms
+                    </div>
+                    <Link
+                      href="/templates"
+                      className="flex items-center justify-between p-2 rounded-xl hover:bg-[#F2F5ED] transition-colors text-xs text-[#1B231B] font-medium"
+                    >
+                      <span>TikTok Creator Ads</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E2E9DC] text-[#1F3824]">Viral</span>
+                    </Link>
+                    <Link
+                      href="/templates"
+                      className="flex items-center justify-between p-2 rounded-xl hover:bg-[#F2F5ED] transition-colors text-xs text-[#1B231B] font-medium"
+                    >
+                      <span>Instagram Reels</span>
+                      <span className="text-[10px] text-[#738072] font-mono">9:16</span>
+                    </Link>
+                    <Link
+                      href="/templates"
+                      className="flex items-center justify-between p-2 rounded-xl hover:bg-[#F2F5ED] transition-colors text-xs text-[#1B231B] font-medium"
+                    >
+                      <span>YouTube Shorts</span>
+                      <span className="text-[10px] text-[#738072] font-mono">Shorts</span>
+                    </Link>
+                    <div className="border-t border-[#EAEFE5] my-1 pt-1 px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-[#738072]">
+                      Verticals
+                    </div>
+                    <Link
+                      href="/templates/b2b-saas"
+                      className="block p-2 rounded-xl hover:bg-[#F2F5ED] transition-colors text-xs text-[#4A544A] hover:text-[#1B231B]"
+                    >
+                      AI & B2B SaaS
+                    </Link>
+                    <Link
+                      href="/templates/ecommerce-shopify"
+                      className="block p-2 rounded-xl hover:bg-[#F2F5ED] transition-colors text-xs text-[#4A544A] hover:text-[#1B231B]"
+                    >
+                      DTC & E-Commerce
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Link
+              href="/brands"
+              className="hover:text-[#1F3824] transition-colors"
+            >
+              FOR SAAS & PRODUCTS
+            </Link>
+
+            <Link
+              href="/pricing"
+              className="hover:text-[#1F3824] transition-colors"
+            >
+              PRICING
+            </Link>
+          </nav>
+        </div>
+
+        {/* Right CTA Group: Blog in place of View Plans + Auth */}
+        <div className="hidden md:flex items-center gap-4">
+          <Link
+            href="/blog"
+            className="btn-outline px-5 py-2 text-xs font-semibold uppercase tracking-wider"
+          >
+            BLOG
+          </Link>
+
+          <Suspense fallback={<div className="h-8 w-24 bg-[#E2E6DC] rounded-full animate-pulse" />}>
             <Show when="signed-out">
               <SignInButton mode="modal">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="text-xs font-medium cursor-pointer"
+                <button
+                  type="button"
+                  className="text-xs font-semibold uppercase tracking-wider text-[#1B231B] hover:text-black transition-colors cursor-pointer px-2"
                 >
-                  Sign In
-                </Button>
+                  SIGN IN
+                </button>
               </SignInButton>
+
               <SignUpButton mode="modal">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="text-xs font-semibold shadow-glow-amber cursor-pointer"
-                  rightIcon={<ArrowRight className="h-3.5 w-3.5" />}
+                <button
+                  type="button"
+                  className="btn-primary px-6 py-2.5 text-xs font-semibold uppercase tracking-wider cursor-pointer"
                 >
-                  Get Started
-                </Button>
+                  GET STARTED
+                </button>
               </SignUpButton>
             </Show>
 
             <Show when="signed-in">
               <Link href="/dashboard">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="text-xs font-semibold"
+                <button
+                  type="button"
+                  className="btn-outline px-4 py-2 text-xs font-semibold uppercase tracking-wider"
                 >
-                  Dashboard
-                </Button>
+                  DASHBOARD
+                </button>
               </Link>
               <Link href="/studio">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="text-xs font-semibold shadow-glow-amber"
-                  rightIcon={<ArrowRight className="h-3.5 w-3.5" />}
+                <button
+                  type="button"
+                  className="btn-primary px-5 py-2 text-xs font-semibold uppercase tracking-wider"
                 >
-                  Launch Studio
-                </Button>
+                  STUDIO
+                </button>
               </Link>
               <UserButton
                 appearance={{
                   elements: {
-                    avatarBox: "h-8 w-8 ring-1 ring-zinc-700",
+                    avatarBox: "h-8 w-8 ring-1 ring-[#1F3824]/30",
                   },
                 }}
               />
@@ -130,18 +174,13 @@ export function Navbar() {
           </Suspense>
         </div>
 
-        {/* Mobile Hamburger Toggle */}
-        <div className="flex md:hidden items-center gap-2">
-          <Link href="/studio">
-            <Button variant="primary" size="sm" className="text-xs px-3">
-              Studio
-            </Button>
-          </Link>
+        {/* Mobile Menu Trigger */}
+        <div className="flex lg:hidden items-center gap-2">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] focus:outline-none"
-            aria-label="Toggle navigation menu"
+            className="p-2 text-[#1B231B] hover:text-black rounded-lg focus:outline-none"
+            aria-label="Toggle Navigation"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -150,34 +189,56 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-subtle bg-[var(--bg-surface)] px-4 pt-3 pb-6 flex flex-col gap-2">
-          {navLinks.map((link) => {
-            const active = isActive(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  active
-                    ? "text-[var(--accent-primary)] bg-[var(--bg-surface-elevated)]"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-          <div className="h-[1px] bg-[var(--border-subtle)] my-2" />
+        <div className="lg:hidden border-b border-[#E2E6DC] bg-[#F6F7F2] px-6 pt-4 pb-6 flex flex-col gap-3">
+          <Link
+            href="/"
+            onClick={() => setMobileMenuOpen(false)}
+            className="py-2 text-sm font-semibold uppercase tracking-wider text-[#1F3824] flex items-center gap-1.5"
+          >
+            <span>✻</span>
+            <span>AUTOPILOT HOME</span>
+          </Link>
+          <Link
+            href="/templates"
+            onClick={() => setMobileMenuOpen(false)}
+            className="py-2 text-sm font-semibold uppercase tracking-wider text-[#1B231B]"
+          >
+            SOLUTIONS
+          </Link>
+          <Link
+            href="/brands"
+            onClick={() => setMobileMenuOpen(false)}
+            className="py-2 text-sm font-semibold uppercase tracking-wider text-[#1B231B]"
+          >
+            FOR SAAS & PRODUCTS
+          </Link>
+          <Link
+            href="/pricing"
+            onClick={() => setMobileMenuOpen(false)}
+            className="py-2 text-sm font-semibold uppercase tracking-wider text-[#1B231B]"
+          >
+            PRICING
+          </Link>
+          <Link
+            href="/blog"
+            onClick={() => setMobileMenuOpen(false)}
+            className="py-2 text-sm font-semibold uppercase tracking-wider text-[#1B231B]"
+          >
+            BLOG
+          </Link>
+          <Link
+            href="/dashboard"
+            onClick={() => setMobileMenuOpen(false)}
+            className="py-2 text-sm font-semibold uppercase tracking-wider text-[#1B231B]"
+          >
+            DASHBOARD
+          </Link>
           <Link
             href="/studio"
             onClick={() => setMobileMenuOpen(false)}
-            className="w-full"
+            className="py-2.5 text-center btn-primary text-xs font-semibold uppercase tracking-wider"
           >
-            <Button variant="primary" size="md" className="w-full justify-center">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Start Free Video Ad
-            </Button>
+            GET STARTED
           </Link>
         </div>
       )}

@@ -20,6 +20,10 @@ export interface UgcAdCompositionProps {
   words: WordTimestamp[];
   subtitleStyle?: SubtitleStyleConfig;
   hasWatermark?: boolean;
+  archetype?: "studio_minimalist" | "organic_selfie" | "meme_reaction";
+  audioMode?: "narration_ducked" | "music_only";
+  hasVoiceover?: boolean;
+  memeCardText?: string;
 }
 
 export const DEFAULT_COMPOSITION_PROPS: UgcAdCompositionProps = {
@@ -27,8 +31,12 @@ export const DEFAULT_COMPOSITION_PROPS: UgcAdCompositionProps = {
   hookText: "Stop coding under harsh fluorescent lights in 2026.",
   bodyText: "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
   ctaText: "Click the link below and get $30 off your setup today.",
-  brandColor: "#F59E0B",
+  brandColor: "#1F3824",
+  productImageUrl: "/images/creator-glasses.jpg",
   hasWatermark: false,
+  archetype: "organic_selfie",
+  audioMode: "narration_ducked",
+  hasVoiceover: true,
   words: [
     { word: "Stop", start: 0.15, end: 0.45 },
     { word: "coding", start: 0.48, end: 0.85 },
@@ -42,7 +50,7 @@ export const DEFAULT_COMPOSITION_PROPS: UgcAdCompositionProps = {
   subtitleStyle: {
     fontSize: 54,
     primaryColor: "#FFFFFF",
-    highlightColor: "#F59E0B",
+    highlightColor: "#FFE600",
     strokeColor: "#000000",
   },
 };

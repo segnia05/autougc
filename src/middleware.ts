@@ -17,8 +17,18 @@ const isPublicRoute = createRouteMatcher([
   "/api/auth(.*)",
 ]);
 
+const isProtectedBrowserRoute = createRouteMatcher([
+  "/dashboard(.*)",
+  "/studio(.*)",
+  "/settings(.*)",
+]);
+
 export default clerkMiddleware(async (auth, request) => {
-  if (!isPublicRoute(request)) {
+  // 1. Strictly gate browser protected routes: unauthenticated users are immediately redirected to sign in
+  if (isProtectedBrowserRoute(request)) {
+    await auth.protect();
+  } else if (!isPublicRoute(request)) {
+    // 2. Private API endpoints require active auth session or trusted internal service header
     const hasServiceHeader = request.headers.get("x-user-id");
     if (!hasServiceHeader) {
       await auth.protect();

@@ -88,10 +88,21 @@ export async function deductCredit(
         },
       });
 
+      let validUserId: string | null = null;
+      if (userId) {
+        const u = await tx.user.findUnique({
+          where: { id: userId },
+          select: { id: true },
+        });
+        if (u) {
+          validUserId = u.id;
+        }
+      }
+
       await tx.creditTransaction.create({
         data: {
           organizationId: orgId,
-          userId: userId || null,
+          userId: validUserId,
           amount: -amount,
           balanceAfter: updated.creditsRemaining,
           reason: "render_deduction",
@@ -104,14 +115,23 @@ export async function deductCredit(
         creditsRemaining: updated.creditsRemaining,
       };
     });
-  } catch {
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    if (errorMsg.includes("Insufficient credits")) {
+      return {
+        success: false,
+        creditsRemaining: 0,
+        error: errorMsg,
+      };
+    }
+
     // If DB is offline in development/unit-test environment:
-    const current = devBalances[orgId] ?? 24;
+    const current = devBalances[orgId] ?? 0;
     if (current < amount) {
       return {
         success: false,
         creditsRemaining: current,
-        error: `Insufficient credits (Dev). Required: ${amount}, Remaining: ${current}`,
+        error: `Insufficient credits. Required: ${amount}, Remaining: ${current}`,
       };
     }
 

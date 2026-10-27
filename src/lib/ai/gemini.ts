@@ -5,6 +5,7 @@ import {
   type ViralScriptsResponse,
   type ViralScriptItem,
 } from "./schema";
+import { enforceMandatoryBrandMention } from "@/lib/templates/videoTemplates";
 
 export interface GenerateScriptsInput {
   brandName: string;
@@ -45,7 +46,17 @@ export async function generateViralScripts(
         const parsed = JSON.parse(responseText);
         const validated = ViralScriptsResponseSchema.safeParse(parsed);
         if (validated.success) {
-          return validated.data;
+          // Enforce mandatory brand mention across all generated items
+          const sanitizedScripts = validated.data.scripts.map((script) => {
+            const enforced = enforceMandatoryBrandMention(input.brandName, script.hook, script.body, script.cta);
+            return {
+              ...script,
+              hook: enforced.hookText,
+              body: enforced.bodyText,
+              cta: enforced.ctaText,
+            };
+          });
+          return { scripts: sanitizedScripts };
         }
       }
     } catch (err) {
@@ -66,7 +77,7 @@ function getFallbackScripts(input: GenerateScriptsInput): ViralScriptsResponse {
       angleType: "negative_hook",
       hook: `Stop manually struggling with ${brand.toLowerCase()} tasks in 2026.`,
       body: `If you're still wasting hours on this, you're doing it wrong. ${brand} automates the entire workflow in two clicks with zero learning curve.`,
-      cta: `Try ${brand} free today and get your first results in under 60 seconds.`,
+      cta: `Get ${brand} today and see results in under 60 seconds.`,
       estimatedDurationSeconds: 14.2,
       caption: `Why are we still doing this manually in 2026? Here is the exact fix. #${brand.toLowerCase().replace(/\s+/g, "")} #productivity #lifehack #techtok #workflow`,
       hashtags: [brand.toLowerCase().replace(/\s+/g, ""), "productivity", "lifehack", "techtok", "workflow"],

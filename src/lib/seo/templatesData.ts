@@ -72,7 +72,7 @@ export const TEMPLATES_CATALOG: Record<string, TemplateData> = {
     sampleHook: "If your sales team is still manually copy-pasting lead data between 4 tabs in 2026, stop.",
     sampleBody:
       "AutoSync enriches inbound leads and triggers personalized Slack alerts in under 60 seconds automatically.",
-    sampleCta: "Claim your 14-day unrestricted founder trial at the link below.",
+    sampleCta: "Claim your founder access at the link below.",
     recommendedVoices: ["Marcus (Authoritative Tech)", "Sophia (Warm Professional)"],
     frameworkTips: [
       "Demonstrate painful manual workflows before revealing the 1-click software solution.",
@@ -143,7 +143,7 @@ export const TEMPLATES_CATALOG: Record<string, TemplateData> = {
     sampleHook: "The #1 reason your bench press progress has been completely stuck for 6 months.",
     sampleBody:
       "This micro-loading barbell system lets you add 0.5 lb increments so you hit a new PR every week without injury.",
-    sampleCta: "Grab your set with free shipping while supplies last.",
+    sampleCta: "Grab your set with priority shipping while supplies last.",
     recommendedVoices: ["Leo (Energetic Hype)", "Marcus (Authoritative)"],
     frameworkTips: [
       "Cut straight to the heavy rep lockout or form critique in frame 1.",
@@ -176,7 +176,7 @@ export const TEMPLATES_CATALOG: Record<string, TemplateData> = {
     sampleHook: "The iOS productivity widget that university students have been gatekeeping all semester.",
     sampleBody:
       "It blocks distracting notifications automatically the second you sit down at your study desk.",
-    sampleCta: "Download free on the App Store before midterms.",
+    sampleCta: "Download now on the App Store before midterms.",
     recommendedVoices: ["Alex (Casual DTC)", "Chloe (Soft Aesthetic)"],
     frameworkTips: [
       "Show screen recording of the app feature resolving the problem in 2 taps.",
@@ -214,7 +214,7 @@ export const TEMPLATES_CATALOG: Record<string, TemplateData> = {
     frameworkTips: [
       "Contrast the jittery feeling with calm mental clarity.",
       "Display clean ingredient certifications in the top-right overlay.",
-      "End with 30-day risk-free guarantee badge.",
+      "End with 30-day satisfaction guarantee badge.",
     ],
     faqs: [
       {

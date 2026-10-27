@@ -1,7 +1,6 @@
 import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Badge } from "@/components/ui/Badge";
 
 export const metadata = {
   title: "Terms of Service | AutoUGC",
@@ -10,23 +9,23 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-primary)]">
+    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
       <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 pt-16 pb-24 w-full">
-        <Badge variant="neutral" size="sm" className="mb-4 font-mono">
-          LEGAL & COMPLIANCE
-        </Badge>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-[family-name:var(--font-display)] mb-4">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4] mb-4 text-xs font-semibold uppercase tracking-wider">
+          Legal & Compliance
+        </div>
+        <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B] mb-3">
           Terms of Service
         </h1>
-        <p className="text-xs text-[var(--text-muted)] font-mono mb-10">
+        <p className="text-xs text-[#717E6C] font-mono mb-8">
           Last updated: October 2026 • Effective Date: January 1, 2026
         </p>
 
-        <div className="space-y-8 text-xs text-[var(--text-secondary)] leading-relaxed border-t border-subtle pt-8">
+        <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8 text-xs text-[#4A544A] leading-relaxed">
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               1. Acceptance of Terms
             </h2>
             <p>
@@ -35,11 +34,11 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               2. Commercial Rights & Video Ownership
             </h2>
             <p>
-              Upon rendering and exporting video content generated using active paid subscription credits or free promotional allowances, you are granted an irrevocable, perpetual, worldwide, royalty-free commercial license to deploy, distribute, monetize, and run paid advertisements using the rendered video files.
+              Upon rendering and exporting video content generated using active paid subscription credits, you are granted an irrevocable, perpetual, worldwide, royalty-free commercial license to deploy, distribute, monetize, and run paid advertisements using the rendered video files.
             </p>
             <p>
               You warrant that you own or possess necessary authorization to utilize any product URLs, trademarks, and brand assets submitted to the Service for parsing.
@@ -47,7 +46,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               3. Subscription Billing & Cancellation
             </h2>
             <p>
@@ -56,7 +55,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               4. Prohibited Uses
             </h2>
             <p>
@@ -65,7 +64,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               5. Limitation of Liability
             </h2>
             <p>

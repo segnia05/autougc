@@ -1,7 +1,6 @@
 import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Badge } from "@/components/ui/Badge";
 
 export const metadata = {
   title: "Privacy Policy | AutoUGC",
@@ -10,29 +9,29 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-primary)]">
+    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
       <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 pt-16 pb-24 w-full">
-        <Badge variant="neutral" size="sm" className="mb-4 font-mono">
-          LEGAL & COMPLIANCE
-        </Badge>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-[family-name:var(--font-display)] mb-4">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4] mb-4 text-xs font-semibold uppercase tracking-wider">
+          Legal & Compliance
+        </div>
+        <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B] mb-3">
           Privacy Policy
         </h1>
-        <p className="text-xs text-[var(--text-muted)] font-mono mb-10">
+        <p className="text-xs text-[#717E6C] font-mono mb-8">
           Last updated: October 2026 • Effective Date: January 1, 2026
         </p>
 
-        <div className="space-y-8 text-xs text-[var(--text-secondary)] leading-relaxed border-t border-subtle pt-8">
+        <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8 text-xs text-[#4A544A] leading-relaxed">
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               1. Information We Collect
             </h2>
             <p>
               AutoUGC (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;) operates an autonomous video ad generation platform. When you interact with our website and application, we collect information you provide directly to us:
             </p>
-            <ul className="list-disc pl-5 space-y-1 text-[var(--text-muted)]">
+            <ul className="list-disc pl-5 space-y-1 text-[#717E6C]">
               <li>Product URLs submitted for autonomous parsing and script generation.</li>
               <li>Account registration details (email address, brand name).</li>
               <li>OAuth authorization tokens for scheduling to TikTok, Instagram Reels, and YouTube Shorts.</li>
@@ -41,13 +40,13 @@ export default function PrivacyPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               2. How We Use Your Data
             </h2>
             <p>
               We process product details and submitted media strictly to render vertical video advertisements requested by your account. Specifically:
             </p>
-            <ul className="list-disc pl-5 space-y-1 text-[var(--text-muted)]">
+            <ul className="list-disc pl-5 space-y-1 text-[#717E6C]">
               <li>Extracting product images, titles, and review snippets to synthesize scripts.</li>
               <li>Generating voiceovers and kinetic subtitle timing tracks via neural synthesis.</li>
               <li>Publishing rendered video MP4 assets directly to your connected social channels when explicitly scheduled.</li>
@@ -56,7 +55,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               3. Social Network APIs & Permissions
             </h2>
             <p>
@@ -65,7 +64,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               4. Data Retention & Security
             </h2>
             <p>
@@ -74,12 +73,12 @@ export default function PrivacyPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[var(--text-primary)]">
+            <h2 className="text-base font-bold text-[#1B231B]">
               5. Contact Us
             </h2>
             <p>
               If you have any questions or data deletion requests regarding this Privacy Policy, please contact our team at{" "}
-              <a href="mailto:privacy@autougc.ai" className="text-[var(--accent-primary)] hover:underline">
+              <a href="mailto:privacy@autougc.ai" className="text-[#1F3824] font-semibold hover:underline">
                 privacy@autougc.ai
               </a>.
             </p>

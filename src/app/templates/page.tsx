@@ -4,9 +4,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { TEMPLATES_CATALOG } from "@/lib/seo/templatesData";
 import {
   ArrowRight,
@@ -48,22 +45,19 @@ export default function TemplatesIndexPage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-primary)]">
+    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-24 w-full">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <Badge variant="amber" size="sm" className="mb-4 font-mono">
-            PROVEN HIGH-RETENTION FRAMEWORKS
-          </Badge>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight font-[family-name:var(--font-display)] mb-4">
-            Tested 9:16 Video Ad Templates for{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500">
-              Every Industry
-            </span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4] mb-4 text-xs font-semibold uppercase tracking-wider">
+            Proven High-Retention Frameworks
+          </div>
+          <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B] mb-4">
+            Tested 9:16 video ad templates for <span className="italic">every industry.</span>
           </h1>
-          <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#4A544A] leading-relaxed">
             Engineered using TikTok and Meta Ads performance data. Tested for 0.8s pattern interrupts and 80%+ hook retention.
           </p>
         </div>
@@ -77,10 +71,10 @@ export default function TemplatesIndexPage() {
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   selectedCategory === cat.id
-                    ? "bg-[var(--accent-primary)] text-black shadow-glow-amber"
-                    : "bg-[var(--bg-surface)] border border-subtle text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-zinc-700"
+                    ? "bg-[#1F3824] text-white shadow-sm"
+                    : "bg-white border border-[#CBD5C4]/70 text-[#4A544A] hover:text-[#1B231B] hover:border-[#1F3824]"
                 }`}
               >
                 {cat.label}
@@ -90,13 +84,13 @@ export default function TemplatesIndexPage() {
 
           {/* Search Box */}
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#717E6C]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search hooks or industries..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-[var(--bg-surface)] border border-subtle rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)]"
+              className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-[#CBD5C4] rounded-full text-[#1B231B] placeholder-[#717E6C] focus:outline-none focus:border-[#1F3824]"
             />
           </div>
         </div>
@@ -104,104 +98,98 @@ export default function TemplatesIndexPage() {
         {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-20">
           {filteredTemplates.map((template) => (
-            <Card
+            <div
               key={template.slug}
-              hoverEffect
-              className="flex flex-col justify-between border border-subtle hover:border-[var(--accent-primary)]/50 transition-all bg-[var(--bg-surface)] group"
+              className="flex flex-col justify-between border border-[#CBD5C4]/70 hover:border-[#1F3824]/60 transition-all bg-white rounded-3xl p-6 shadow-sm group"
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <Badge variant="amber" size="sm" className="font-mono text-[10px]">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#E2E9DC] text-[#1F3824]">
                     {template.nicheName}
-                  </Badge>
-                  <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--accent-emerald)]">
-                    <TrendingUp className="h-3 w-3" />
+                  </span>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#1F3824]">
+                    <TrendingUp className="h-3.5 w-3.5" />
                     <span>{template.benchmarkCtr} CTR</span>
                   </div>
                 </div>
-                <CardTitle className="text-base font-bold font-[family-name:var(--font-display)] group-hover:text-[var(--accent-primary)] transition-colors">
-                  {template.title}
-                </CardTitle>
-              </CardHeader>
 
-              <CardContent className="space-y-4 pt-0">
+                <h3 className="text-base font-bold text-[#1B231B] group-hover:text-[#1F3824] transition-colors mb-4">
+                  {template.title}
+                </h3>
+
                 {/* Benchmark Metrics Bar */}
-                <div className="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-[var(--bg-app)] border border-subtle text-xs font-mono">
+                <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[#F6F7F2] border border-[#CBD5C4]/60 text-xs mb-4">
                   <div>
-                    <span className="text-[10px] text-[var(--text-muted)] block">Avg ROAS:</span>
-                    <span className="font-bold text-[var(--text-primary)]">{template.averageRoas}</span>
+                    <span className="text-[10px] text-[#717E6C] block">Avg ROAS:</span>
+                    <span className="font-bold text-[#1B231B]">{template.averageRoas}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[var(--text-muted)] block">Angle:</span>
-                    <span className="font-bold text-[var(--accent-primary)] truncate block">
+                    <span className="text-[10px] text-[#717E6C] block">Angle:</span>
+                    <span className="font-bold text-[#1F3824] truncate block">
                       {template.primaryHookAngle}
                     </span>
                   </div>
                 </div>
 
                 {/* Sample Hook Box */}
-                <div className="p-3 rounded-lg bg-[var(--bg-surface-elevated)] border border-subtle">
-                  <span className="text-[10px] font-mono font-semibold text-[var(--accent-primary)] uppercase tracking-wider block mb-1">
+                <div className="p-3 rounded-xl bg-[#ECEFE7] border border-[#CBD5C4]/60 mb-4">
+                  <span className="text-[10px] font-semibold text-[#1F3824] uppercase tracking-wider block mb-1">
                     Sample Hook (0:00 - 0:03):
                   </span>
-                  <p className="text-xs text-[var(--text-secondary)] italic leading-relaxed">
+                  <p className="text-xs text-[#4A544A] italic leading-relaxed">
                     &ldquo;{template.sampleHook}&rdquo;
                   </p>
                 </div>
 
                 {/* Framework Highlights */}
-                <div className="text-[11px] text-[var(--text-muted)] space-y-1">
-                  <span className="font-semibold text-[var(--text-secondary)] block">Key Execution:</span>
+                <div className="text-[11px] text-[#717E6C] space-y-1 mb-6">
+                  <span className="font-semibold text-[#1B231B] block">Key Execution:</span>
                   <p className="line-clamp-2 leading-relaxed">
                     {template.frameworkTips[0] ?? ""}
                   </p>
                 </div>
+              </div>
 
-                {/* Actions */}
-                <div className="pt-2 flex items-center gap-2 border-t border-subtle">
-                  <Link
-                    href={`/studio?brand=${encodeURIComponent(
-                      template.nicheName
-                    )}&hook=${encodeURIComponent(template.sampleHook)}&body=${encodeURIComponent(
-                      template.sampleBody
-                    )}&cta=${encodeURIComponent(template.sampleCta)}`}
-                    className="flex-1"
-                  >
-                    <Button variant="primary" size="sm" className="w-full text-xs justify-center font-semibold">
-                      Use in Studio
-                    </Button>
-                  </Link>
-                  <Link href={`/templates/${template.slug}`}>
-                    <Button variant="secondary" size="sm" className="text-xs px-2.5" title="View Full Blueprint">
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+              {/* Actions */}
+              <div className="pt-3 flex items-center gap-2 border-t border-[#CBD5C4]/60">
+                <Link
+                  href={`/studio?brand=${encodeURIComponent(
+                    template.nicheName
+                  )}&hook=${encodeURIComponent(template.sampleHook)}&body=${encodeURIComponent(
+                    template.sampleBody
+                  )}&cta=${encodeURIComponent(template.sampleCta)}`}
+                  className="flex-1"
+                >
+                  <button className="w-full py-2.5 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer shadow-xs">
+                    Use in Studio
+                  </button>
+                </Link>
+                <Link href={`/templates/${template.slug}`}>
+                  <button className="p-2.5 rounded-full border border-[#CBD5C4] text-[#1F3824] hover:bg-[#ECEFE7] transition-colors cursor-pointer" title="View Full Blueprint">
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </Link>
+              </div>
+            </div>
           ))}
         </div>
 
         {/* Bottom CTA Banner */}
-        <div className="rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 p-8 sm:p-12 text-center max-w-4xl mx-auto">
-          <div className="h-10 w-10 rounded-xl bg-amber-500/20 text-[var(--accent-primary)] flex items-center justify-center mx-auto mb-4 border border-amber-500/30">
+        <div className="rounded-3xl bg-[#ECEFE7] border border-[#CBD5C4]/70 p-8 sm:p-12 text-center max-w-4xl mx-auto shadow-sm">
+          <div className="h-10 w-10 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center mx-auto mb-4 border border-[#CBD5C4]">
             <Video className="h-5 w-5" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-[family-name:var(--font-display)] mb-3">
-            Want to Generate Custom Templates from Your Store?
+          <h2 className="text-2xl sm:text-3xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B] mb-3">
+            Want to generate custom templates from your website?
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)] max-w-xl mx-auto mb-6">
-            Paste any Shopify, Amazon, or website URL. Our autonomous parser extracts your best hooks and formats them for immediate export.
+          <p className="text-xs sm:text-sm text-[#4A544A] max-w-xl mx-auto mb-6">
+            Paste any Shopify, Amazon, or SaaS URL. Our autonomous parser extracts your best hooks and formats them for immediate export.
           </p>
           <Link href="/studio">
-            <Button
-              variant="primary"
-              size="lg"
-              className="font-semibold text-xs shadow-glow-amber"
-              rightIcon={<ArrowRight className="h-4 w-4" />}
-            >
-              Start Free Video Ad Now
-            </Button>
+            <button className="px-8 py-3.5 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-widest transition-all shadow-sm cursor-pointer inline-flex items-center gap-2">
+              <span>Start Video Ad Generation</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
           </Link>
         </div>
       </main>

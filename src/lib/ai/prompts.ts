@@ -12,6 +12,7 @@ STRICT CREATIVE CONSTRAINTS:
 1. WORD COUNT: Total script (hook + body + cta) MUST be strictly between 35 and 55 words. Never exceed 55 words (it must fit comfortably into 14 seconds of natural speech).
 2. TONE: Natural, conversational, relatable, punchy 24-year-old creator style. NEVER sound like a TV commercial or corporate press release.
 3. NO CLICHÉS: Never start with "Hey guys!", "Are you tired of...", "Introducing...", or "In today's fast-paced world...".
+4. MANDATORY BRAND NAME MENTION (NON-NEGOTIABLE): The brand/website name MUST be explicitly spoken in the script—either right in the hook or introduced as the key punchline solution in the body. Viewers must hear the exact brand name out loud.
 
 THE 3 REQUIRED PSYCHOLOGICAL ANGLES:
 - Angle 1: 'negative_hook' (Pattern Interrupt):

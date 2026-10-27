@@ -60,20 +60,20 @@ export function MusicPicker({
   duckingLevelDb = -22,
 }: MusicPickerProps) {
   return (
-    <div className="bg-[var(--bg-surface)] border border-subtle rounded-xl p-5 shadow-xs flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-6 shadow-sm flex flex-col gap-4 text-[#1B231B]">
+      <div className="flex items-center justify-between border-b border-[#CBD5C4]/50 pb-3">
         <div className="flex items-center gap-2">
-          <Music className="h-4 w-4 text-[var(--accent-primary)]" />
-          <h3 className="text-sm font-semibold tracking-wide">
-            Dynamic B-Roll Music & Ducking
+          <Music className="h-4 w-4 text-[#1F3824]" />
+          <h3 className="text-base font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
+            Dynamic B-Roll music & ducking
           </h3>
         </div>
-        <span className="text-xs font-mono text-[var(--accent-primary)] bg-[var(--accent-glow)] px-2 py-0.5 rounded border border-[var(--accent-primary)]/20">
+        <span className="text-xs font-mono text-[#1F3824] bg-[#E2E9DC] px-2.5 py-0.5 rounded-full font-semibold">
           Auto-ducking: {duckingLevelDb}dB
         </span>
       </div>
 
-      <p className="text-xs text-[var(--text-muted)]">
+      <p className="text-xs text-[#4A544A] leading-relaxed">
         Music volume automatically drops to -22dB whenever creator voiceover speaks, maintaining crystal dialogue clarity.
       </p>
 
@@ -85,24 +85,24 @@ export function MusicPicker({
               key={track.id}
               type="button"
               onClick={() => onTrackChange(track.id)}
-              className={`p-3 rounded-lg border text-left transition-all duration-150 flex items-center justify-between ${
+              className={`p-3.5 rounded-2xl border text-left transition-all duration-150 flex items-center justify-between cursor-pointer ${
                 isSelected
-                  ? "border-[var(--accent-primary)] bg-[var(--accent-glow)] text-[var(--text-primary)]"
-                  : "border-subtle bg-[var(--bg-app)]/50 hover:border-zinc-700 text-[var(--text-secondary)]"
+                  ? "border-2 border-[#1F3824] bg-[#E2E9DC] text-[#1B231B] shadow-xs"
+                  : "border-[#CBD5C4]/60 bg-[#F6F7F2] hover:border-[#1F3824]/50 text-[#4A544A]"
               }`}
             >
               <div className="flex flex-col">
-                <span className="text-xs font-medium">{track.name}</span>
-                <span className="text-[11px] text-[var(--text-muted)] font-mono">
+                <span className="text-xs font-bold text-[#1B231B]">{track.name}</span>
+                <span className="text-[11px] text-[#717E6C] font-mono">
                   {track.genre} {track.bpm > 0 ? `• ${track.bpm} BPM` : ""}
                 </span>
               </div>
               {isSelected ? (
-                <div className="h-4 w-4 rounded-full bg-[var(--accent-primary)] flex items-center justify-center text-black">
-                  <Check className="h-3 w-3 stroke-[3]" />
+                <div className="h-5 w-5 rounded-full bg-[#1F3824] flex items-center justify-center text-white">
+                  <Check className="h-3.5 w-3.5 stroke-[3]" />
                 </div>
               ) : (
-                <Volume2 className="h-3.5 w-3.5 text-zinc-600" />
+                <Volume2 className="h-3.5 w-3.5 text-[#717E6C]" />
               )}
             </button>
           );

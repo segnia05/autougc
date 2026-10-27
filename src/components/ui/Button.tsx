@@ -29,26 +29,26 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium transition-all select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-app)] disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]";
+      "inline-flex items-center justify-center font-medium transition-all select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F6F7F2] disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]";
 
     const variantStyles = {
       primary:
-        "bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-zinc-950 font-semibold shadow-glow-amber border border-amber-400/30",
+        "bg-[#1F3824] hover:bg-[#162B1B] text-white font-semibold shadow-sm",
       secondary:
-        "bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-hover)] text-[var(--text-primary)] border border-subtle shadow-tactile",
+        "bg-[#ECEFE7] hover:bg-[#E2E9DC] text-[#1B231B] border border-[#CBD5C4]/70 shadow-xs",
       outline:
-        "bg-transparent hover:bg-[var(--bg-surface-hover)] text-[var(--text-primary)] border border-prominent",
+        "bg-transparent hover:bg-[#ECEFE7] text-[#1B231B] border border-[#CBD5C4]",
       ghost:
-        "bg-transparent hover:bg-[var(--bg-surface-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
+        "bg-transparent hover:bg-[#ECEFE7] text-[#4A544A] hover:text-[#1B231B]",
       danger:
-        "bg-[var(--accent-rose)] hover:bg-rose-600 text-white font-semibold border border-rose-400/30 shadow-tactile",
+        "bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-xs",
     };
 
     const sizeStyles = {
-      sm: "h-8 px-3 text-xs rounded-md gap-1.5",
-      md: "h-10 px-4 text-sm rounded-lg gap-2",
-      lg: "h-12 px-6 text-base rounded-xl gap-2.5",
-      icon: "h-10 w-10 p-0 rounded-lg",
+      sm: "h-8 px-3.5 text-xs rounded-full gap-1.5",
+      md: "h-10 px-5 text-xs uppercase tracking-wider rounded-full gap-2",
+      lg: "h-12 px-7 text-xs uppercase tracking-widest rounded-full gap-2.5",
+      icon: "h-9 w-9 p-0 rounded-full",
     };
 
     return (

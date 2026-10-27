@@ -17,17 +17,17 @@ export function Badge({
 }: BadgeProps) {
   const variantStyles = {
     default:
-      "bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] border-subtle",
+      "bg-[#E2E9DC] text-[#1F3824] border-[#CBD5C4]",
     amber:
-      "bg-amber-500/10 text-[var(--accent-primary)] border-amber-500/25",
+      "bg-[#FDF4E7] text-[#925B00] border-[#E8D4B0]",
     emerald:
-      "bg-emerald-500/10 text-[var(--accent-emerald)] border-emerald-500/25",
+      "bg-[#E2E9DC] text-[#1F3824] border-[#CBD5C4]",
     rose:
-      "bg-rose-500/10 text-[var(--accent-rose)] border-rose-500/25",
+      "bg-[#FDECEC] text-[#9A2626] border-[#F1C2C2]",
     neutral:
-      "bg-zinc-800 text-[var(--text-secondary)] border-zinc-700",
+      "bg-[#ECEFE7] text-[#4A544A] border-[#CBD5C4]",
     outline:
-      "bg-transparent text-[var(--text-secondary)] border-prominent",
+      "bg-transparent text-[#4A544A] border-[#CBD5C4]",
   };
 
   const sizeStyles = {
@@ -51,20 +51,24 @@ export function Badge({
             className={cn(
               "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
               variant === "emerald"
-                ? "bg-emerald-400"
+                ? "bg-[#1F3824]"
                 : variant === "amber"
-                ? "bg-amber-400"
-                : "bg-white"
+                ? "bg-amber-500"
+                : variant === "rose"
+                ? "bg-rose-500"
+                : "bg-[#1F3824]"
             )}
           />
           <span
             className={cn(
               "relative inline-flex rounded-full h-2 w-2",
               variant === "emerald"
-                ? "bg-[var(--accent-emerald)]"
+                ? "bg-[#1F3824]"
                 : variant === "amber"
-                ? "bg-[var(--accent-primary)]"
-                : "bg-white"
+                ? "bg-amber-600"
+                : variant === "rose"
+                ? "bg-rose-600"
+                : "bg-[#1F3824]"
             )}
           />
         </span>

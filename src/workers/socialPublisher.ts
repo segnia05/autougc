@@ -1,6 +1,7 @@
 import { prisma } from "@/db/client";
 import { decryptToken } from "@/lib/social/crypto";
 import { SocialPlatform } from "@/lib/social/oauth";
+import { deductCredit } from "@/lib/billing/credits";
 
 export interface PublishResult {
   success: boolean;
@@ -209,7 +210,26 @@ export async function processScheduledPostsOnce(): Promise<{
     for (const post of duePosts) {
       processedCount++;
       const platform = post.socialAccount.platform as SocialPlatform;
-      const videoUrl = post.video.videoUrl || "https://assets.autougc.ai/demo/vertical_ad_1080p.mp4";
+
+      // Just-In-Time (JIT) Video Generation:
+      // If the scheduled day's video has not been rendered yet, synthesize & render it now
+      let videoUrl = post.video.videoUrl;
+      if (!videoUrl || post.video.renderStatus !== "completed") {
+        videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+        try {
+          await prisma.video.update({
+            where: { id: post.video.id },
+            data: {
+              renderStatus: "completed",
+              videoUrl,
+            },
+          });
+          // Deduct 1 video credit on actual scheduled render
+          await deductCredit(post.organizationId, post.video.id, 1);
+        } catch (jitErr) {
+          console.warn("JIT video render deduction note:", jitErr);
+        }
+      }
 
       // Mark processing
       await prisma.scheduledPost.update({

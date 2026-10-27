@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import {
@@ -60,31 +58,31 @@ export function ToolInteractive({ slug, tool }: ToolInteractiveProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)]">
+    <div className="min-h-screen bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
-      <div className="border-b border-subtle bg-[var(--bg-surface)] py-3 px-6">
+      <div className="border-b border-[#CBD5C4]/60 bg-[#EEF1EA] py-3 px-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)]">
-            <Link href="/tools" className="hover:text-[var(--text-primary)] transition-colors">
+          <div className="flex items-center gap-2 text-xs text-[#717E6C]">
+            <Link href="/tools" className="hover:text-[#1F3824] font-medium transition-colors">
               Tools
             </Link>
             <span>/</span>
-            <span className="text-[var(--text-primary)]">{slug}</span>
+            <span className="text-[#1B231B] font-semibold">{slug}</span>
           </div>
 
-          <Badge variant="amber" size="sm" className="font-mono text-[10px]">
-            100% Free Utility
-          </Badge>
+          <span className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-[#E2E9DC] text-[#1F3824]">
+            SaaS Marketing Utility
+          </span>
         </div>
       </div>
 
       <main className="max-w-4xl mx-auto px-6 py-16 flex flex-col gap-10">
         <div className="flex flex-col gap-3 text-center items-center">
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-[family-name:var(--font-display)]">
+          <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B]">
             {tool.title}
           </h1>
-          <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-2xl">
+          <p className="text-sm sm:text-base text-[#4A544A] max-w-2xl leading-relaxed">
             {tool.subtitle}
           </p>
         </div>
@@ -92,11 +90,11 @@ export function ToolInteractive({ slug, tool }: ToolInteractiveProps) {
         {/* Interactive Tool Area */}
         {slug === "ugc-video-cost-calculator" ? (
           /* ROI Calculator Tool */
-          <div className="bg-[var(--bg-surface)] border border-subtle rounded-2xl p-6 sm:p-8 flex flex-col gap-8 shadow-sm">
+          <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-6 sm:p-10 flex flex-col gap-8 shadow-sm">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                  Videos Needed Per Month: {monthlyAdsNeeded}
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#4A544A]">
+                  Videos Needed Per Month: <span className="text-[#1F3824] font-bold">{monthlyAdsNeeded}</span>
                 </label>
                 <input
                   type="range"
@@ -105,13 +103,13 @@ export function ToolInteractive({ slug, tool }: ToolInteractiveProps) {
                   step="5"
                   value={monthlyAdsNeeded}
                   onChange={(e) => setMonthlyAdsNeeded(Number(e.target.value))}
-                  className="w-full accent-[var(--accent-primary)] cursor-pointer"
+                  className="w-full accent-[#1F3824] cursor-pointer"
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                  Traditional Agency Rate / Video: ${agencyRatePerAd}
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#4A544A]">
+                  Traditional Agency Rate / Video: <span className="text-[#1F3824] font-bold">${agencyRatePerAd}</span>
                 </label>
                 <input
                   type="range"
@@ -120,110 +118,109 @@ export function ToolInteractive({ slug, tool }: ToolInteractiveProps) {
                   step="25"
                   value={agencyRatePerAd}
                   onChange={(e) => setAgencyRatePerAd(Number(e.target.value))}
-                  className="w-full accent-[var(--accent-primary)] cursor-pointer"
+                  className="w-full accent-[#1F3824] cursor-pointer"
                 />
               </div>
             </div>
 
             {/* Savings Comparison Card */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-subtle">
-              <div className="p-4 rounded-xl bg-[var(--bg-app)] border border-subtle flex flex-col gap-1">
-                <span className="text-xs text-[var(--text-muted)]">Traditional Agency Cost</span>
-                <span className="text-2xl font-bold font-mono text-red-400">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-[#CBD5C4]/60">
+              <div className="p-4 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]/60 flex flex-col gap-1">
+                <span className="text-xs text-[#717E6C]">Traditional Agency Cost</span>
+                <span className="text-2xl font-bold font-sans text-rose-600">
                   ${agencyTotalCost.toLocaleString()}
-                  <span className="text-xs text-[var(--text-muted)]">/mo</span>
+                  <span className="text-xs text-[#717E6C] font-normal">/mo</span>
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl bg-[var(--bg-app)] border border-subtle flex flex-col gap-1">
-                <span className="text-xs text-[var(--text-muted)]">AutoUGC Growth Plan</span>
-                <span className="text-2xl font-bold font-mono text-emerald-400">
+              <div className="p-4 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]/60 flex flex-col gap-1">
+                <span className="text-xs text-[#717E6C]">AutoUGC Growth Plan</span>
+                <span className="text-2xl font-bold font-sans text-[#1F3824]">
                   ${autoUgcCost}
-                  <span className="text-xs text-[var(--text-muted)]">/mo</span>
+                  <span className="text-xs text-[#717E6C] font-normal">/mo</span>
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl bg-[var(--accent-glow)] border border-[var(--accent-primary)]/30 flex flex-col gap-1">
-                <span className="text-xs text-[var(--accent-primary)] font-semibold">
+              <div className="p-4 rounded-2xl bg-[#E2E9DC] border border-[#CBD5C4]/80 flex flex-col gap-1">
+                <span className="text-xs text-[#1F3824] font-bold">
                   Net Monthly Savings
                 </span>
-                <span className="text-2xl font-bold font-mono text-[var(--text-primary)]">
+                <span className="text-2xl font-extrabold font-sans text-[#1F3824]">
                   ${netSavings.toLocaleString()}
-                  <span className="text-xs text-[var(--text-muted)]">/mo</span>
+                  <span className="text-xs text-[#1F3824]/80 font-normal">/mo</span>
                 </span>
               </div>
             </div>
 
             <div className="flex justify-center pt-2">
               <Link href="/studio">
-                <Button variant="primary" size="lg" rightIcon={<ArrowRight className="h-4 w-4" />}>
-                  Start Saving With AutoUGC Today
-                </Button>
+                <button className="px-8 py-3.5 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-widest transition-all shadow-sm cursor-pointer inline-flex items-center gap-2">
+                  <span>Start Saving With AutoUGC Today</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               </Link>
             </div>
           </div>
         ) : (
           /* Viral Hook & Script Generator Tool */
-          <div className="bg-[var(--bg-surface)] border border-subtle rounded-2xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-6 sm:p-10 flex flex-col gap-6 shadow-sm">
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="text-xs font-semibold uppercase tracking-wider text-[#4A544A]">
                 Enter Your Product, Service or Value Proposition:
               </label>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
                   value={productTopic}
                   onChange={(e) => setProductTopic(e.target.value)}
-                  className="flex-1 bg-[var(--bg-app)] border border-subtle rounded-lg px-4 py-2.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] transition-colors"
+                  className="flex-1 bg-[#F6F7F2] border border-[#CBD5C4] rounded-full px-5 py-2.5 text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824] transition-colors"
                   placeholder="e.g. Ergonomic lumbar desk chair for software engineers"
                 />
-                <Button
-                  variant="primary"
-                  size="sm"
+                <button
                   onClick={handleGenerateHooks}
-                  leftIcon={<Sparkles className="h-3.5 w-3.5" />}
+                  className="px-6 py-2.5 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0"
                 >
-                  Generate
-                </Button>
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Generate</span>
+                </button>
               </div>
             </div>
 
             {/* Generated Variations */}
             <div className="flex flex-col gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#1B231B]">
                 Tested Viral Hooks:
               </span>
               <div className="flex flex-col gap-2.5">
                 {generatedHooks.map((h, i) => (
                   <div
                     key={i}
-                    className="p-4 rounded-xl bg-[var(--bg-app)] border border-subtle flex items-center justify-between gap-4"
+                    className="p-4 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]/60 flex items-center justify-between gap-4"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="h-5 w-5 rounded bg-zinc-800 text-[10px] font-mono font-bold flex items-center justify-center text-zinc-400">
+                      <span className="h-6 w-6 rounded-full bg-[#E2E9DC] text-[#1F3824] text-xs font-bold flex items-center justify-center shrink-0">
                         {i + 1}
                       </span>
-                      <p className="text-xs font-medium text-[var(--text-primary)]">
+                      <p className="text-xs font-medium text-[#1B231B]">
                         &ldquo;{h}&rdquo;
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                    <div className="flex items-center gap-3 shrink-0">
+                      <button
                         onClick={() => copyToClipboard(h, i)}
+                        className="p-1.5 rounded-full hover:bg-white text-[#717E6C] hover:text-[#1B231B] transition-colors cursor-pointer"
                         aria-label="Copy hook"
                       >
                         {copiedIndex === i ? (
-                          <Check className="h-3.5 w-3.5 text-emerald-400" />
+                          <Check className="h-4 w-4 text-[#1F3824]" />
                         ) : (
-                          <Copy className="h-3.5 w-3.5" />
+                          <Copy className="h-4 w-4" />
                         )}
-                      </Button>
+                      </button>
                       <Link
                         href={`/studio?hook=${encodeURIComponent(h)}`}
-                        className="text-xs font-medium text-[var(--accent-primary)] hover:underline flex items-center gap-1"
+                        className="text-xs font-semibold text-[#1F3824] hover:underline flex items-center gap-1"
                       >
                         <span>Animate in Studio</span>
                         <ArrowRight className="h-3 w-3" />

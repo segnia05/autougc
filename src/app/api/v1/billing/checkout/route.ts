@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { stripe, BILLING_PLANS } from "@/lib/billing/stripe";
 import { getAuthContext } from "@/lib/auth/getAuthContext";
+import { prisma } from "@/db/client";
 
 const CheckoutRequestSchema = z.object({
   planId: z.enum(["starter", "growth", "scale"]),
@@ -35,10 +36,45 @@ export async function POST(request: NextRequest) {
       process.env.STRIPE_SECRET_KEY.startsWith("sk_test_mock");
 
     if (isMock) {
-      // In local dev/mock mode, return instant success simulation URL
+      // In local dev/mock mode, persist the upgrade directly to Neon DB so the user immediately receives full plan benefits
+      try {
+        await prisma.subscription.upsert({
+          where: { organizationId: orgId },
+          update: {
+            planTier: planId,
+            creditsMonthlyAllowance: plan.monthlyCredits,
+            creditsRemaining: plan.monthlyCredits,
+            status: "active",
+            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          },
+          create: {
+            organizationId: orgId,
+            stripeCustomerId: `cus_${orgId.slice(-12)}`,
+            planTier: planId,
+            status: "active",
+            creditsMonthlyAllowance: plan.monthlyCredits,
+            creditsRemaining: plan.monthlyCredits,
+            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          },
+        });
+        await prisma.creditTransaction.create({
+          data: {
+            organizationId: orgId,
+            userId: authContext?.userId || null,
+            amount: plan.monthlyCredits,
+            balanceAfter: plan.monthlyCredits,
+            reason: `plan_upgrade_${planId}`,
+          },
+        });
+      } catch (err) {
+        console.warn("Mock upgrade DB update skipped/failed:", err);
+      }
+
       return NextResponse.json({
-        url: `${origin}/studio?upgraded=true&plan=${planId}&credits=${plan.monthlyCredits}`,
+        url: `${origin}/dashboard?tab=billing&upgraded=true&plan=${planId}&credits=${plan.monthlyCredits}`,
         isMock: true,
+        planId,
+        credits: plan.monthlyCredits,
       });
     }
 

@@ -14,7 +14,7 @@ async function runStudioTests() {
   // 2. Test dynamic script edits and word synchronization
   const hook = "Stop wasting $500 a month on UGC agencies in 2026.";
   const body = "AutoUGC turns any URL into a high-converting vertical ad in 15 seconds flat.";
-  const cta = "Try it free today.";
+  const cta = "Get started today.";
 
   const fullText = `${hook} ${body} ${cta}`;
   const audioSync = await synthesizeVoiceover(fullText, "alex_casual_dtc");

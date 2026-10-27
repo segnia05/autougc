@@ -7,10 +7,10 @@ async function runE2ETests() {
   console.log(`✓ 1. Landing Page: HTTP ${landingRes.status} (${landingRes.headers.get("content-type")})`);
   if (landingRes.status !== 200) throw new Error("Landing page failed");
 
-  // Test 2: Free Tool (TikTok Hook Generator)
+  // Test 2: Growth Utility Tool (TikTok Hook Generator)
   const toolRes = await fetch(`${baseUrl}/tools/tiktok-hook-generator`);
-  console.log(`✓ 2. Free Tool (TikTok Hook Generator): HTTP ${toolRes.status}`);
-  if (toolRes.status !== 200) throw new Error("Free tool page failed");
+  console.log(`✓ 2. Growth Utility Tool (TikTok Hook Generator): HTTP ${toolRes.status}`);
+  if (toolRes.status !== 200) throw new Error("Growth utility tool page failed");
 
   // Test 3: Programmatic Template (E-Commerce Shopify)
   const templateRes = await fetch(`${baseUrl}/templates/ecommerce-shopify`);

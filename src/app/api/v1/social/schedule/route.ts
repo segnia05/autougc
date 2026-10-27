@@ -145,90 +145,10 @@ export async function GET(request: NextRequest) {
         take: 100,
       });
 
-      return NextResponse.json({ posts });
-    } catch {
-      // Mock fallback data for development mode
-      const samplePosts = [
-        {
-          id: "sched_01",
-          caption: "Stop coding under harsh fluorescent lights in 2026 #developer #setup #ugc",
-          scheduledFor: new Date(Date.now() + 1000 * 60 * 60 * 4).toISOString(),
-          localScheduledTime: "Today @ 4:00 PM EST",
-          publishStatus: "pending",
-          hookAngle: "pattern_interrupt",
-          postUrl: null,
-          socialAccount: {
-            id: "acc_main_brand",
-            platform: "tiktok",
-            accountHandle: "@lumina_official",
-            accountNickname: "Main Brand (Official)",
-            isBurner: false,
-          },
-          video: { durationSeconds: 14.5, thumbnailUrl: null },
-        },
-        {
-          id: "sched_02",
-          caption: "The $80 monitor upgrade nobody is talking about #desksetup #wfh",
-          scheduledFor: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
-          localScheduledTime: "Tomorrow @ 4:00 PM EST",
-          publishStatus: "pending",
-          hookAngle: "curiosity_hack",
-          postUrl: null,
-          socialAccount: {
-            id: "acc_burner_1",
-            platform: "tiktok",
-            accountHandle: "@desk_hacks_daily",
-            accountNickname: "Burner #1 (Desk Setups)",
-            isBurner: true,
-          },
-          video: { durationSeconds: 15.0, thumbnailUrl: null },
-        },
-        {
-          id: "sched_03",
-          caption: "Say goodbye to 3 PM eye fatigue #productivity #techshorts",
-          scheduledFor: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
-          localScheduledTime: "Yesterday @ 4:00 PM EST",
-          publishStatus: "published",
-          platformPostId: "tt_v_889211",
-          postUrl: "https://www.tiktok.com/@creator/video/tt_v_889211",
-          hookAngle: "problem_agitation",
-          socialAccount: {
-            id: "acc_burner_2",
-            platform: "tiktok",
-            accountHandle: "@focus_tools_2026",
-            accountNickname: "Burner #2 (Productivity)",
-            isBurner: true,
-          },
-          video: { durationSeconds: 13.8, thumbnailUrl: null },
-        },
-        {
-          id: "sched_04",
-          caption: "Over 10,000 developers switched their workspace light this month #software #saas",
-          scheduledFor: new Date(Date.now() + 1000 * 60 * 60 * 48).toISOString(),
-          localScheduledTime: "Wed @ 4:00 PM EST",
-          publishStatus: "pending",
-          hookAngle: "social_proof",
-          postUrl: null,
-          socialAccount: {
-            id: "acc_reels_main",
-            platform: "instagram",
-            accountHandle: "@luminalight",
-            accountNickname: "Instagram Reels (Main)",
-            isBurner: false,
-          },
-          video: { durationSeconds: 15.0, thumbnailUrl: null },
-        },
-      ];
-
-      let filtered = samplePosts;
-      if (accountId && accountId !== "all") {
-        filtered = filtered.filter((p) => p.socialAccount.id === accountId);
-      }
-      if (status && status !== "all") {
-        filtered = filtered.filter((p) => p.publishStatus === status);
-      }
-
-      return NextResponse.json({ posts: filtered });
+      return NextResponse.json({ success: true, posts });
+    } catch (dbErr) {
+      console.warn("Notice in /api/v1/social/schedule:", dbErr);
+      return NextResponse.json({ success: true, posts: [] });
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Error fetching scheduled posts";

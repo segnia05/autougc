@@ -8,20 +8,20 @@ const TOOLS_CONFIG: Record<string, ToolConfig> = {
   "tiktok-hook-generator": {
     slug: "tiktok-hook-generator",
     name: "TikTok Hook Generator",
-    title: "Free AI TikTok UGC Hook Generator (2026)",
+    title: "AI TikTok UGC Hook Generator (2026)",
     subtitle:
       "Generate high-retention pattern interrupt hooks engineered to stop users scrolling in the first 0.8 seconds.",
     metaDescription:
-      "Generate 3 viral TikTok hooks for any product or software in seconds. Free AI tool for creators, founders, and performance marketers.",
+      "Generate 3 viral TikTok hooks for any product or software in seconds. Built for SaaS founders, product teams, and performance marketers.",
   },
   "instagram-reels-script-generator": {
     slug: "instagram-reels-script-generator",
     name: "Instagram Reels Script Generator",
-    title: "Free Instagram Reels UGC Script Generator",
+    title: "Instagram Reels UGC Script Generator",
     subtitle:
       "Turn your product value propositions into high-converting 15-second vertical script structures.",
     metaDescription:
-      "Free AI script generator for Instagram Reels ads. Generate high-converting hook, body, and CTA copy instantly.",
+      "AI script generator for Instagram Reels ads. Generate high-converting hook, body, and CTA copy instantly.",
   },
   "ugc-video-cost-calculator": {
     slug: "ugc-video-cost-calculator",
@@ -55,7 +55,7 @@ export async function generateMetadata({
   const canonicalUrl = `https://autougc.ai/tools/${slug}`;
 
   return {
-    title: `${tool.title} | AutoUGC Free Tools`,
+    title: `${tool.title} | AutoUGC Tools`,
     description: tool.metaDescription,
     alternates: {
       canonical: canonicalUrl,
@@ -81,7 +81,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
   const appJsonLd = buildSoftwareAppJsonLd();
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: "Home", url: "https://autougc.ai" },
-    { name: "Free Tools", url: "https://autougc.ai/tools" },
+    { name: "Tools", url: "https://autougc.ai/tools" },
     { name: tool.name, url: `https://autougc.ai/tools/${slug}` },
   ]);
 

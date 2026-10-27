@@ -14,16 +14,16 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
   onVoiceChange,
 }) => {
   return (
-    <div className="flex flex-col gap-3 p-5 rounded-2xl bg-[var(--bg-surface)] border border-subtle">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-4 p-6 rounded-3xl bg-white border border-[#CBD5C4]/70 shadow-sm text-[#1B231B]">
+      <div className="flex items-center justify-between border-b border-[#CBD5C4]/50 pb-3">
         <div className="flex items-center gap-2">
-          <Mic className="h-4 w-4 text-[var(--accent-primary)]" />
-          <h3 className="text-sm font-semibold tracking-tight text-[var(--text-primary)] font-[family-name:var(--font-display)]">
-            Creator Voice Persona
+          <Mic className="h-4 w-4 text-[#1F3824]" />
+          <h3 className="text-base font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
+            Creator voice persona
           </h3>
         </div>
-        <span className="text-xs text-[var(--text-muted)] font-mono">
-          Hyper-realistic TTS
+        <span className="text-xs text-[#717E6C] font-mono">
+          Hyper-realistic Neural TTS
         </span>
       </div>
 
@@ -34,22 +34,22 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
             <div
               key={voice.id}
               onClick={() => onVoiceChange(voice.id)}
-              className={`p-3 rounded-xl border cursor-pointer transition-all ${
+              className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                 isSelected
-                  ? "border-[var(--accent-primary)] bg-[var(--bg-surface-elevated)] shadow-glow-amber/20"
-                  : "border-subtle bg-[var(--bg-app)] hover:border-prominent"
+                  ? "bg-[#E2E9DC] border-2 border-[#1F3824] shadow-xs"
+                  : "bg-[#F6F7F2] border-[#CBD5C4]/60 hover:border-[#1F3824]/50"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+                <span className="text-sm font-bold text-[#1B231B] flex items-center gap-1.5">
                   {voice.name}
-                  {isSelected && <Volume2 className="h-3.5 w-3.5 text-[var(--accent-primary)] animate-pulse" />}
+                  {isSelected && <Volume2 className="h-3.5 w-3.5 text-[#1F3824] animate-pulse" />}
                 </span>
-                <span className="text-[11px] font-mono text-[var(--text-muted)] capitalize">
+                <span className="text-[11px] font-mono text-[#717E6C] capitalize">
                   {voice.gender}
                 </span>
               </div>
-              <p className="text-xs text-[var(--text-secondary)] line-clamp-1 leading-snug">
+              <p className="text-xs text-[#4A544A] line-clamp-1 leading-snug">
                 {voice.style}
               </p>
             </div>

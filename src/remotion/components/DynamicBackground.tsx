@@ -26,7 +26,7 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
       style={{
         position: "absolute",
         inset: 0,
-        backgroundColor: "#09090B",
+        backgroundColor: "#F6F7F2",
         overflow: "hidden",
       }}
     >
@@ -52,34 +52,34 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
           />
         </div>
       ) : (
-        /* Sleek Ambient Mesh Canvas Fallback */
+        /* Modern Editorial Canvas Fallback in Fluencify Organic Palette */
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: `radial-gradient(circle at 50% 30%, ${brandColor}22 0%, #09090B 70%)`,
+            background: `radial-gradient(circle at 50% 25%, ${brandColor}22 0%, #ECEFE7 50%, #D8DFD2 100%)`,
           }}
         >
-          {/* Subtle geometric grid */}
+          {/* Subtle tactile grid */}
           <div
             style={{
               position: "absolute",
               inset: 0,
               backgroundImage:
-                "linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
+                "linear-gradient(rgba(31, 56, 36, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(31, 56, 36, 0.05) 1px, transparent 1px)",
               backgroundSize: "60px 60px",
             }}
           />
         </div>
       )}
 
-      {/* Dark Vignette & Readability Gradient Overlay */}
+      {/* Cinematic Ambient Scrim - Light & Crisp for Optimal Text Readability */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(180deg, rgba(9, 9, 11, 0.7) 0%, rgba(9, 9, 11, 0.3) 40%, rgba(9, 9, 11, 0.9) 85%, #09090B 100%)",
+            "linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.05) 22%, rgba(0, 0, 0, 0.1) 60%, rgba(0, 0, 0, 0.65) 100%)",
         }}
       />
     </div>

@@ -9,9 +9,9 @@ export function Card({ className, hoverEffect = false, children, ...props }: Car
   return (
     <div
       className={cn(
-        "bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-xl border border-subtle shadow-tactile p-6",
+        "bg-white text-[#1B231B] rounded-3xl border border-[#CBD5C4]/70 p-6 shadow-sm",
         hoverEffect &&
-          "transition-all duration-200 hover:border-prominent hover:bg-[var(--bg-surface-elevated)] hover:-translate-y-0.5",
+          "transition-all duration-300 hover:border-[#1F3824]/60 hover:shadow-md hover:-translate-y-0.5",
         className
       )}
       {...props}
@@ -41,7 +41,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "text-lg font-semibold tracking-tight text-[var(--text-primary)] font-[family-name:var(--font-display)]",
+        "text-lg font-semibold tracking-tight text-[#1B231B] font-[family-name:var(--font-serif)]",
         className
       )}
       {...props}
@@ -57,7 +57,7 @@ export function CardDescription({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-sm text-[var(--text-secondary)]", className)} {...props}>
+    <p className={cn("text-sm text-[#4A544A]", className)} {...props}>
       {children}
     </p>
   );
@@ -78,7 +78,7 @@ export function CardFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex items-center pt-4 border-t border-subtle mt-4", className)}
+      className={cn("flex items-center pt-4 border-t border-[#CBD5C4]/60 mt-4", className)}
       {...props}
     >
       {children}

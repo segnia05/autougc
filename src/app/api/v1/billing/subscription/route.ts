@@ -14,26 +14,67 @@ export async function GET(request: NextRequest) {
     }
 
     const credits = await getOrganizationCredits(orgId);
-    const tier = (credits.planTier || "growth") as SubscriptionTier;
-    const planConfig = BILLING_PLANS[tier] || BILLING_PLANS.growth;
+    const tier = (credits.planTier || "free") as SubscriptionTier;
+    const planConfig = BILLING_PLANS[tier] || BILLING_PLANS.free;
 
     let renewalDate = "December 1, 2026";
     let status = credits.status;
+    let workspaceName = authContext?.fullName ? `${authContext.fullName}'s Workspace` : "Creative Workspace";
+    let workspaceSlug = "workspace";
+    let members: Array<{
+      id: string;
+      fullName: string;
+      email: string;
+      role: string;
+      isCurrentUser: boolean;
+    }> = [
+      {
+        id: authContext?.userId || "user_current",
+        fullName: authContext?.fullName || "Founder (You)",
+        email: authContext?.email || "owner@autougc.com",
+        role: authContext?.role || "owner",
+        isCurrentUser: true,
+      },
+    ];
 
     try {
-      const sub = await prisma.subscription.findUnique({
-        where: { organizationId: orgId },
+      const org = await prisma.organization.findUnique({
+        where: { id: orgId },
+        include: {
+          subscription: true,
+          members: {
+            include: {
+              user: true,
+            },
+          },
+        },
       });
-      if (sub?.currentPeriodEnd) {
-        renewalDate = sub.currentPeriodEnd.toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        });
-        status = sub.status;
+
+      if (org) {
+        workspaceName = org.name;
+        workspaceSlug = org.slug;
+
+        if (org.subscription?.currentPeriodEnd) {
+          renewalDate = org.subscription.currentPeriodEnd.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          });
+          status = org.subscription.status;
+        }
+
+        if (org.members && org.members.length > 0) {
+          members = org.members.map((m) => ({
+            id: m.userId,
+            fullName: m.user.fullName || (m.userId === authContext?.userId ? authContext.fullName : "Team Member"),
+            email: m.user.email || (m.userId === authContext?.userId ? authContext.email : ""),
+            role: m.role,
+            isCurrentUser: m.userId === authContext?.userId,
+          }));
+        }
       }
-    } catch {
-      // Resilient fallback when DB is offline
+    } catch (err) {
+      console.warn("Notice in /api/v1/billing/subscription:", err);
     }
 
     return NextResponse.json({
@@ -50,6 +91,12 @@ export async function GET(request: NextRequest) {
         renewalDate,
         status,
         maxSeats: tier === "scale" ? 10 : tier === "growth" ? 3 : 1,
+        workspaceName,
+        workspaceSlug,
+        userFullName: authContext?.fullName || "AutoUGC Creator",
+        userEmail: authContext?.email || "",
+        userRole: authContext?.role || "owner",
+        members,
       },
     });
   } catch (error: unknown) {

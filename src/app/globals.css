@@ -1,26 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  /* Surface Layers (Anti-AI Slop: Deep Obsidian + Warm Slate) */
-  --bg-app: #09090b;
-  --bg-surface: #121215;
-  --bg-surface-elevated: #18181c;
-  --bg-surface-hover: #222228;
+  /* Fluencify Signature Editorial Organic Palette */
+  --bg-app: #f6f7f2;               /* Organic Heritage Warm Cream / Linen */
+  --bg-surface: #ffffff;           /* Crisp White Card Surface */
+  --bg-surface-elevated: #ecefe7;  /* Soft Sage Cream Container */
+  --bg-surface-hover: #e3e8dc;     /* Interactive Hover Tint */
 
-  /* Text & Content */
-  --text-primary: #f4f4f6;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  /* Text & Typography */
+  --text-primary: #1b231b;         /* Deep Forest Charcoal */
+  --text-secondary: #4a544a;       /* Warm Olive Slate */
+  --text-muted: #738072;           /* Soft Sage Slate */
 
-  /* Brand Accents */
-  --accent-primary: #f59e0b;       /* Electric Amber */
-  --accent-primary-hover: #d97706;
-  --accent-emerald: #10b981;       /* Conversion & Success */
-  --accent-rose: #f43f5e;          /* Destructive / Error */
+  /* Accents */
+  --accent-primary: #1f3824;       /* Fluencify Signature Deep Forest Green */
+  --accent-primary-hover: #162b1b;
+  --accent-secondary: #e2e9dc;     /* Sage Pill Background */
+  --accent-emerald: #2d6a28;       /* Operational Approved Emerald */
+  --accent-amber: #c05621;         /* Warm Peach / Pending Amber */
+  --accent-rose: #be123c;          /* Alert Crimson */
 
-  /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-prominent: rgba(255, 255, 255, 0.16);
+  /* Precision Tactile Borders */
+  --border-subtle: rgba(27, 35, 27, 0.09);
+  --border-prominent: rgba(27, 35, 27, 0.18);
+  --border-dashed: #cbd5c4;
 }
 
 @theme inline {
@@ -35,12 +38,16 @@
 
   --color-accent-primary: var(--accent-primary);
   --color-accent-primary-hover: var(--accent-primary-hover);
+  --color-accent-secondary: var(--accent-secondary);
   --color-accent-emerald: var(--accent-emerald);
+  --color-accent-amber: var(--accent-amber);
   --color-accent-rose: var(--accent-rose);
 
   --color-border-subtle: var(--border-subtle);
   --color-border-prominent: var(--border-prominent);
+  --color-border-dashed: var(--border-dashed);
 
+  --font-serif: var(--font-serif);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
@@ -57,9 +64,10 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
 
-/* Tactile 1px Border Utilities */
+/* Tactile Micro-Border Utilities */
 .border-subtle {
   border: 1px solid var(--border-subtle);
 }
@@ -68,13 +76,56 @@ body {
   border: 1px solid var(--border-prominent);
 }
 
-/* Inset Glow & Shadow */
-.shadow-tactile {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+/* Fluencify Specular & Soft Shadow Depth */
+.card-specular {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 3px 0 rgba(27, 35, 27, 0.04), 0 10px 24px -8px rgba(27, 35, 27, 0.06);
 }
 
-.shadow-glow-amber {
-  box-shadow: 0 0 24px -4px rgba(245, 158, 11, 0.25);
+.card-specular-elevated {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 6px -1px rgba(27, 35, 27, 0.05), 0 20px 35px -10px rgba(27, 35, 27, 0.09);
+}
+
+.card-sage {
+  background: var(--bg-surface-elevated);
+  border: 1px solid rgba(27, 35, 27, 0.06);
+}
+
+/* Pill and Button Styles */
+.btn-primary {
+  background-color: var(--accent-primary);
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 4px rgba(31, 56, 36, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(31, 56, 36, 0.28);
+}
+
+.btn-outline {
+  border: 1px solid #c8cfbf;
+  background-color: transparent;
+  color: var(--text-primary);
+  border-radius: 9999px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background-color: #eaefe5;
+  border-color: #b4bea9;
 }
 
 /* Custom Scrollbar for Studio Timeline */
@@ -88,10 +139,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #23272e;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #353b47;
 }

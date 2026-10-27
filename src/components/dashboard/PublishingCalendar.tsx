@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
@@ -142,14 +143,22 @@ export function PublishingCalendar() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, scheduledFor?: string) => {
     switch (status) {
       case "published":
         return <Badge variant="emerald" size="sm">Published</Badge>;
       case "processing":
-        return <Badge variant="amber" size="sm" pulse>Uploading...</Badge>;
-      case "pending":
-        return <Badge variant="neutral" size="sm">Queued</Badge>;
+        return <Badge variant="amber" size="sm" pulse>Rendering & Posting...</Badge>;
+      case "pending": {
+        const isToday =
+          scheduledFor &&
+          new Date(scheduledFor).toDateString() === new Date().toDateString();
+        return isToday ? (
+          <Badge variant="amber" size="sm">Rendering Today (JIT)</Badge>
+        ) : (
+          <Badge variant="neutral" size="sm">Scheduled (JIT)</Badge>
+        );
+      }
       case "failed":
         return <Badge variant="rose" size="sm">Failed</Badge>;
       default:
@@ -158,39 +167,39 @@ export function PublishingCalendar() {
   };
 
   return (
-    <div className="bg-[var(--bg-surface)] border border-subtle rounded-xl p-6 shadow-xs flex flex-col gap-5">
+    <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col gap-6">
       {/* Header & Controls */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-[var(--accent-glow)] border border-[var(--accent-primary)]/20 flex items-center justify-center text-[var(--accent-primary)] shrink-0">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-4 border-b border-[#CBD5C4]/60">
+        <div className="flex items-center gap-3.5">
+          <div className="h-11 w-11 rounded-full bg-[#E2E9DC] border border-[#CBD5C4] flex items-center justify-center text-[#1F3824] shrink-0">
             <Calendar className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold tracking-wide">
+              <h3 className="text-base font-bold text-[#1B231B] font-[family-name:var(--font-serif)]">
                 Automated 30-Day Publishing Queue
               </h3>
               <Badge variant="emerald" size="sm">Autopilot Active</Badge>
             </div>
-            <p className="text-xs text-[var(--text-muted)]">
+            <p className="text-xs text-[#4A544A]">
               Scheduled broadcasts rotated across official brand and satellite accounts
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap w-full lg:w-auto justify-between lg:justify-end">
-          {/* Multi-Account Filter Dropdown (if multiple accounts exist) */}
+          {/* Multi-Account Filter Dropdown */}
           {uniqueAccounts.length > 0 && (
-            <div className="flex items-center gap-1.5 bg-[var(--bg-app)] border border-subtle rounded-lg px-2 py-1 text-xs text-[var(--text-secondary)]">
-              <Users className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+            <div className="flex items-center gap-1.5 bg-[#F6F7F2] border border-[#CBD5C4] rounded-full px-3 py-1.5 text-xs text-[#4A544A]">
+              <Users className="h-3.5 w-3.5 text-[#717E6C]" />
               <select
                 value={selectedAccountId}
                 onChange={(e) => setSelectedAccountId(e.target.value)}
-                className="bg-transparent text-xs text-[var(--text-primary)] focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs text-[#1B231B] focus:outline-none cursor-pointer"
               >
-                <option value="all" className="bg-[var(--bg-surface)]">All Accounts ({uniqueAccounts.length})</option>
+                <option value="all" className="bg-white">All Accounts ({uniqueAccounts.length})</option>
                 {uniqueAccounts.map((acc) => (
-                  <option key={acc.id} value={acc.id} className="bg-[var(--bg-surface)]">
+                  <option key={acc.id} value={acc.id} className="bg-white">
                     {acc.nickname || acc.handle}
                   </option>
                 ))}
@@ -199,16 +208,16 @@ export function PublishingCalendar() {
           )}
 
           {/* Status Filter Buttons */}
-          <div className="flex items-center bg-[var(--bg-app)] border border-subtle rounded-lg p-1 text-xs">
+          <div className="flex items-center bg-[#ECEFE7] border border-[#CBD5C4]/70 rounded-full p-1 text-xs">
             {(["all", "pending", "published"] as const).map((tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setStatusFilter(tab)}
-                className={`px-2.5 py-1 rounded text-xs capitalize transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-full text-xs capitalize transition-colors cursor-pointer ${
                   statusFilter === tab
-                    ? "bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-medium shadow-xs"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                    ? "bg-[#1F3824] text-white font-semibold shadow-xs"
+                    : "text-[#4A544A] hover:text-[#1B231B]"
                 }`}
               >
                 {tab}
@@ -239,15 +248,15 @@ export function PublishingCalendar() {
       </div>
 
       {/* Schedule Items List */}
-      <div className="flex flex-col divide-y divide-subtle border border-subtle rounded-lg overflow-hidden bg-[var(--bg-app)]/40">
+      <div className="flex flex-col divide-y divide-[#CBD5C4]/60 border border-[#CBD5C4]/70 rounded-2xl overflow-hidden bg-[#FAFBF9]">
         {loading ? (
-          <div className="p-8 text-center text-xs text-[var(--text-muted)] font-mono">
+          <div className="p-8 text-center text-xs text-[#717E6C] font-mono">
             Loading scheduled broadcasts...
           </div>
         ) : posts.length === 0 ? (
-          <div className="p-8 text-center text-xs text-[var(--text-muted)] flex flex-col items-center gap-3">
-            <Clock className="h-6 w-6 text-zinc-600" />
-            <p>No scheduled posts found for the selected filter.</p>
+          <div className="p-10 text-center text-xs text-[#717E6C] flex flex-col items-center gap-3">
+            <Clock className="h-6 w-6 text-[#717E6C]" />
+            <p className="text-sm font-medium text-[#1B231B]">No scheduled posts found for the selected filter.</p>
             <Button
               variant="secondary"
               size="sm"
@@ -269,10 +278,10 @@ export function PublishingCalendar() {
             return (
               <div
                 key={post.id}
-                className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-[var(--bg-surface-elevated)]/30 transition-colors"
+                className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-white transition-colors"
               >
                 <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                  <div className="h-10 w-8 rounded bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 shrink-0">
+                  <div className="h-10 w-8 rounded-lg bg-[#E2E9DC] border border-[#CBD5C4] flex items-center justify-center text-[#1F3824] shrink-0">
                     <Film className="h-4 w-4" />
                   </div>
 
@@ -282,7 +291,7 @@ export function PublishingCalendar() {
                       {getPlatformBadge(post.socialAccount.platform)}
 
                       {/* Account Nickname & Handle */}
-                      <span className="text-xs font-semibold text-[var(--text-primary)]">
+                      <span className="text-xs font-semibold text-[#1B231B]">
                         {post.socialAccount.accountNickname || post.socialAccount.accountHandle}
                       </span>
 
@@ -294,31 +303,41 @@ export function PublishingCalendar() {
 
                       {getHookBadge(post.hookAngle)}
 
-                      <span className="text-xs text-[var(--text-muted)]">•</span>
+                      <span className="text-xs text-[#CBD5C4]">•</span>
 
                       {/* Scheduled Local Time */}
-                      <span className="text-xs font-mono text-[var(--accent-primary)] flex items-center gap-1">
+                      <span className="text-xs font-mono text-[#1F3824] flex items-center gap-1 font-medium">
                         <Clock className="h-3 w-3" /> {timeLabel}
                       </span>
                     </div>
 
                     {/* Post Caption */}
-                    <p className="text-xs text-[var(--text-secondary)] truncate font-normal">
+                    <p className="text-xs text-[#4A544A] truncate font-normal">
                       {post.caption}
                     </p>
                   </div>
                 </div>
 
                 {/* Right Status & Actions */}
-                <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
-                  {getStatusBadge(post.publishStatus)}
+                <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
+                  {getStatusBadge(post.publishStatus, post.scheduledFor)}
+
+                  {/* Edit in Studio Link */}
+                  {post.publishStatus !== "published" && (
+                    <Link
+                      href={`/studio?scheduledPostId=${post.id}`}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#1F3824] bg-white border border-[#CBD5C4] hover:bg-[#E2E9DC] px-2.5 py-1 rounded-full transition-colors"
+                    >
+                      <span>Edit in Studio</span>
+                    </Link>
+                  )}
 
                   {post.postUrl && (
                     <a
                       href={post.postUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] font-mono text-[var(--accent-primary)] hover:underline"
+                      className="inline-flex items-center gap-1 text-[11px] font-mono text-[#1F3824] hover:underline"
                     >
                       <span>Live Post</span>
                       <ExternalLink className="h-3 w-3" />
@@ -326,7 +345,7 @@ export function PublishingCalendar() {
                   )}
 
                   {post.platformPostId && !post.postUrl && (
-                    <span className="text-[11px] font-mono text-emerald-400">
+                    <span className="text-[11px] font-mono text-[#1F3824] font-semibold">
                       ID: {post.platformPostId}
                     </span>
                   )}
