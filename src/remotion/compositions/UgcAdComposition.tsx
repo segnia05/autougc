@@ -71,7 +71,7 @@ export const UgcAdComposition: React.FC<UgcAdCompositionProps> = (props) => {
               letterSpacing: "-0.03em",
             }}
           >
-            {`"${mergedProps.hookText}"`}
+            "{mergedProps.hookText}"
           </div>
           <div
             style={{

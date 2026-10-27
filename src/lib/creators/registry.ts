@@ -160,3 +160,4 @@ export function getCreatorById(id: string): CertifiedCreator | undefined {
 export function getAllCreators(): CertifiedCreator[] {
   return [...CANONICAL_CREATORS];
 }
+
