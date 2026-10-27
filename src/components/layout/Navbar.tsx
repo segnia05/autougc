@@ -32,9 +32,6 @@ export function Navbar() {
             <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#1B231B] font-[family-name:var(--font-serif)]">
               AutoUGC
             </span>
-            <span className="inline-flex text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4]/60">
-              Autopilot
-            </span>
           </Link>
 
           {/* Navigation Links to the right of the Brand Name */}
@@ -196,7 +193,7 @@ export function Navbar() {
             className="py-2 text-sm font-semibold uppercase tracking-wider text-[#1F3824] flex items-center gap-1.5"
           >
             <span>✻</span>
-            <span>AUTOPILOT HOME</span>
+            <span>AUTOUGC HOME</span>
           </Link>
           <Link
             href="/templates"

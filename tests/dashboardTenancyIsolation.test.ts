@@ -99,7 +99,7 @@ async function runTenancyIsolationTests() {
     console.log("✓ Step 1: Provisioned isolated Organizations A and B in Neon DB.");
 
     // 3. User A connects 2 TikTok/IG accounts and creates a Project + Video
-    const accA1 = await prisma.socialAccount.create({
+    await prisma.socialAccount.create({
       data: {
         organizationId: orgAId,
         platform: "tiktok",
