@@ -2,23 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-
-// High-Performance Lazy-Loaded 9:16 Canvas Player (bypasses heavy SSR bundle and streams asynchronously)
-const CanvasPlayer = dynamic(
-  () => import("@/components/studio/CanvasPlayer").then((mod) => mod.CanvasPlayer),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-[300px] sm:w-[340px] md:w-[360px] aspect-[9/16] rounded-[52px] p-3.5 bg-gradient-to-b from-[#E2E7DC] via-[#D5DDCF] to-[#CBD5C4] shadow-[0_30px_70px_-20px_rgba(31,56,36,0.25)] flex items-center justify-center animate-pulse select-none">
-        <div className="w-full h-full rounded-[40px] bg-[#1F3824]/10 flex flex-col items-center justify-center gap-3 text-xs font-mono text-[#717E6C]">
-          <div className="h-8 w-8 rounded-full border-2 border-[#1F3824] border-t-transparent animate-spin" />
-          <span>Loading 9:16 Ad Canvas...</span>
-        </div>
-      </div>
-    ),
-  }
-);
+import { CanvasPlayer } from "@/components/studio/CanvasPlayer";
 import { CreatorVisualPicker, CREATOR_PERSONAS, CreatorPersona } from "@/components/studio/CreatorVisualPicker";
 import { VideoTemplatePicker } from "@/components/studio/VideoTemplatePicker";
 import { VideoTemplateArchetype, VIDEO_TEMPLATES, enforceMandatoryBrandMention } from "@/lib/templates/videoTemplates";
@@ -26,10 +10,7 @@ import { ScriptEditor } from "@/components/studio/ScriptEditor";
 import { VoiceSelector } from "@/components/studio/VoiceSelector";
 import { SubtitleStyler } from "@/components/studio/SubtitleStyler";
 import { MusicPicker } from "@/components/studio/MusicPicker";
-const ScheduleModal = dynamic(
-  () => import("@/components/studio/ScheduleModal").then((mod) => mod.ScheduleModal),
-  { ssr: false }
-);
+import { ScheduleModal } from "@/components/studio/ScheduleModal";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
@@ -54,12 +35,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
-import type { PaywallTriggerReason } from "@/components/billing/UpgradePaywallModal";
-
-const UpgradePaywallModal = dynamic(
-  () => import("@/components/billing/UpgradePaywallModal").then((mod) => mod.UpgradePaywallModal),
-  { ssr: false }
-);
+import { UpgradePaywallModal, PaywallTriggerReason } from "@/components/billing/UpgradePaywallModal";
 
 export default function StudioPage() {
   return (

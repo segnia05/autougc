@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthContext } from "@/lib/auth/getAuthContext";
 import { deductCredit } from "@/lib/billing/credits";
+import { checkRateLimit, createRateLimitResponse } from "@/lib/security/rateLimit";
+import { validateCsrfOrigin } from "@/lib/security/csrf";
 
 import { prisma } from "@/db/client";
 
@@ -17,12 +19,24 @@ const RenderRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // 1. CSRF Protection
+    const csrf = validateCsrfOrigin(request);
+    if (!csrf.isValid) {
+      return NextResponse.json({ success: false, error: "CSRF_ERROR", message: csrf.error }, { status: 403 });
+    }
+
     const authContext = await getAuthContext(request);
     if (!authContext) {
       return NextResponse.json(
         { success: false, error: "UNAUTHORIZED", message: "You must be signed in to render videos." },
         { status: 401 }
       );
+    }
+
+    // 2. Rate Limiting (10 renders/minute per organization)
+    const rateLimit = checkRateLimit(`org:${authContext.orgId}`, { limit: 10, windowSeconds: 60 });
+    if (!rateLimit.success) {
+      return createRateLimitResponse(rateLimit);
     }
 
     const body = await request.json().catch(() => ({}));

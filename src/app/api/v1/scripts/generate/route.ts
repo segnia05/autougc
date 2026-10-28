@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { generateViralScripts } from "@/lib/ai/gemini";
 import { db } from "@/db/client";
+import { checkRateLimit, getClientIdentifier, createRateLimitResponse } from "@/lib/security/rateLimit";
+import { validateCsrfOrigin } from "@/lib/security/csrf";
 
 const ScriptGenerateRequestSchema = z.object({
   projectId: z.string().optional(),
@@ -12,9 +14,22 @@ const ScriptGenerateRequestSchema = z.object({
   targetAudience: z.string().optional(),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const requestId = `req_${Math.random().toString(36).substring(2, 10)}`;
+
+  // 1. CSRF Protection
+  const csrf = validateCsrfOrigin(request);
+  if (!csrf.isValid) {
+    return NextResponse.json({ success: false, error: { code: "CSRF_ERROR", message: csrf.error } }, { status: 403 });
+  }
+
+  // 2. Sliding-Window Rate Limiting (20 generations/minute per client)
+  const clientIdentifier = getClientIdentifier(request);
+  const rateLimit = checkRateLimit(clientIdentifier, { limit: 20, windowSeconds: 60 });
+  if (!rateLimit.success) {
+    return createRateLimitResponse(rateLimit);
+  }
 
   try {
     const rawBody = await request.json().catch(() => null);

@@ -3,23 +3,12 @@
 import React, { useState, useEffect, Suspense, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Modal } from "@/components/ui/Modal";
 import { PublishingCalendar } from "@/components/dashboard/PublishingCalendar";
-import type { PaywallTriggerReason } from "@/components/billing/UpgradePaywallModal";
-
-// Lazy-loaded dialogs to optimize initial page performance
-const AutoScheduleModal = dynamic(
-  () => import("@/components/dashboard/AutoScheduleModal").then((mod) => mod.AutoScheduleModal),
-  { ssr: false }
-);
-
-const UpgradePaywallModal = dynamic(
-  () => import("@/components/billing/UpgradePaywallModal").then((mod) => mod.UpgradePaywallModal),
-  { ssr: false }
-);
+import { AutoScheduleModal } from "@/components/dashboard/AutoScheduleModal";
+import { UpgradePaywallModal, PaywallTriggerReason } from "@/components/billing/UpgradePaywallModal";
 import {
   Calendar,
   Film,
