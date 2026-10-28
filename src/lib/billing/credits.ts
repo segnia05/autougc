@@ -1,4 +1,5 @@
 import { prisma } from "@/db/client";
+import { cacheManager } from "@/lib/cache/cacheManager";
 
 export interface CreditBalanceResult {
   creditsRemaining: number;
@@ -110,6 +111,7 @@ export async function deductCredit(
         },
       });
 
+      await cacheManager.invalidateTag(orgId);
       return {
         success: true,
         creditsRemaining: updated.creditsRemaining,
@@ -137,6 +139,7 @@ export async function deductCredit(
 
     const newBalance = current - amount;
     devBalances[orgId] = newBalance;
+    await cacheManager.invalidateTag(orgId);
     return {
       success: true,
       creditsRemaining: newBalance,
@@ -195,6 +198,7 @@ export async function grantCredits(
         },
       });
 
+      await cacheManager.invalidateTag(orgId);
       return {
         success: true,
         newBalance: sub.creditsRemaining,
@@ -204,6 +208,7 @@ export async function grantCredits(
     const current = devBalances[orgId] ?? 24;
     const newBalance = current + amount;
     devBalances[orgId] = newBalance;
+    await cacheManager.invalidateTag(orgId);
     return { success: true, newBalance };
   }
 }

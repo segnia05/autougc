@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe, BILLING_PLANS, SubscriptionTier } from "@/lib/billing/stripe";
 import { grantCredits } from "@/lib/billing/credits";
 import { prisma } from "@/db/client";
+import { cacheManager, CacheKeys } from "@/lib/cache/cacheManager";
 import Stripe from "stripe";
-
-// Deduplication store for processed webhook IDs (prevents double processing)
-const processedEventIds = new Set<string>();
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,17 +27,29 @@ export async function POST(request: NextRequest) {
       event = JSON.parse(rawBody) as Stripe.Event;
     }
 
-    // Idempotency check: Deduplicate webhook events
-    if (processedEventIds.has(event.id)) {
+    // Distributed Idempotency: Multi-node cluster safe deduplication
+    const dedupeCacheKey = CacheKeys.idempotency("stripe_webhook", event.id);
+    const isCachedDedupe = await cacheManager.get<boolean>(dedupeCacheKey);
+    if (isCachedDedupe) {
       return NextResponse.json({ received: true, deduplicated: true });
     }
-    processedEventIds.add(event.id);
 
-    // Keep deduplication set memory bounded
-    if (processedEventIds.size > 10000) {
-      const oldest = Array.from(processedEventIds).slice(0, 5000);
-      oldest.forEach((id) => processedEventIds.delete(id));
+    try {
+      await prisma.idempotencyKey.create({
+        data: {
+          key: event.id,
+          scope: "stripe_webhook",
+          expiresAt: new Date(Date.now() + 86400 * 1000),
+        },
+      });
+    } catch {
+      // Key already exists in database from a concurrent horizontal worker!
+      await cacheManager.set(dedupeCacheKey, true, 86400);
+      return NextResponse.json({ received: true, deduplicated: true });
     }
+
+    // Mark as processed in distributed cache
+    await cacheManager.set(dedupeCacheKey, true, 86400);
 
     switch (event.type) {
       case "checkout.session.completed": {
@@ -78,6 +88,9 @@ export async function POST(request: NextRequest) {
                 currentPeriodEnd: new Date(Date.now() + 30 * 24 * 3600 * 1000),
               },
             });
+
+            // Evict stale cached subscription & quota for immediate reactivity
+            await cacheManager.invalidateTag(orgId);
           } catch (dbErr) {
             console.warn("Prisma subscription update failed during webhook (dev fallback):", dbErr);
           }
@@ -106,6 +119,7 @@ export async function POST(request: NextRequest) {
                 "subscription_renewal",
                 invoice.id
               );
+              await cacheManager.invalidateTag(sub.organizationId);
             }
           } catch (dbErr) {
             console.warn("Invoice payment credits grant notice:", dbErr);

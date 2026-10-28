@@ -208,6 +208,23 @@ export async function processScheduledPostsOnce(): Promise<{
     });
 
     for (const post of duePosts) {
+      // 1. Horizontally safe atomic claim:
+      // Guarantees zero duplicate postings across multiple concurrent worker containers.
+      const claim = await prisma.scheduledPost.updateMany({
+        where: {
+          id: post.id,
+          publishStatus: "pending",
+        },
+        data: {
+          publishStatus: "processing",
+        },
+      });
+
+      if (claim.count === 0) {
+        // Another worker instance claimed this post in parallel; skip gracefully
+        continue;
+      }
+
       processedCount++;
       const platform = post.socialAccount.platform as SocialPlatform;
 
@@ -230,12 +247,6 @@ export async function processScheduledPostsOnce(): Promise<{
           console.warn("JIT video render deduction note:", jitErr);
         }
       }
-
-      // Mark processing
-      await prisma.scheduledPost.update({
-        where: { id: post.id },
-        data: { publishStatus: "processing" },
-      });
 
       const result = await dispatchPostToPlatform(
         platform,

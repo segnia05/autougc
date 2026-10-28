@@ -1,5 +1,6 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/db/client";
+import { cacheManager } from "@/lib/cache/cacheManager";
 
 export interface AuthContext {
   userId: string;
@@ -42,6 +43,22 @@ export async function getAuthContext(request?: Request): Promise<AuthContext | n
     return null;
   }
 
+  const effectiveUserId = userId;
+  const effectiveOrgId = orgId;
+  const cacheKey = `auth_ctx:${effectiveUserId}:${effectiveOrgId || "personal"}`;
+
+  return cacheManager.getOrSet(
+    cacheKey,
+    () => resolveAuthContextFromDb(effectiveUserId, effectiveOrgId),
+    30,
+    [effectiveUserId, effectiveOrgId || `org_${effectiveUserId.replace(/^user_/, "")}`]
+  );
+}
+
+async function resolveAuthContextFromDb(
+  userId: string,
+  orgId: string | null
+): Promise<AuthContext> {
   // Database tenancy resolution & auto-sync
   try {
     let dbUser = await prisma.user.findUnique({
