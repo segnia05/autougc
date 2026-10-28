@@ -37,7 +37,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
 }) => {
   const playerRef = useRef<PlayerRef>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(true);
+  const [showOverlay, setShowOverlay] = useState(false);
   const [showSafeZone, setShowSafeZone] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentFrame, setCurrentFrame] = useState(0);
@@ -334,14 +334,14 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
           <div className="grid grid-cols-3 gap-1.5">
             <button
               type="button"
-              onClick={() => onSelectMedia("/videos/organic_selfie.mp4", true)}
+              onClick={() => onSelectMedia("/images/study-creator.jpg", false)}
               className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer ${
-                compositionProps.videoUrl === "/videos/organic_selfie.mp4"
+                !compositionProps.videoUrl && compositionProps.productImageUrl === "/images/study-creator.jpg"
                   ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
               }`}
             >
-              🎥 UGC Video
+              👩 Emma (UK)
             </button>
             <button
               type="button"

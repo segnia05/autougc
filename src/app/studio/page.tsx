@@ -77,8 +77,8 @@ function StudioContent() {
   const [brandColor, setBrandColor] = useState("#1F3824");
   const [selectedVoiceId, setSelectedVoiceId] = useState("sarah_dtc_founder");
   const [selectedTrackId, setSelectedTrackId] = useState("lofi_focus");
-  const [selectedVisualUrl, setSelectedVisualUrl] = useState(() => searchParams.get("image") || "/videos/organic_selfie.mp4");
-  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>("/videos/organic_selfie.mp4");
+  const [selectedVisualUrl, setSelectedVisualUrl] = useState(() => searchParams.get("image") || "/images/creator-glasses.jpg");
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>(undefined);
 
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyleConfig>({
     fontSize: 54,
@@ -92,8 +92,8 @@ function StudioContent() {
     bodyText: "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
     ctaText: "Click the link below and get $30 off your setup today.",
     brandColor: "#1F3824",
-    productImageUrl: "/videos/organic_selfie.mp4",
-    videoUrl: "/videos/organic_selfie.mp4",
+    productImageUrl: "/images/creator-glasses.jpg",
+    videoUrl: undefined,
     words: [],
     subtitleStyle: {
       fontSize: 54,
@@ -293,7 +293,7 @@ function StudioContent() {
 
   const handleSelectMedia = (mediaUrl: string, isVideo = false) => {
     if (isVideo) {
-      setSelectedVideoUrl(mediaUrl);
+      setSelectedVideoUrl(isVideo ? mediaUrl : undefined);
       setSelectedVisualUrl(mediaUrl);
     } else {
       setSelectedVideoUrl(undefined);
@@ -334,7 +334,7 @@ function StudioContent() {
         throw new Error(data.message || data.error || "Failed to render video ad");
       }
 
-      setRenderedVideoUrl(data.videoUrl || "/videos/organic_selfie.mp4");
+      setRenderedVideoUrl(data.videoUrl || "/images/creator-glasses.jpg");
       setExportComplete(true);
       fetchSubscription();
     } catch (err: unknown) {
