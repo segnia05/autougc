@@ -80,20 +80,23 @@ async function runResilienceAudit() {
 
   // Test Non-Retryable Error Filter (e.g. 400 Bad Request should fail fast)
   let nonRetryableRan = 0;
+  interface HttpError extends Error {
+    statusCode?: number;
+  }
   try {
     await retryWithBackoff(
       async () => {
         nonRetryableRan++;
-        const err = new Error("Invalid parameters");
-        (err as any).statusCode = 400;
+        const err: HttpError = new Error("Invalid parameters");
+        err.statusCode = 400;
         throw err;
       },
       {
         maxRetries: 3,
-        retryIf: (err: any) => err.statusCode !== 400, // Do NOT retry 400
+        retryIf: (err: unknown) => (err as HttpError).statusCode !== 400, // Do NOT retry 400
       }
     );
-  } catch (err: any) {
+  } catch {
     if (nonRetryableRan !== 1) {
       console.error(`✗ Non-retryable error was retried ${nonRetryableRan} times! Expected 1.`);
       process.exit(1);

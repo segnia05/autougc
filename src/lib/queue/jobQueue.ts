@@ -38,7 +38,7 @@ export interface WorkerOptions {
 
 class JobQueue {
   private jobs = new Map<string, Job>();
-  private handlers = new Map<string, { handler: JobHandler<any, any>; options: WorkerOptions }>();
+  private handlers = new Map<string, { handler: JobHandler<unknown, unknown>; options: WorkerOptions }>();
   private activeWorkers = new Map<string, number>(); // jobType -> currently running count
   private queueOrder: string[] = []; // Array of job IDs waiting to be processed
 
@@ -84,7 +84,7 @@ class JobQueue {
     options: WorkerOptions = {}
   ): void {
     this.handlers.set(type, {
-      handler,
+      handler: handler as JobHandler<unknown, unknown>,
       options: {
         concurrency: options.concurrency || 5,
         maxRetries: options.maxRetries ?? 3,

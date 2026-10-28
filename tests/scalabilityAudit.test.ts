@@ -61,9 +61,10 @@ async function runScalabilityAudit() {
   console.log(`✓ Concurrency strictly bounded: Peak active was ${peakConcurrency} (max allowed: 2).`);
 
   const updatedCritical = jobQueue.getJob(jobCritical.id);
+  const updatedStandard = jobQueue.getJob(jobStandard.id);
   const updatedLow = jobQueue.getJob(jobLow.id);
 
-  if (updatedCritical?.status !== "completed" || updatedLow?.status !== "completed") {
+  if (updatedCritical?.status !== "completed" || updatedStandard?.status !== "completed" || updatedLow?.status !== "completed") {
     console.error("✗ Expected all jobs to complete successfully.");
     process.exit(1);
   }
@@ -84,7 +85,7 @@ async function runScalabilityAudit() {
   await new Promise((resolve) => setTimeout(resolve, 300));
 
   const finalJobState = jobQueue.getJob(failingJob.id);
-  if (finalJobState?.status !== "failed" || finalJobState?.retryCount !== 3) {
+  if (finalJobState?.status !== "failed" || finalJobState?.retryCount !== 3 || retryAttempts < 3) {
     console.error("✗ Failed to route persistently failing job to Dead-Letter Queue:", finalJobState);
     process.exit(1);
   }
@@ -165,7 +166,7 @@ async function runScalabilityAudit() {
   }));
 
   // Atomic claim simulation matching the exact production code in src/workers/socialPublisher.ts
-  const atomicClaim = (postId: string, workerName: string): boolean => {
+  const atomicClaim = (postId: string): boolean => {
     const post = mockDatabasePosts.find((p) => p.id === postId);
     if (post && post.publishStatus === "pending") {
       post.publishStatus = "processing";
@@ -189,7 +190,7 @@ async function runScalabilityAudit() {
   await Promise.all(
     workerNames.map(async (worker) => {
       for (const p of mockDatabasePosts) {
-        const won = atomicClaim(p.id, worker);
+        const won = atomicClaim(p.id);
         if (won) {
           claimedByWorker[worker]!.push(p.id);
         }

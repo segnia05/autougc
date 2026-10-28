@@ -27,7 +27,10 @@ function createPrismaClient(): PrismaClient {
 
   // Slow query telemetry (>150ms) to ensure sub-second response times under 100k scale
   if (isDev) {
-    (client as any).$on("query", (e: { query: string; duration: number }) => {
+    interface QueryTelemetryClient {
+      $on(event: "query", cb: (e: { query: string; duration: number }) => void): void;
+    }
+    (client as unknown as QueryTelemetryClient).$on("query", (e) => {
       if (e.duration > 150) {
         console.warn(`[SLOW QUERY DETECTED] Duration: ${e.duration}ms | Query: ${e.query.substring(0, 100)}...`);
       }

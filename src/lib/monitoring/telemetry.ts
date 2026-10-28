@@ -54,8 +54,11 @@ class TelemetryMonitor {
   /**
    * Records an operational exception.
    */
-  recordError(_context: string, _error: unknown): void {
+  recordError(context: string, error: unknown): void {
     this.totalErrors++;
+    if (process.env.NODE_ENV === "development") {
+      console.warn(`[TELEMETRY_ERROR] Context: ${context} | Details:`, error);
+    }
   }
 
   /**
