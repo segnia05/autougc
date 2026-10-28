@@ -1,23 +1,31 @@
 import React from "react";
-import { interpolate, useCurrentFrame, Img } from "remotion";
+import { interpolate, useCurrentFrame, Img, Video } from "remotion";
 
 interface DynamicBackgroundProps {
   productImageUrl?: string;
+  videoUrl?: string;
   brandColor?: string;
 }
 
 export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
   productImageUrl,
-  brandColor = "#F59E0B",
+  videoUrl,
+  brandColor = "#1F3824",
 }) => {
   const frame = useCurrentFrame();
 
-  // Slow smooth Ken Burns zoom effect (1.00 -> 1.12 over 450 frames / 15 seconds)
-  const scale = interpolate(frame, [0, 450], [1.0, 1.12], {
-    extrapolateRight: "clamp",
-  });
+  // Determine if we have an active video asset (either explicit videoUrl or productImageUrl is an mp4)
+  const activeVideoUrl =
+    videoUrl ||
+    (productImageUrl && productImageUrl.endsWith(".mp4") ? productImageUrl : undefined);
 
-  const panY = interpolate(frame, [0, 450], [0, -30], {
+  // Organic Handheld Selfie Camera Physics (sine/cosine micro-movement simulating real iPhone hand-holding)
+  const handheldPanX = Math.sin(frame / 32) * 12 + Math.cos(frame / 70) * 8;
+  const handheldPanY = Math.cos(frame / 38) * 16 + Math.sin(frame / 85) * 6;
+  const handheldRotate = Math.sin(frame / 50) * 0.45; // Subtle micro-tilt
+
+  // Smooth cinematic breathing zoom
+  const scale = interpolate(frame, [0, 225, 450], [1.04, 1.09, 1.05], {
     extrapolateRight: "clamp",
   });
 
@@ -30,20 +38,44 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
         overflow: "hidden",
       }}
     >
-      {productImageUrl ? (
+      {activeVideoUrl ? (
+        /* Real Video Layer with high-performance native Remotion Video */
         <div
           style={{
             position: "absolute",
             inset: 0,
-            transform: `scale(${scale}) translateY(${panY}px)`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
+          <Video
+            src={activeVideoUrl}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+            loop
+          />
+        </div>
+      ) : productImageUrl ? (
+        /* Photo Layer with Organic Handheld Camera Float & Micro-Movement */
+        <div
+          style={{
+            position: "absolute",
+            inset: -40, // 40px bleed margin so handheld pan never exposes canvas edges
+            transform: `scale(${scale}) translate(${handheldPanX}px, ${handheldPanY}px) rotate(${handheldRotate}deg)`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transformOrigin: "center center",
+            transition: "transform 0.05s ease-out",
+          }}
+        >
           <Img
             src={productImageUrl}
-            alt="Product B-Roll"
+            alt="Creator Visual Persona"
             style={{
               width: "100%",
               height: "100%",
@@ -73,13 +105,14 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
         </div>
       )}
 
-      {/* Cinematic Ambient Scrim - Light & Crisp for Optimal Text Readability */}
+      {/* Cinematic Ambient Scrim - Protects text legibility while preserving vibrant background */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.05) 22%, rgba(0, 0, 0, 0.1) 60%, rgba(0, 0, 0, 0.65) 100%)",
+            "linear-gradient(180deg, rgba(0, 0, 0, 0.40) 0%, rgba(0, 0, 0, 0.05) 25%, rgba(0, 0, 0, 0.15) 55%, rgba(0, 0, 0, 0.75) 100%)",
+          pointerEvents: "none",
         }}
       />
     </div>

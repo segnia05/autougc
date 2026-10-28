@@ -27,6 +27,7 @@ export const UgcAdComposition: React.FC<UgcAdCompositionProps> = (props) => {
       {/* Track 1: Dynamic Visual Background / Creator Reaction */}
       <DynamicBackground
         productImageUrl={mergedProps.productImageUrl}
+        videoUrl={mergedProps.videoUrl}
         brandColor={mergedProps.brandColor}
       />
 

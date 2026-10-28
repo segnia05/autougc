@@ -17,38 +17,42 @@ export const KineticSubtitles: React.FC<KineticSubtitlesProps> = ({
 
   const currentTime = frame / fps;
 
-  const fontSize = styleConfig.fontSize || 52;
+  const fontSize = styleConfig.fontSize || 54;
   const primaryColor = styleConfig.primaryColor || "#FFFFFF";
-  const highlightColor = styleConfig.highlightColor || "#F59E0B";
+  const highlightColor = styleConfig.highlightColor || "#FFE600";
 
-  // Group words into short 3-5 word readable chunks
-  const CHUNK_SIZE = 4;
+  // Group words into short 3-4 word readable kinetic chunks
+  const CHUNK_SIZE = 3;
   const chunks: WordTimestamp[][] = [];
   for (let i = 0; i < words.length; i += CHUNK_SIZE) {
     chunks.push(words.slice(i, i + CHUNK_SIZE));
   }
 
   // Find active chunk for the current timestamp
-  const activeChunk = chunks.find((chunk) => {
-    const firstWord = chunk[0];
-    const lastWord = chunk[chunk.length - 1];
-    if (!firstWord || !lastWord) return false;
-    return currentTime >= firstWord.start - 0.1 && currentTime <= lastWord.end + 0.3;
-  }) || chunks[0] || [];
+  const activeChunk =
+    chunks.find((chunk) => {
+      const firstWord = chunk[0];
+      const lastWord = chunk[chunk.length - 1];
+      if (!firstWord || !lastWord) return false;
+      return currentTime >= firstWord.start - 0.1 && currentTime <= lastWord.end + 0.35;
+    }) || chunks[0] || [];
 
   return (
     <div
       style={{
         position: "absolute",
-        left: 40,
-        right: 40,
-        bottom: 380, // Positioned safely above TikTok profile & caption UI
+        left: 60,
+        right: 60,
+        // Centered strictly in the official TikTok / Reels Safe Zone (50%-55% from top)
+        // Completely clear of bottom captions, audio marquee, and action icons!
+        top: "50%",
+        transform: "translateY(-50%)",
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "center",
         alignItems: "center",
-        gap: "12px 16px",
-        zIndex: 20,
+        gap: "14px 18px",
+        zIndex: 25,
         pointerEvents: "none",
       }}
     >
@@ -60,8 +64,8 @@ export const KineticSubtitles: React.FC<KineticSubtitlesProps> = ({
           ? spring({
               frame: frame - Math.floor(item.start * fps),
               fps,
-              config: { damping: 12, stiffness: 200 },
-            }) * 0.1 + 1.05
+              config: { damping: 12, stiffness: 220 },
+            }) * 0.12 + 1.08
           : 1.0;
 
         return (
@@ -70,14 +74,14 @@ export const KineticSubtitles: React.FC<KineticSubtitlesProps> = ({
             style={{
               fontSize: `${fontSize}px`,
               fontWeight: 900,
-              fontFamily: "Plus Jakarta Sans, sans-serif",
-              letterSpacing: "-0.02em",
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              letterSpacing: "-0.03em",
               textTransform: "uppercase",
               transform: `scale(${scale})`,
               display: "inline-block",
               color: isActive ? highlightColor : isPast ? primaryColor : "rgba(255, 255, 255, 0.45)",
               textShadow:
-                "0 2px 4px rgba(0,0,0,0.9), 0 0 16px rgba(0,0,0,0.8), -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000",
+                "0 4px 12px rgba(0, 0, 0, 0.9), 0 0 24px rgba(0, 0, 0, 0.85), -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000",
               transition: "color 0.05s ease-out",
             }}
           >

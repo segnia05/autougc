@@ -5,13 +5,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { CanvasPlayer } from "@/components/studio/CanvasPlayer";
 import { CreatorVisualPicker, CREATOR_PERSONAS, CreatorPersona } from "@/components/studio/CreatorVisualPicker";
 import { VideoTemplatePicker } from "@/components/studio/VideoTemplatePicker";
-import { VideoTemplateArchetype, VIDEO_TEMPLATES } from "@/lib/templates/videoTemplates";
+import { VideoTemplateArchetype, VIDEO_TEMPLATES, enforceMandatoryBrandMention } from "@/lib/templates/videoTemplates";
 import { ScriptEditor } from "@/components/studio/ScriptEditor";
 import { VoiceSelector } from "@/components/studio/VoiceSelector";
 import { SubtitleStyler } from "@/components/studio/SubtitleStyler";
 import { MusicPicker } from "@/components/studio/MusicPicker";
 import { ScheduleModal } from "@/components/studio/ScheduleModal";
-import { PublishingCalendar } from "@/components/dashboard/PublishingCalendar";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
@@ -28,6 +27,11 @@ import {
   ExternalLink,
   Layers,
   Palette,
+  FileText,
+  Type,
+  Music,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
@@ -47,10 +51,14 @@ export default function StudioPage() {
   );
 }
 
+type StudioTab = "script" | "creator" | "subtitles" | "audio";
+
 function StudioContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scheduledPostId = searchParams.get("scheduledPostId");
+  const [activeTab, setActiveTab] = useState<StudioTab>("script");
+
   const [scheduledPostMeta, setScheduledPostMeta] = useState<{
     id: string;
     channelHandle: string;
@@ -69,7 +77,8 @@ function StudioContent() {
   const [brandColor, setBrandColor] = useState("#1F3824");
   const [selectedVoiceId, setSelectedVoiceId] = useState("sarah_dtc_founder");
   const [selectedTrackId, setSelectedTrackId] = useState("lofi_focus");
-  const [selectedVisualUrl, setSelectedVisualUrl] = useState(() => searchParams.get("image") || "/images/creator-glasses.jpg");
+  const [selectedVisualUrl, setSelectedVisualUrl] = useState(() => searchParams.get("image") || "/videos/organic_selfie.mp4");
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>("/videos/organic_selfie.mp4");
 
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyleConfig>({
     fontSize: 54,
@@ -77,22 +86,21 @@ function StudioContent() {
     highlightColor: "#FFE600",
   });
 
-  const [compositionProps, setCompositionProps] =
-    useState<UgcAdCompositionProps>({
-      brandName: "Lumina",
-      hookText: "Stop coding under harsh fluorescent lights in 2026.",
-      bodyText:
-        "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
-      ctaText: "Click the link below and get $30 off your setup today.",
-      brandColor: "#1F3824",
-      productImageUrl: "/images/creator-glasses.jpg",
-      words: [],
-      subtitleStyle: {
-        fontSize: 54,
-        primaryColor: "#FFFFFF",
-        highlightColor: "#FFE600",
-      },
-    });
+  const [compositionProps, setCompositionProps] = useState<UgcAdCompositionProps>({
+    brandName: "Lumina",
+    hookText: "Stop coding under harsh fluorescent lights in 2026.",
+    bodyText: "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
+    ctaText: "Click the link below and get $30 off your setup today.",
+    brandColor: "#1F3824",
+    productImageUrl: "/videos/organic_selfie.mp4",
+    videoUrl: "/videos/organic_selfie.mp4",
+    words: [],
+    subtitleStyle: {
+      fontSize: 54,
+      primaryColor: "#FFFFFF",
+      highlightColor: "#FFE600",
+    },
+  });
 
   const [estimatedDuration, setEstimatedDuration] = useState(14.5);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -166,12 +174,15 @@ function StudioContent() {
           setBodyText(d.bodyText || "This software handles your entire workflow automatically.");
           setCtaText(d.ctaText || "Try it out today.");
           if (d.voiceId) setSelectedVoiceId(d.voiceId);
-          if (d.archetype && (d.archetype in VIDEO_TEMPLATES)) {
+          if (d.archetype && d.archetype in VIDEO_TEMPLATES) {
             setSelectedTemplate(d.archetype as VideoTemplateArchetype);
           }
           if (d.creatorId) {
             const persona = CREATOR_PERSONAS.find((p) => p.id === d.creatorId || p.id.includes(d.creatorId));
-            if (persona) setSelectedVisualUrl(persona.imageUrl);
+            if (persona) {
+              setSelectedVisualUrl(persona.imageUrl);
+              setSelectedVideoUrl(undefined);
+            }
           }
           setScheduledPostMeta({
             id: d.id,
@@ -248,6 +259,7 @@ function StudioContent() {
           ctaText,
           brandColor,
           productImageUrl: selectedVisualUrl,
+          videoUrl: selectedVideoUrl,
           words: res.words,
           subtitleStyle,
           archetype: selectedTemplate,
@@ -260,11 +272,33 @@ function StudioContent() {
     return () => {
       isCancelled = true;
     };
-  }, [hookText, bodyText, ctaText, brandName, brandColor, selectedVoiceId, subtitleStyle, selectedVisualUrl, selectedTemplate]);
+  }, [
+    hookText,
+    bodyText,
+    ctaText,
+    brandName,
+    brandColor,
+    selectedVoiceId,
+    subtitleStyle,
+    selectedVisualUrl,
+    selectedVideoUrl,
+    selectedTemplate,
+  ]);
 
   const handleSelectPersona = (persona: CreatorPersona) => {
     setSelectedVisualUrl(persona.imageUrl);
+    setSelectedVideoUrl(undefined);
     setSelectedVoiceId(persona.voiceId);
+  };
+
+  const handleSelectMedia = (mediaUrl: string, isVideo = false) => {
+    if (isVideo) {
+      setSelectedVideoUrl(mediaUrl);
+      setSelectedVisualUrl(mediaUrl);
+    } else {
+      setSelectedVideoUrl(undefined);
+      setSelectedVisualUrl(mediaUrl);
+    }
   };
 
   const handleStartExport = async () => {
@@ -300,15 +334,11 @@ function StudioContent() {
         throw new Error(data.message || data.error || "Failed to render video ad");
       }
 
-      setRenderedVideoUrl(data.videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4");
+      setRenderedVideoUrl(data.videoUrl || "/videos/organic_selfie.mp4");
       setExportComplete(true);
-      if (typeof data.creditsRemaining === "number") {
-        setSubscription((prev) =>
-          prev ? { ...prev, creditsRemaining: data.creditsRemaining } : null
-        );
-      }
+      fetchSubscription();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Video render failed";
+      const msg = err instanceof Error ? err.message : "Failed to render video ad";
       setRenderError(msg);
     } finally {
       setIsExporting(false);
@@ -316,7 +346,7 @@ function StudioContent() {
   };
 
   const handleOpenSchedule = () => {
-    if (subscription?.tier === "free") {
+    if (subscription && subscription.creditsRemaining <= 0) {
       setPaywallReason("autopilot_locked");
       setIsPaywallOpen(true);
     } else {
@@ -324,17 +354,54 @@ function StudioContent() {
     }
   };
 
-  // Find active persona metadata for footer info
-  const activePersona = CREATOR_PERSONAS.find((p) => p.imageUrl === selectedVisualUrl) || CREATOR_PERSONAS[0];
+  // Check if brand is mentioned in script
+  const fullScript = `${hookText} ${bodyText} ${ctaText}`.toLowerCase();
+  const hasBrandMention = brandName && fullScript.includes(brandName.toLowerCase());
+
+  const handleAutoInjectBrand = () => {
+    const enforced = enforceMandatoryBrandMention(brandName, hookText, bodyText, ctaText);
+    setHookText(enforced.hookText);
+    setBodyText(enforced.bodyText);
+    setCtaText(enforced.ctaText);
+  };
+
+  // 5 Viral Hook Angle Presets
+  const VIRAL_HOOK_PRESETS = [
+    {
+      id: "negative",
+      label: "Negative Hook",
+      text: `Stop wasting hours doing this manually in 2026.`,
+    },
+    {
+      id: "secret",
+      label: "Secret Hack",
+      text: `The secret tool high-growth founders use to automate content...`,
+    },
+    {
+      id: "problem",
+      label: "Problem Agitation",
+      text: `Why is nobody talking about how broken traditional agencies are?`,
+    },
+    {
+      id: "transformation",
+      label: "Before / After",
+      text: `Here is what happened when we switched to autonomous UGC...`,
+    },
+    {
+      id: "mistake",
+      label: "Costly Mistake",
+      text: `The $5,000 mistake SaaS founders make when hiring creators.`,
+    },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B]">
-      {/* Studio Header */}
-      <header className="sticky top-0 z-40 border-b border-[#CBD5C4]/70 bg-[#F6F7F2]/90 backdrop-blur-md px-4 sm:px-6 h-16 flex items-center justify-between">
+      {/* Studio Top Navigation Bar */}
+      <header className="sticky top-0 z-40 border-b border-[#CBD5C4]/80 bg-[#F6F7F2]/95 backdrop-blur-md px-4 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3 sm:gap-4">
           <Link
             href="/dashboard"
-            className="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-[#4A544A] hover:text-[#1F3824] transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#4A544A] hover:text-[#1F3824] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="hidden sm:inline">Command Center</span>
@@ -342,11 +409,15 @@ function StudioContent() {
           <div className="h-4 w-[1px] bg-[#CBD5C4] hidden sm:block" />
           <div className="flex items-center gap-2">
             <span className="text-[#1F3824] text-lg font-bold">✻</span>
-            <span className="text-sm font-bold text-[#1B231B]">
+            <span className="text-sm font-bold text-[#1B231B] font-[family-name:var(--font-serif)]">
               AutoUGC Studio
             </span>
-            <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-[#E2E9DC] text-[#1F3824]">
-              Creative Editor
+            <span className="hidden md:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-[#E2E9DC] text-[#1F3824]">
+              {selectedTemplate === "organic_selfie"
+                ? "Organic Handheld"
+                : selectedTemplate === "studio_minimalist"
+                ? "Studio Minimalist"
+                : "Viral Meme Card"}
             </span>
           </div>
         </div>
@@ -394,6 +465,7 @@ function StudioContent() {
             <span className="hidden sm:inline">Schedule Post</span>
             <span className="sm:hidden">Schedule</span>
           </Button>
+
           <Button
             variant="primary"
             size="sm"
@@ -465,148 +537,218 @@ function StudioContent() {
         </div>
       )}
 
-      {/* Main Studio Canvas Layout */}
-      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Pane: Interactive 9:16 Canvas Mockup (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col items-center sticky top-24 gap-3">
-          <CanvasPlayer compositionProps={compositionProps} />
-
-          {/* Quick Creator Persona Presets Bar under Phone */}
-          <div className="w-full max-w-[370px] bg-white border border-[#CBD5C4]/70 rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-[#1B231B] flex items-center gap-1.5 text-[11px]">
-                <Layers className="h-3.5 w-3.5 text-[#1F3824]" />
-                Visual Persona:
-              </span>
-              <span className="font-mono text-[10px] text-[#1F3824] bg-[#E2E9DC] px-2 py-0.5 rounded-full font-bold">
-                {activePersona?.name || "Sarah Miller"}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-4 gap-1.5">
-              {CREATOR_PERSONAS.map((p) => {
-                const isSelected = selectedVisualUrl === p.imageUrl;
-                return (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => handleSelectPersona(p)}
-                    className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-semibold border transition-all cursor-pointer truncate ${isSelected
-                        ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
-                        : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4]/60 hover:bg-[#E2E9DC]"
-                      }`}
-                  >
-                    {p.name.split(" ")[0]}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
+      {/* Studio Stage: Clean 2-Column Desktop Grid */}
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Column: Interactive 9:16 Canvas & Transport Controls (5 cols) */}
+        <div className="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-20 gap-3">
+          <CanvasPlayer
+            compositionProps={compositionProps}
+            onSelectMedia={handleSelectMedia}
+          />
           <p className="text-[11px] text-[#717E6C] font-mono text-center">
-            Native 1080x1920 9:16 vertical • Client Remotion 30 FPS • TikTok Safe Zone
+            1080x1920 9:16 Vertical • Remotion 30 FPS • TikTok & Reels Safe Zone
           </p>
         </div>
 
-        {/* Right Pane: Precision Editing Controls (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col gap-6">
-          {/* Brand Identity & Theme Control */}
-          <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#1F3824] flex items-center gap-1.5">
-                <Palette className="h-3.5 w-3.5 text-[#1F3824]" />
-                Brand / Product Name
-              </label>
-              <p className="text-[11px] text-[#717E6C]">
-                Used for watermarks, handles, and subtitle color accents
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <input
-                type="text"
-                value={brandName}
-                onChange={(e) => setBrandName(e.target.value)}
-                className="bg-[#F6F7F2] border border-[#CBD5C4] rounded-full px-4 py-2 text-xs text-[#1B231B] font-bold focus:outline-none focus:border-[#1F3824] focus:bg-white w-full sm:w-44 transition-all"
-                placeholder="e.g. Lumina"
-              />
-
-              {/* Accent Color Circles */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                {[
-                  { name: "Forest", hex: "#1F3824" },
-                  { name: "Emerald", hex: "#10B981" },
-                  { name: "Cyan", hex: "#06B6D4" },
-                  { name: "Amber", hex: "#F59E0B" },
-                ].map((c) => (
-                  <button
-                    key={c.hex}
-                    type="button"
-                    onClick={() => setBrandColor(c.hex)}
-                    style={{ backgroundColor: c.hex }}
-                    title={c.name}
-                    className={`h-6 w-6 rounded-full border transition-all cursor-pointer ${brandColor === c.hex
-                        ? "ring-2 ring-[#1F3824] ring-offset-2 ring-offset-white scale-110"
-                        : "border-[#CBD5C4] opacity-80 hover:opacity-100"
-                      }`}
-                  />
-                ))}
-              </div>
-            </div>
+        {/* Right Column: Tabbed Precision Creative Suite (7 cols) */}
+        <div className="lg:col-span-7 flex flex-col gap-4">
+          {/* Segmented Inspector Tab Bar */}
+          <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-1.5 shadow-xs flex items-center justify-between gap-1">
+            {[
+              { id: "script", label: "Script & Hooks", icon: FileText },
+              { id: "creator", label: "Creator & Style", icon: Layers },
+              { id: "subtitles", label: "Subtitles", icon: Type },
+              { id: "audio", label: "Audio & Music", icon: Music },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id as StudioTab)}
+                  className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-[#1F3824] text-white shadow-xs"
+                      : "text-[#4A544A] hover:bg-[#F6F7F2] hover:text-[#1B231B]"
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Video Format & Template Archetype Selector */}
-          <VideoTemplatePicker
-            selectedTemplate={selectedTemplate}
-            onSelectTemplate={(tmpl) => {
-              setSelectedTemplate(tmpl.id);
-              if (tmpl.defaultMusicTrack) setSelectedTrackId(tmpl.defaultMusicTrack);
-            }}
-          />
+          {/* TAB 1: SCRIPT & HOOKS */}
+          {activeTab === "script" && (
+            <div className="flex flex-col gap-4">
+              {/* Brand Identity Card */}
+              <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex flex-col">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#1F3824] flex items-center gap-1.5">
+                    <Palette className="h-3.5 w-3.5 text-[#1F3824]" />
+                    Brand / Product Name
+                  </label>
+                  <p className="text-[11px] text-[#717E6C]">
+                    Spoken in voiceovers and highlighted in kinetic subtitles
+                  </p>
+                </div>
 
-          {/* Creator Visual & B-Roll Persona Picker */}
-          <CreatorVisualPicker
-            selectedImageUrl={selectedVisualUrl}
-            onSelectPersona={handleSelectPersona}
-          />
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <input
+                    type="text"
+                    value={brandName}
+                    onChange={(e) => setBrandName(e.target.value)}
+                    className="bg-[#F6F7F2] border border-[#CBD5C4] rounded-xl px-3.5 py-1.5 text-xs text-[#1B231B] font-bold focus:outline-none focus:border-[#1F3824] focus:bg-white w-full sm:w-36 transition-all"
+                    placeholder="e.g. Lumina"
+                  />
 
-          {/* Script Copy & Pacing */}
-          <ScriptEditor
-            hookText={hookText}
-            bodyText={bodyText}
-            ctaText={ctaText}
-            onHookChange={setHookText}
-            onBodyChange={setBodyText}
-            onCtaChange={setCtaText}
-            estimatedDuration={estimatedDuration}
-          />
+                  {/* Accent Color Swatches */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {[
+                      { name: "Forest", hex: "#1F3824" },
+                      { name: "Emerald", hex: "#10B981" },
+                      { name: "Cyan", hex: "#06B6D4" },
+                      { name: "Amber", hex: "#F59E0B" },
+                    ].map((c) => (
+                      <button
+                        key={c.hex}
+                        type="button"
+                        onClick={() => setBrandColor(c.hex)}
+                        style={{ backgroundColor: c.hex }}
+                        title={c.name}
+                        className={`h-5 w-5 rounded-full border transition-all cursor-pointer ${
+                          brandColor === c.hex
+                            ? "ring-2 ring-[#1F3824] ring-offset-2 ring-offset-white scale-110"
+                            : "border-[#CBD5C4] opacity-80 hover:opacity-100"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
 
-          {/* Creator Voice Selector */}
-          <VoiceSelector
-            selectedVoiceId={selectedVoiceId}
-            onVoiceChange={setSelectedVoiceId}
-          />
+              {/* Mandatory Brand Mention Status */}
+              <div
+                className={`p-3 rounded-2xl border text-xs flex items-center justify-between gap-2 ${
+                  hasBrandMention
+                    ? "bg-emerald-50/80 border-emerald-300 text-emerald-900"
+                    : "bg-amber-50 border-amber-300 text-amber-900"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {hasBrandMention ? (
+                    <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-amber-700 shrink-0" />
+                  )}
+                  <span className="font-medium text-[11px]">
+                    {hasBrandMention
+                      ? `Brand Mention Verified: "${brandName}" is spoken in this script`
+                      : `Brand Warning: "${brandName}" is not spoken in the current copy`}
+                  </span>
+                </div>
+                {!hasBrandMention && (
+                  <button
+                    type="button"
+                    onClick={handleAutoInjectBrand}
+                    className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 transition-colors shrink-0 cursor-pointer"
+                  >
+                    Auto-Inject Brand
+                  </button>
+                )}
+              </div>
 
-          {/* Kinetic Subtitle Styler */}
-          <SubtitleStyler
-            subtitleStyle={subtitleStyle}
-            brandColor={brandColor}
-            onStyleChange={setSubtitleStyle}
-            onBrandColorChange={setBrandColor}
-          />
+              {/* 5 1-Click Viral Hook Angles Presets */}
+              <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs flex flex-col gap-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-[#1B231B] flex items-center gap-1.5">
+                    <Zap className="h-3.5 w-3.5 text-[#1F3824]" />
+                    Viral Hook Angles (1-Click Switch):
+                  </span>
+                  <span className="text-[10px] text-[#717E6C] font-mono">
+                    Psychological Frameworks
+                  </span>
+                </div>
 
-          {/* Dynamic B-Roll Music Picker */}
-          <MusicPicker
-            selectedTrackId={selectedTrackId}
-            onTrackChange={setSelectedTrackId}
-          />
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {VIRAL_HOOK_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => setHookText(preset.text)}
+                      className="px-2.5 py-1 rounded-lg text-[10px] font-bold border border-[#CBD5C4] bg-[#F6F7F2] text-[#4A544A] hover:bg-[#1F3824] hover:text-white hover:border-[#1F3824] transition-all cursor-pointer"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Script Copy Editor */}
+              <ScriptEditor
+                hookText={hookText}
+                bodyText={bodyText}
+                ctaText={ctaText}
+                onHookChange={setHookText}
+                onBodyChange={setBodyText}
+                onCtaChange={setCtaText}
+                estimatedDuration={estimatedDuration}
+              />
+            </div>
+          )}
+
+          {/* TAB 2: CREATOR & TEMPLATE ARCHETYPE */}
+          {activeTab === "creator" && (
+            <div className="flex flex-col gap-4">
+              {/* Video Format & Template Archetype Selector */}
+              <VideoTemplatePicker
+                selectedTemplate={selectedTemplate}
+                onSelectTemplate={(tmpl) => {
+                  setSelectedTemplate(tmpl.id);
+                  if (tmpl.defaultMusicTrack) setSelectedTrackId(tmpl.defaultMusicTrack);
+                }}
+              />
+
+              {/* Creator Persona Visual Picker */}
+              <CreatorVisualPicker
+                selectedImageUrl={selectedVisualUrl}
+                onSelectPersona={handleSelectPersona}
+              />
+            </div>
+          )}
+
+          {/* TAB 3: SUBTITLES & TYPOGRAPHY */}
+          {activeTab === "subtitles" && (
+            <div className="flex flex-col gap-4">
+              <SubtitleStyler
+                subtitleStyle={subtitleStyle}
+                brandColor={brandColor}
+                onStyleChange={setSubtitleStyle}
+                onBrandColorChange={setBrandColor}
+              />
+            </div>
+          )}
+
+          {/* TAB 4: AUDIO & DUCKING */}
+          {activeTab === "audio" && (
+            <div className="flex flex-col gap-4">
+              {/* Creator Voice Selector */}
+              <VoiceSelector
+                selectedVoiceId={selectedVoiceId}
+                onVoiceChange={setSelectedVoiceId}
+              />
+
+              {/* Dynamic B-Roll Music Picker */}
+              <MusicPicker
+                selectedTrackId={selectedTrackId}
+                onTrackChange={setSelectedTrackId}
+              />
+            </div>
+          )}
         </div>
-      </div>
-
-      {/* Automated Publishing Calendar Section */}
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pb-16">
-        <PublishingCalendar />
-      </div>
+      </main>
 
       {/* Schedule Modal */}
       <ScheduleModal

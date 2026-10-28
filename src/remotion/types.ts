@@ -17,6 +17,7 @@ export interface UgcAdCompositionProps {
   brandColor?: string;
   logoUrl?: string;
   productImageUrl?: string;
+  videoUrl?: string;
   words: WordTimestamp[];
   subtitleStyle?: SubtitleStyleConfig;
   hasWatermark?: boolean;
