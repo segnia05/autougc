@@ -1,5 +1,9 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { datadog } from "@/lib/observability/datadog";
+import { grafana } from "@/lib/observability/grafana";
+import { tracer } from "@/lib/observability/tracer";
+import { logger } from "@/lib/observability/logger";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -16,6 +20,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/v1/campaigns/approve(.*)",
   "/api/v1/webhooks(.*)",
   "/api/health(.*)",
+  "/api/metrics(.*)",
   "/api/auth(.*)",
 ]);
 
@@ -26,6 +31,15 @@ const isProtectedBrowserRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
+  const startTime = Date.now();
+  const spanContext = tracer.extract(request.headers);
+  const path = request.nextUrl.pathname;
+  const method = request.method;
+
+  // Record metrics on Prometheus & Datadog
+  datadog.increment("http.requests", 1, { method, path });
+  grafana.httpRequestsTotal.inc({ method, route: path, status: 200 });
+
   // 1. Strictly gate browser protected routes: unauthenticated users are immediately redirected to sign in
   if (isProtectedBrowserRoute(request)) {
     await auth.protect();
@@ -39,6 +53,14 @@ export default clerkMiddleware(async (auth, request) => {
 
   const { userId, orgId } = await auth();
   const requestHeaders = new Headers(request.headers);
+
+  // Propagate distributed trace context
+  requestHeaders.set("x-request-id", spanContext.traceId);
+  requestHeaders.set("x-trace-id", spanContext.traceId);
+  requestHeaders.set("x-span-id", spanContext.spanId);
+  requestHeaders.set("x-datadog-trace-id", spanContext.traceId);
+  requestHeaders.set("traceparent", `00-${spanContext.traceId}-${spanContext.spanId}-01`);
+
   if (userId) {
     requestHeaders.set("x-user-id", userId);
   }
@@ -46,11 +68,31 @@ export default clerkMiddleware(async (auth, request) => {
     requestHeaders.set("x-organization-id", orgId);
   }
 
-  return NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
+
+  const durationMs = Date.now() - startTime;
+  response.headers.set("x-request-id", spanContext.traceId);
+  response.headers.set("x-trace-id", spanContext.traceId);
+  response.headers.set("x-response-time-ms", durationMs.toString());
+
+  // Record latency histogram on Prometheus & Datadog
+  datadog.timing("http.latency", durationMs, { method, path });
+  grafana.httpRequestDurationSeconds.observe(durationMs / 1000, { method, route: path });
+
+  logger.info(`HTTP ${method} ${path} - ${durationMs}ms`, {
+    traceId: spanContext.traceId,
+    method,
+    path,
+    durationMs,
+    userId: userId || undefined,
+    orgId: orgId || undefined,
+  });
+
+  return response;
 });
 
 export const config = {

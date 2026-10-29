@@ -4,6 +4,11 @@ import { generateViralScripts } from "@/lib/ai/gemini";
 import { db } from "@/db/client";
 import { checkRateLimit, getClientIdentifier, createRateLimitResponse } from "@/lib/security/rateLimit";
 import { validateCsrfOrigin } from "@/lib/security/csrf";
+import { datadog } from "@/lib/observability/datadog";
+import { posthog } from "@/lib/observability/posthog";
+import { sentry } from "@/lib/observability/sentry";
+import { grafana } from "@/lib/observability/grafana";
+import { logger } from "@/lib/observability/logger";
 
 const ScriptGenerateRequestSchema = z.object({
   projectId: z.string().optional(),
@@ -21,6 +26,7 @@ export async function POST(request: NextRequest) {
   // 1. CSRF Protection
   const csrf = validateCsrfOrigin(request);
   if (!csrf.isValid) {
+    datadog.increment("scripts.csrf_blocked", 1);
     return NextResponse.json({ success: false, error: { code: "CSRF_ERROR", message: csrf.error } }, { status: 403 });
   }
 
@@ -28,6 +34,7 @@ export async function POST(request: NextRequest) {
   const clientIdentifier = getClientIdentifier(request);
   const rateLimit = checkRateLimit(clientIdentifier, { limit: 20, windowSeconds: 60 });
   if (!rateLimit.success) {
+    datadog.increment("scripts.rate_limited", 1);
     return createRateLimitResponse(rateLimit);
   }
 
@@ -36,6 +43,7 @@ export async function POST(request: NextRequest) {
     const parsed = ScriptGenerateRequestSchema.safeParse(rawBody);
 
     if (!parsed.success) {
+      datadog.increment("scripts.validation_error", 1);
       return NextResponse.json(
         {
           success: false,
@@ -61,48 +69,75 @@ export async function POST(request: NextRequest) {
       targetAudience,
     });
 
-    // 2. If a valid persisted projectId was provided, save scripts to PostgreSQL
+    // 2. If a valid project exists in DB, persist generated scripts
     const responseScripts = [];
 
-    for (const s of result.scripts) {
-      let scriptId = `script_${Math.random().toString(36).substring(2, 10)}`;
+    if (projectId && !projectId.startsWith("preview_")) {
+      try {
+        const project = await db.project.findUnique({
+          where: { id: projectId },
+        });
 
-      if (projectId && !projectId.startsWith("preview_")) {
-        try {
-          const persisted = await db.script.create({
-            data: {
-              projectId,
-              angleType: s.angleType,
-              hookText: s.hook,
-              bodyText: s.body,
-              ctaText: s.cta,
-              fullScriptText: `${s.hook} ${s.body} ${s.cta}`,
-              suggestedVisualCues: s.suggestedVisualCues,
-              captionCopy: s.caption,
-              hashtags: s.hashtags,
-            },
-          });
-          scriptId = persisted.id;
-        } catch (dbErr) {
-          console.warn("Script persistence bypassed:", dbErr);
+        if (project) {
+          for (const s of result.scripts) {
+            const saved = await db.script.create({
+              data: {
+                projectId,
+                angleType: s.angleType,
+                hookText: s.hook,
+                bodyText: s.body,
+                ctaText: s.cta,
+                fullScriptText: `${s.hook} ${s.body} ${s.cta}`,
+                captionCopy: s.caption,
+                hashtags: s.hashtags,
+                suggestedVisualCues: s.suggestedVisualCues,
+              },
+            });
+            responseScripts.push({
+              id: saved.id,
+              fullScript: `${s.hook} ${s.body} ${s.cta}`,
+              ...s,
+            });
+          }
         }
+      } catch (dbErr) {
+        console.warn("Script persistence bypassed:", dbErr);
       }
+    }
 
-      responseScripts.push({
-        scriptId,
-        angleType: s.angleType,
-        hook: s.hook,
-        body: s.body,
-        cta: s.cta,
-        fullScript: `${s.hook} ${s.body} ${s.cta}`,
-        estimatedDurationSeconds: s.estimatedDurationSeconds,
-        caption: s.caption,
-        hashtags: s.hashtags,
-        suggestedVisualCues: s.suggestedVisualCues,
-      });
+    // Fallback if not persisted
+    if (responseScripts.length === 0) {
+      for (const s of result.scripts) {
+        responseScripts.push({
+          id: `script_${Math.random().toString(36).substring(2, 10)}`,
+          angleType: s.angleType,
+          hook: s.hook,
+          body: s.body,
+          cta: s.cta,
+          fullScript: `${s.hook} ${s.body} ${s.cta}`,
+          caption: s.caption,
+          hashtags: s.hashtags,
+          suggestedVisualCues: s.suggestedVisualCues,
+        });
+      }
     }
 
     const durationMs = Date.now() - startTime;
+
+    // Observability metrics & event tracking
+    grafana.scriptsGeneratedTotal.inc({ angle: "viral_trio" }, responseScripts.length);
+    datadog.timing("gemini.script_gen.duration", durationMs, { brand: brandName });
+    datadog.increment("scripts.generated", responseScripts.length);
+    posthog.capture("script_generated", {
+      brandName,
+      scriptsCount: responseScripts.length,
+      durationMs,
+    });
+    logger.info(`Generated ${responseScripts.length} viral script angles for brand: ${brandName}`, {
+      brandName,
+      durationMs,
+      requestId,
+    });
 
     return NextResponse.json({
       success: true,
@@ -118,6 +153,14 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "Failed to generate scripts";
+
+    datadog.increment("scripts.failed", 1);
+    sentry.captureException(error, {
+      tags: { route: "/api/v1/scripts/generate" },
+      extra: { requestId },
+    });
+    logger.error("Script generation failed", error, { requestId });
+
     return NextResponse.json(
       {
         success: false,

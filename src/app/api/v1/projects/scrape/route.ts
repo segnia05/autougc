@@ -4,6 +4,10 @@ import { scrapeUrl } from "@/lib/scraper/extractor";
 import { db } from "@/db/client";
 import { checkRateLimit, getClientIdentifier, createRateLimitResponse } from "@/lib/security/rateLimit";
 import { validateCsrfOrigin } from "@/lib/security/csrf";
+import { datadog } from "@/lib/observability/datadog";
+import { posthog } from "@/lib/observability/posthog";
+import { sentry } from "@/lib/observability/sentry";
+import { logger } from "@/lib/observability/logger";
 
 const ScrapeRequestSchema = z.object({
   url: z.string().url("A valid URL is required (e.g. https://yourbrand.com)"),
@@ -17,6 +21,7 @@ export async function POST(request: NextRequest) {
   // 1. CSRF Protection
   const csrf = validateCsrfOrigin(request);
   if (!csrf.isValid) {
+    datadog.increment("scrape.csrf_blocked", 1);
     return NextResponse.json({ success: false, error: { code: "CSRF_ERROR", message: csrf.error } }, { status: 403 });
   }
 
@@ -24,6 +29,7 @@ export async function POST(request: NextRequest) {
   const clientIdentifier = getClientIdentifier(request);
   const rateLimit = checkRateLimit(clientIdentifier, { limit: 15, windowSeconds: 60 });
   if (!rateLimit.success) {
+    datadog.increment("scrape.rate_limited", 1);
     return createRateLimitResponse(rateLimit);
   }
 
@@ -32,6 +38,7 @@ export async function POST(request: NextRequest) {
     const parsed = ScrapeRequestSchema.safeParse(rawBody);
 
     if (!parsed.success) {
+      datadog.increment("scrape.validation_error", 1);
       return NextResponse.json(
         {
           success: false,
@@ -102,6 +109,22 @@ export async function POST(request: NextRequest) {
 
     const durationMs = Date.now() - startTime;
 
+    // Emit Observability Telemetry
+    datadog.timing("scrape.duration", durationMs, { brand: scrapedData.brandName });
+    datadog.increment("scrape.success", 1);
+    posthog.capture("project_scraped", {
+      brandName: scrapedData.brandName,
+      url,
+      hasLogo: !!scrapedData.assets.find((a) => a.type === "logo"),
+      durationMs,
+    });
+    logger.info(`Successfully scraped brand: ${scrapedData.brandName}`, {
+      brandName: scrapedData.brandName,
+      url,
+      durationMs,
+      requestId,
+    });
+
     return NextResponse.json({
       success: true,
       data: {
@@ -121,6 +144,14 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to scrape target URL";
+
+    datadog.increment("scrape.error", 1);
+    sentry.captureException(error, {
+      tags: { route: "/api/v1/projects/scrape" },
+      extra: { requestId },
+    });
+    logger.error("Project scrape failed", error, { requestId });
+
     return NextResponse.json(
       {
         success: false,

@@ -1,6 +1,9 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Newsreader, Plus_Jakarta_Sans, Inter, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
+import SentryErrorBoundary from "@/components/observability/SentryErrorBoundary";
+import PostHogProvider from "@/components/observability/PostHogProvider";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -73,7 +76,13 @@ export default function RootLayout({
           Skip to main content
         </a>
         <ClerkProvider>
-          {children}
+          <SentryErrorBoundary>
+            <Suspense fallback={null}>
+              <PostHogProvider>
+                {children}
+              </PostHogProvider>
+            </Suspense>
+          </SentryErrorBoundary>
         </ClerkProvider>
       </body>
     </html>
