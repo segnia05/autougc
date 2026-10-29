@@ -90,6 +90,7 @@ export async function GET(request: NextRequest) {
         hookText: script?.hookText || "Stop doing this manually in 2026.",
         bodyText: script?.bodyText || "This software handles your entire workflow automatically.",
         ctaText: script?.ctaText || "Try it out today.",
+        videoUrl: post.video?.videoUrl || null,
         socialAccount: {
           platform: post.socialAccount.platform,
           accountHandle: post.socialAccount.accountHandle,

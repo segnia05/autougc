@@ -70,6 +70,44 @@ function StudioContent() {
   const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<VideoTemplateArchetype>("organic_selfie");
 
+  // In-Studio AI Script Generator state
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isGeneratingAiScripts, setIsGeneratingAiScripts] = useState(false);
+  const [aiGeneratedScripts, setAiGeneratedScripts] = useState<
+    Array<{ angleType: string; hook: string; body: string; cta: string }>
+  >([]);
+
+  const handleGenerateAiScripts = async () => {
+    if (!aiPrompt.trim() && !brandName.trim()) return;
+    setIsGeneratingAiScripts(true);
+    try {
+      const res = await fetch("/api/v1/scripts/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brandName: brandName || "My Brand",
+          pageTitle: aiPrompt || `${brandName} Ad`,
+          summary: aiPrompt || `High-converting viral video ad for ${brandName}`,
+          headings: ["Key Features", "Core Problem", "Direct Call to Action"],
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.scripts?.scripts) {
+        setAiGeneratedScripts(data.scripts.scripts);
+        const first = data.scripts.scripts[0];
+        if (first) {
+          setHookText(first.hook);
+          setBodyText(first.body);
+          setCtaText(first.cta);
+        }
+      }
+    } catch (err) {
+      console.warn("AI script generation notice:", err);
+    } finally {
+      setIsGeneratingAiScripts(false);
+    }
+  };
+
   const [brandName, setBrandName] = useState(() => searchParams.get("brand") || "Lumina");
   const [hookText, setHookText] = useState(() => searchParams.get("hook") || "Stop coding under harsh fluorescent lights in 2026.");
   const [bodyText, setBodyText] = useState(() => searchParams.get("body") || "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour deep work sprints.");
@@ -181,7 +219,9 @@ function StudioContent() {
           if (d.archetype && d.archetype in VIDEO_TEMPLATES) {
             setSelectedTemplate(d.archetype as VideoTemplateArchetype);
           }
-          if (d.creatorId) {
+          if (d.videoUrl) {
+            setSelectedVideoUrl(d.videoUrl);
+          } else if (d.creatorId) {
             const persona = CREATOR_PERSONAS.find((p) => p.id === d.creatorId || p.id.includes(d.creatorId));
             if (persona) {
               setSelectedVisualUrl(persona.imageUrl);
@@ -339,6 +379,9 @@ function StudioContent() {
       }
 
       setRenderedVideoUrl(data.videoUrl || "/images/creator-glasses.jpg");
+      if (data.videoUrl) {
+        setSelectedVideoUrl(data.videoUrl);
+      }
       setExportComplete(true);
       fetchSubscription();
     } catch (err: unknown) {
@@ -483,11 +526,11 @@ function StudioContent() {
                 setIsExportModalOpen(true);
               }
             }}
-            leftIcon={<Download className="h-3.5 w-3.5" />}
-            className="text-xs px-2.5 sm:px-3 font-semibold"
+            leftIcon={<Sparkles className="h-3.5 w-3.5 text-emerald-300" />}
+            className="text-xs px-2.5 sm:px-3 font-semibold shadow-xs"
           >
-            <span className="hidden sm:inline">Export 1080p Ad</span>
-            <span className="sm:hidden">Export</span>
+            <span className="hidden sm:inline">⚡ Generate Video (1 Credit)</span>
+            <span className="sm:hidden">⚡ Generate</span>
           </Button>
         </div>
       </header>
@@ -545,6 +588,37 @@ function StudioContent() {
       <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start focus:outline-none">
         {/* Left Column: Interactive 9:16 Canvas & Transport Controls (5 cols) */}
         <div className="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-20 gap-3">
+          {selectedVideoUrl ? (
+            <div className="w-full max-w-[360px] bg-emerald-50 border border-emerald-300 rounded-xl px-3 py-1.5 flex items-center justify-between text-[11px] text-emerald-900 font-semibold shadow-xs">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                Rendered 1080p MP4 Active
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedVideoUrl(undefined)}
+                className="text-[10px] text-emerald-700 hover:text-emerald-900 underline font-bold cursor-pointer"
+              >
+                Switch to Canvas Editor
+              </button>
+            </div>
+          ) : (
+            <div className="w-full max-w-[360px] bg-[#ECEFE7] border border-[#CBD5C4] rounded-xl px-3 py-1.5 flex items-center justify-between text-[11px] text-[#4A544A] font-semibold">
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-[#1F3824]" />
+                Live Remotion Preview (Interactive)
+              </span>
+              {renderedVideoUrl && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedVideoUrl(renderedVideoUrl)}
+                  className="text-[10px] text-[#1F3824] hover:underline font-bold cursor-pointer"
+                >
+                  Play Rendered MP4
+                </button>
+              )}
+            </div>
+          )}
           <CanvasPlayer
             compositionProps={compositionProps}
             onSelectMedia={handleSelectMedia}
@@ -597,6 +671,77 @@ function StudioContent() {
               tabIndex={0}
               className="flex flex-col gap-4 focus:outline-none"
             >
+              {/* In-Studio Magic AI Script Assistant */}
+              <div className="bg-gradient-to-r from-[#1F3824] to-[#2B4E32] rounded-2xl p-4 text-white shadow-sm flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-emerald-300 animate-pulse" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-100">
+                      Magic AI Script Generator
+                    </span>
+                  </div>
+                  <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-emerald-200 font-mono">
+                    Gemini AI
+                  </span>
+                </div>
+                <p className="text-[11px] text-white/80 leading-relaxed">
+                  Generate 1 custom ad: Enter a product URL or describe what you want to sell. AI will instantly write 3 viral hooks tailored to your brand.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    placeholder="e.g. Ergonomic desk lamp with zero screen glare"
+                    className="flex-1 bg-white/10 border border-white/20 rounded-xl px-3.5 py-2 text-xs text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white/15"
+                  />
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleGenerateAiScripts}
+                    isLoading={isGeneratingAiScripts}
+                    leftIcon={<Zap className="h-3.5 w-3.5 text-emerald-300" />}
+                    className="bg-emerald-500 hover:bg-emerald-400 text-[#1F3824] font-bold text-xs shrink-0 cursor-pointer"
+                  >
+                    Generate Scripts
+                  </Button>
+                </div>
+
+                {/* Display AI Generated Variations if available */}
+                {aiGeneratedScripts.length > 0 && (
+                  <div className="flex flex-col gap-2 pt-2 border-t border-white/15">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200">
+                      AI Generated Hooks (Click to Apply):
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {aiGeneratedScripts.map((s, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            setHookText(s.hook);
+                            setBodyText(s.body);
+                            setCtaText(s.cta);
+                          }}
+                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                            hookText === s.hook
+                              ? "bg-white/20 border-emerald-400 shadow-xs"
+                              : "bg-white/5 border-white/10 hover:bg-white/10"
+                          }`}
+                        >
+                          <span className="text-[10px] font-mono font-bold text-emerald-300 uppercase block">
+                            {s.angleType.replace("_", " ")}
+                          </span>
+                          <p className="text-[11px] text-white/90 line-clamp-2 mt-1 leading-snug">
+                            &ldquo;{s.hook}&rdquo;
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Brand Identity Card */}
               <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex flex-col">
