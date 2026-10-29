@@ -116,7 +116,7 @@ export async function deductCredit(
         success: true,
         creditsRemaining: updated.creditsRemaining,
       };
-    });
+    }, { maxWait: 10000, timeout: 20000 });
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
     if (errorMsg.includes("Insufficient credits")) {
@@ -203,7 +203,7 @@ export async function grantCredits(
         success: true,
         newBalance: sub.creditsRemaining,
       };
-    });
+    }, { maxWait: 10000, timeout: 20000 });
   } catch {
     const current = devBalances[orgId] ?? 24;
     const newBalance = current + amount;

@@ -1,0 +1,90 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autougc-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - DATABASE_URL=postgresql://autougc_admin:autougc_secure_pass_2026@postgres:5432/autougc_production?schema=public
+      - REDIS_URL=redis://redis:6379
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/api/health?probe=liveness', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - autougc-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: autougc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: autougc_admin
+      POSTGRES_PASSWORD: autougc_secure_pass_2026
+      POSTGRES_DB: autougc_production
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autougc_admin -d autougc_production"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - autougc-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: autougc-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - autougc-network
+
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: autougc-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - app
+    networks:
+      - autougc-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  autougc-network:
+    driver: bridge

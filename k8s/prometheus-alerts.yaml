@@ -1,0 +1,47 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: autougc-alerting-rules
+  namespace: autougc-production
+  labels:
+    role: alert-rules
+    app.kubernetes.io/name: autougc
+spec:
+  groups:
+    - name: autougc.alerts
+      rules:
+        - alert: AutoUGCHighErrorRate
+          expr: (sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) * 100 > 1
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "AutoUGC High 5xx HTTP Error Rate Detected"
+            description: "5xx HTTP error rate is {{ $value }}% (threshold: 1%) over the last 5 minutes."
+
+        - alert: AutoUGCP99LatencyCritical
+          expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1.5
+          for: 3m
+          labels:
+            severity: warning
+          annotations:
+            summary: "AutoUGC High P99 Latency (>1.5s)"
+            description: "p99 HTTP latency has exceeded 1.5 seconds for more than 3 minutes."
+
+        - alert: AutoUGCPodCrashLooping
+          expr: increase(kube_pod_container_status_restarts_total{container="autougc-web"}[15m]) > 2
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "AutoUGC Web Pod CrashLooping"
+            description: "Pod {{ $labels.pod }} restarted {{ $value }} times within 15 minutes."
+
+        - alert: AutoUGCQueueBacklogExcessive
+          expr: autougc_generation_queue_depth > 50
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Video Generation Queue Backlog Exceeded"
+            description: "Active video render queue backlog is {{ $value }} jobs (threshold: 50)."

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: autougc-production
+  labels:
+    app.kubernetes.io/name: autougc
+    app.kubernetes.io/part-of: autougc-platform
+    environment: production

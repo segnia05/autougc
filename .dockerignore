@@ -1,0 +1,19 @@
+# Production Docker Ignore file for AutoUGC SaaS
+node_modules
+.next
+.git
+.gitignore
+.github
+tests
+dashboards
+docs
+*.md
+!.env.example
+.env*
+.neon
+tsconfig.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db

@@ -4,7 +4,6 @@ import { Newsreader, Plus_Jakarta_Sans, Inter, Geist_Mono } from "next/font/goog
 import { Suspense } from "react";
 import SentryErrorBoundary from "@/components/observability/SentryErrorBoundary";
 import PostHogProvider from "@/components/observability/PostHogProvider";
-import CookieConsentBanner from "@/components/compliance/CookieConsentBanner";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -81,7 +80,6 @@ export default function RootLayout({
             <Suspense fallback={null}>
               <PostHogProvider>
                 {children}
-                <CookieConsentBanner />
               </PostHogProvider>
             </Suspense>
           </SentryErrorBoundary>
