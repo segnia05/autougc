@@ -5,8 +5,6 @@ import { jobQueue } from "@/lib/queue/jobQueue";
 import { geminiBreaker, socialDispatcherBreaker, stripeBreaker } from "@/lib/resilience/circuitBreaker";
 import { telemetry } from "@/lib/monitoring/telemetry";
 
-export const dynamic = "force-dynamic";
-
 /**
  * Enterprise Health Check & Uptime Monitoring Endpoint.
  *
