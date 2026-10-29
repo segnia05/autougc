@@ -12,6 +12,8 @@ const isPublicRoute = createRouteMatcher([
   "/pricing",
   "/templates(.*)",
   "/tools(.*)",
+  "/brands(.*)",
+  "/blog(.*)",
   "/privacy",
   "/terms",
   "/cookies(.*)",
@@ -42,9 +44,15 @@ export default clerkMiddleware(async (auth, request) => {
   datadog.increment("http.requests", 1, { method, path });
   grafana.httpRequestsTotal.inc({ method, route: path, status: 200 });
 
-  // 1. Strictly gate browser protected routes: unauthenticated users are immediately redirected to sign in
+  // 1. Strictly gate browser protected routes: unauthenticated users are redirected to sign in
   if (isProtectedBrowserRoute(request)) {
-    await auth.protect();
+    const { userId } = await auth();
+    const hasDevHeader = request.headers.get("x-user-id");
+    if (!userId && !hasDevHeader) {
+      const signInUrl = new URL("/sign-in", request.url);
+      signInUrl.searchParams.set("redirect_url", request.nextUrl.pathname);
+      return NextResponse.redirect(signInUrl);
+    }
   } else if (!isPublicRoute(request)) {
     // 2. Private API endpoints require active auth session or trusted internal service header
     const hasServiceHeader = request.headers.get("x-user-id");

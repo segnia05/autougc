@@ -11,7 +11,7 @@ import { logger } from "@/lib/observability/logger";
 
 const ScrapeRequestSchema = z.object({
   url: z.string().url("A valid URL is required (e.g. https://yourbrand.com)"),
-  organizationId: z.string().uuid().optional(),
+  organizationId: z.string().min(1).optional(),
 });
 
 export async function POST(request: NextRequest) {

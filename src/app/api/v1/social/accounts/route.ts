@@ -146,3 +146,40 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const authContext = await getAuthContext(request);
+    const orgId = authContext?.orgId || request.headers.get("x-organization-id");
+
+    if (!orgId) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const accountId = searchParams.get("accountId");
+
+    if (!accountId) {
+      return NextResponse.json({ success: false, error: "accountId is required" }, { status: 400 });
+    }
+
+    const account = await prisma.socialAccount.findFirst({
+      where: { id: accountId, organizationId: orgId },
+    });
+
+    if (!account) {
+      return NextResponse.json({ success: false, error: "Account not found or access denied" }, { status: 404 });
+    }
+
+    // Soft-disconnect to preserve historical analytics and audit logs
+    await prisma.socialAccount.update({
+      where: { id: accountId },
+      data: { isActive: false },
+    });
+
+    return NextResponse.json({ success: true, disconnectedAccountId: accountId });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to disconnect account";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
+  }
+}

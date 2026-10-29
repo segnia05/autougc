@@ -73,22 +73,22 @@ export function assertProductionReadiness(env: ValidatedEnv | Record<string, unk
   const issues: string[] = [];
   const e = env as Record<string, string | undefined>;
 
-  const dbUrl = e.DATABASE_URL || "";
+  const dbUrl = typeof e.DATABASE_URL === "string" ? e.DATABASE_URL : "";
   if (!dbUrl || dbUrl.includes("localhost") || dbUrl.includes("127.0.0.1")) {
     issues.push("Production DATABASE_URL must not point to localhost or loopback");
   }
 
-  const clerkKey = e.CLERK_SECRET_KEY || "";
+  const clerkKey = typeof e.CLERK_SECRET_KEY === "string" ? e.CLERK_SECRET_KEY : "";
   if (!clerkKey || clerkKey.includes("placeholder") || clerkKey.includes("CHANGE_ME") || !clerkKey.startsWith("sk_live_")) {
     issues.push("CLERK_SECRET_KEY must be a valid production live key (sk_live_...)");
   }
 
-  const stripeKey = e.STRIPE_SECRET_KEY || "";
+  const stripeKey = typeof e.STRIPE_SECRET_KEY === "string" ? e.STRIPE_SECRET_KEY : "";
   if (!stripeKey || stripeKey.includes("placeholder") || stripeKey.includes("mock") || !stripeKey.startsWith("sk_live_")) {
     issues.push("STRIPE_SECRET_KEY must be a valid production live key (sk_live_...)");
   }
 
-  const geminiKey = e.GEMINI_API_KEY || "";
+  const geminiKey = typeof e.GEMINI_API_KEY === "string" ? e.GEMINI_API_KEY : "";
   if (!geminiKey || geminiKey.includes("mock") || geminiKey.includes("placeholder") || geminiKey.includes("CHANGE_ME")) {
     issues.push("GEMINI_API_KEY must be a configured non-placeholder key");
   }

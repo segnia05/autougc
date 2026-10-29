@@ -65,3 +65,43 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const authContext = await getAuthContext(request);
+    const orgId = authContext?.orgId || request.headers.get("x-organization-id");
+
+    if (!orgId) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const videoId = searchParams.get("videoId");
+
+    if (!videoId) {
+      return NextResponse.json({ success: false, error: "videoId is required" }, { status: 400 });
+    }
+
+    const video = await prisma.video.findFirst({
+      where: { id: videoId, organizationId: orgId },
+    });
+
+    if (!video) {
+      return NextResponse.json({ success: false, error: "Video not found or access denied" }, { status: 404 });
+    }
+
+    // Cascade delete scheduled posts if any
+    await prisma.scheduledPost.deleteMany({
+      where: { videoId },
+    });
+
+    await prisma.video.delete({
+      where: { id: videoId },
+    });
+
+    return NextResponse.json({ success: true, deletedVideoId: videoId });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to delete video";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
+  }
+}
