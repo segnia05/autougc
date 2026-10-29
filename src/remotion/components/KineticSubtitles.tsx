@@ -20,8 +20,14 @@ export const KineticSubtitles: React.FC<KineticSubtitlesProps> = ({
   const fontSize = styleConfig.fontSize || 54;
   const primaryColor = styleConfig.primaryColor || "#FFFFFF";
   const highlightColor = styleConfig.highlightColor || "#FFE600";
+  const position = styleConfig.position || "center";
+  const backgroundPill = styleConfig.backgroundPill || false;
 
-  // Group words into short 3-4 word readable kinetic chunks
+  // Vertical anchor based on user preference, calibrated strictly to Safe Zones
+  const topPosition =
+    position === "top" ? "26%" : position === "bottom" ? "62%" : "46%";
+
+  // Group words into short 3-word punchy kinetic chunks
   const CHUNK_SIZE = 3;
   const chunks: WordTimestamp[][] = [];
   for (let i = 0; i < words.length; i += CHUNK_SIZE) {
@@ -43,52 +49,70 @@ export const KineticSubtitles: React.FC<KineticSubtitlesProps> = ({
         position: "absolute",
         left: 60,
         right: 60,
-        // Centered strictly in the official TikTok / Reels Safe Zone (50%-55% from top)
-        // Completely clear of bottom captions, audio marquee, and action icons!
-        top: "50%",
+        top: topPosition,
         transform: "translateY(-50%)",
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "center",
         alignItems: "center",
-        gap: "14px 18px",
         zIndex: 25,
         pointerEvents: "none",
       }}
     >
-      {activeChunk.map((item, idx) => {
-        const isActive = currentTime >= item.start && currentTime <= item.end;
-        const isPast = currentTime > item.end;
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "14px 18px",
+          ...(backgroundPill
+            ? {
+                backgroundColor: "rgba(18, 24, 18, 0.88)",
+                backdropFilter: "blur(16px)",
+                padding: "16px 32px",
+                borderRadius: "28px",
+                border: "1.5px solid rgba(255, 255, 255, 0.18)",
+                boxShadow: "0 14px 40px rgba(0, 0, 0, 0.65)",
+              }
+            : {}),
+        }}
+      >
+        {activeChunk.map((item, idx) => {
+          const isActive = currentTime >= item.start && currentTime <= item.end;
+          const isPast = currentTime > item.end;
 
-        const scale = isActive
-          ? spring({
-              frame: frame - Math.floor(item.start * fps),
-              fps,
-              config: { damping: 12, stiffness: 220 },
-            }) * 0.12 + 1.08
-          : 1.0;
+          const scale = isActive
+            ? spring({
+                frame: frame - Math.floor(item.start * fps),
+                fps,
+                config: { damping: 12, stiffness: 220 },
+              }) * 0.12 + 1.08
+            : 1.0;
 
-        return (
-          <span
-            key={`${item.word}-${idx}`}
-            style={{
-              fontSize: `${fontSize}px`,
-              fontWeight: 900,
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              letterSpacing: "-0.03em",
-              textTransform: "uppercase",
-              transform: `scale(${scale})`,
-              display: "inline-block",
-              color: isActive ? highlightColor : isPast ? primaryColor : "rgba(255, 255, 255, 0.45)",
-              textShadow:
-                "0 4px 12px rgba(0, 0, 0, 0.9), 0 0 24px rgba(0, 0, 0, 0.85), -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000",
-              transition: "color 0.05s ease-out",
-            }}
-          >
-            {item.word}
-          </span>
-        );
-      })}
+          return (
+            <span
+              key={`${item.word}-${idx}`}
+              style={{
+                fontSize: `${fontSize}px`,
+                fontWeight: 900,
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                letterSpacing: "-0.03em",
+                textTransform: "uppercase",
+                transform: `scale(${scale})`,
+                display: "inline-block",
+                color: isActive ? highlightColor : isPast ? primaryColor : "rgba(255, 255, 255, 0.5)",
+                textShadow:
+                  "0 4px 14px rgba(0, 0, 0, 0.95), 0 0 28px rgba(0, 0, 0, 0.9), -2.5px -2.5px 0 #000, 2.5px -2.5px 0 #000, -2.5px 2.5px 0 #000, 2.5px 2.5px 0 #000",
+                WebkitTextStroke: "1px rgba(0, 0, 0, 0.85)",
+                transition: "color 0.05s ease-out",
+              }}
+            >
+              {item.word}
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 };

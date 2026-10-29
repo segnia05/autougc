@@ -84,6 +84,8 @@ function StudioContent() {
     fontSize: 54,
     primaryColor: "#FFFFFF",
     highlightColor: "#FFE600",
+    position: "center",
+    backgroundPill: false,
   });
 
   const [compositionProps, setCompositionProps] = useState<UgcAdCompositionProps>({
@@ -99,6 +101,8 @@ function StudioContent() {
       fontSize: 54,
       primaryColor: "#FFFFFF",
       highlightColor: "#FFE600",
+      position: "center",
+      backgroundPill: false,
     },
   });
 

@@ -13,13 +13,13 @@ import {
   Bookmark,
   Share2,
   Disc,
-  Eye,
-  EyeOff,
   Wifi,
   Battery,
   ShieldCheck,
   Volume2,
   VolumeX,
+  CheckCircle,
+  RefreshCw,
 } from "lucide-react";
 
 interface CanvasPlayerProps {
@@ -30,6 +30,8 @@ interface CanvasPlayerProps {
   onSelectMedia?: (mediaUrl: string, isVideo?: boolean) => void;
 }
 
+type PreviewViewMode = "clean" | "safe_zone" | "in_feed";
+
 export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
   compositionProps,
   className,
@@ -37,8 +39,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
 }) => {
   const playerRef = useRef<PlayerRef>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(false);
-  const [showSafeZone, setShowSafeZone] = useState(false);
+  const [viewMode, setViewMode] = useState<PreviewViewMode>("clean");
   const [isMuted, setIsMuted] = useState(false);
   const [currentFrame, setCurrentFrame] = useState(0);
   const totalFrames = 450; // 15 seconds at 30 fps
@@ -96,11 +97,13 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
     return `00:${seconds < 10 ? "0" : ""}${seconds}.${ms}`;
   };
 
+  const hasActiveVideo = Boolean(compositionProps.videoUrl);
+
   return (
     <div className={`relative flex flex-col items-center gap-4 ${className || ""}`}>
-      {/* 9:16 Phone Frame Mockup in Natural Titanium Architectural Finish */}
+      {/* 9:16 Phone Frame Mockup in Natural Titanium Finish */}
       <div className="relative w-[300px] sm:w-[340px] md:w-[360px] aspect-[9/16] rounded-[52px] p-3.5 bg-gradient-to-b from-[#E2E7DC] via-[#D5DDCF] to-[#CBD5C4] shadow-[0_30px_70px_-20px_rgba(31,56,36,0.25)] border border-[#BDC8B7] select-none">
-        {/* Chamfered Bezel Ring */}
+        {/* Chamfered Inner Bezel */}
         <div className="relative w-full h-full rounded-[44px] p-0.5 bg-gradient-to-b from-white/95 via-[#CBD5C4]/60 to-[#CBD5C4]/95 shadow-xs">
           {/* Screen Display Container */}
           <div className="relative w-full h-full rounded-[40px] overflow-hidden bg-[#1B231B] shadow-inner">
@@ -120,7 +123,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
               <div className="w-1.5 h-1.5 rounded-full bg-[#4A544A]" />
             </div>
 
-            {/* Remotion Player Container */}
+            {/* Remotion Player Canvas */}
             <div className="relative w-full h-full cursor-pointer" onClick={togglePlay}>
               <Player
                 ref={playerRef}
@@ -141,89 +144,121 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
               />
             </div>
 
-            {/* Official TikTok & Instagram Reels Safe Zone Overlay */}
-            {showSafeZone && (
-              <div className="absolute inset-0 z-35 pointer-events-none border-2 border-emerald-400/80 m-3 rounded-2xl flex flex-col justify-between p-3">
-                <div className="bg-emerald-500/20 text-emerald-300 text-[9px] font-mono font-bold px-2 py-0.5 rounded self-center uppercase tracking-wider backdrop-blur-xs">
-                  TikTok & Reels Safe Zone (Visible)
+            {/* Permanent Pinned iOS Home Indicator Bar */}
+            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/70 rounded-full z-45 pointer-events-none shadow-sm" />
+
+            {/* MODE 2: Official 2026 TikTok & Instagram Reels Broadcast Safe Zone HUD */}
+            {viewMode === "safe_zone" && (
+              <div className="absolute inset-0 z-35 pointer-events-none flex flex-col justify-between p-2 select-none">
+                {/* Top Exclusion Zone (12%) */}
+                <div className="h-16 border-b border-dashed border-rose-400/80 bg-rose-500/15 rounded-t-3xl flex items-center justify-center p-1">
+                  <span className="text-[9px] font-mono font-bold text-rose-300 uppercase tracking-wider bg-black/60 px-2 py-0.5 rounded-full">
+                    Top Platform Header (12%)
+                  </span>
                 </div>
-                {/* Danger zone indicators */}
-                <div className="h-28 border-t border-dashed border-rose-400/60 bg-rose-500/10 rounded-b-xl flex items-center justify-center">
-                  <span className="text-[9px] font-mono text-rose-300 font-bold uppercase">
-                    Bottom UI Zone (Captions & Buttons)
+
+                {/* Central Protected Safe Box */}
+                <div className="flex-1 mx-2 my-2 border-2 border-emerald-400/90 rounded-2xl flex flex-col items-center justify-between p-2 relative bg-emerald-500/5">
+                  <span className="text-[9px] font-mono font-bold text-emerald-300 uppercase tracking-wider bg-[#1F3824]/90 px-2.5 py-0.5 rounded-full border border-emerald-400/40">
+                    ✓ Protected Subtitle & Hook Safe Area
+                  </span>
+
+                  {/* Right Exclusion Rail Marker */}
+                  <div className="absolute right-0 top-12 bottom-12 w-14 border-l border-dashed border-amber-400/80 bg-amber-500/15 flex items-center justify-center rounded-r-xl">
+                    <span className="text-[8px] font-mono font-bold text-amber-200 uppercase -rotate-90 whitespace-nowrap">
+                      Buttons (18%)
+                    </span>
+                  </div>
+
+                  <span className="text-[8px] font-mono text-emerald-300/80">
+                    100% Unobstructed on TikTok • Reels • Shorts
+                  </span>
+                </div>
+
+                {/* Bottom Platform Danger Zone (22%) */}
+                <div className="h-28 border-t border-dashed border-rose-400/80 bg-rose-500/15 rounded-b-3xl flex flex-col items-center justify-center p-2 gap-1">
+                  <span className="text-[9px] font-mono font-bold text-rose-300 uppercase tracking-wider bg-black/70 px-2 py-0.5 rounded-full">
+                    ⚠️ Bottom UI Zone: Native Captions & Audio Bar (22%)
+                  </span>
+                  <span className="text-[8px] font-mono text-rose-200/80 text-center">
+                    Do not place text or logos here
                   </span>
                 </div>
               </div>
             )}
 
-            {/* Simulated TikTok / Reels In-Feed Overlay */}
-            {showOverlay && (
-              <div className="absolute inset-0 z-30 pointer-events-none flex flex-col justify-between p-4 pt-12 pb-5">
-                <div />
+            {/* MODE 3: High-Fidelity In-Feed Feed Mockup with Protective Gradient Scrim */}
+            {viewMode === "in_feed" && (
+              <>
+                {/* Protective Bottom Gradient Scrim - Eliminates any visual clash with background video */}
+                <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-black/92 via-black/60 to-transparent pointer-events-none z-28" />
 
-                {/* Bottom Overlay Row: Meta Details + Vertical Action Bar */}
-                <div className="flex items-end justify-between gap-3">
-                  {/* Left: Creator Handle & Caption */}
-                  <div className="flex flex-col gap-1 max-w-[72%] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                      @{compositionProps.brandName.toLowerCase().replace(/[^a-z0-9]/g, "")}.official
-                      <span className="h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-emerald-400/30" />
-                    </span>
-                    <p className="text-[11px] text-white/95 line-clamp-2 leading-tight font-medium">
-                      {compositionProps.hookText}
+                <div className="absolute inset-x-3.5 bottom-7 z-30 pointer-events-none flex items-end justify-between gap-3 text-white">
+                  {/* Left: Native Profile Handle, Hook Caption, and Audio Marquee */}
+                  <div className="flex flex-col gap-1.5 max-w-[74%] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-white tracking-tight">
+                        @{compositionProps.brandName.toLowerCase().replace(/[^a-z0-9]/g, "")}.official
+                      </span>
+                      <CheckCircle className="h-3.5 w-3.5 text-sky-400 fill-sky-400/20" />
+                    </div>
+
+                    <p className="text-[11px] text-white/95 line-clamp-2 leading-snug font-medium">
+                      {compositionProps.hookText}{" "}
+                      <span className="text-white/70 font-normal">#ugc #ad</span>
                     </p>
-                    <div className="flex items-center gap-1.5 text-[10px] text-white/80 font-mono mt-0.5">
-                      <span>♫</span>
-                      <span className="truncate">Original Sound • {compositionProps.brandName} UGC</span>
+
+                    <div className="flex items-center gap-1.5 text-[10px] text-white/85 font-mono mt-0.5">
+                      <span className="animate-pulse">♫</span>
+                      <span className="truncate">
+                        Original Sound • {compositionProps.brandName} UGC
+                      </span>
                     </div>
                   </div>
 
                   {/* Right: Vertical TikTok Engagement Stack */}
-                  <div className="flex flex-col items-center gap-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-white">
+                  <div className="flex flex-col items-center gap-2.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-white shrink-0 pb-1">
                     {/* Creator Avatar Pill */}
                     <div className="relative">
                       <div className="h-9 w-9 rounded-full border-2 border-white bg-[#1F3824] flex items-center justify-center font-bold text-xs text-white shadow-md">
                         {compositionProps.brandName.slice(0, 2).toUpperCase()}
                       </div>
-                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-3.5 w-3.5 rounded-full bg-rose-500 flex items-center justify-center text-[10px] text-white font-black leading-none">
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-3.5 w-3.5 rounded-full bg-rose-500 flex items-center justify-center text-[10px] text-white font-black leading-none ring-1 ring-white">
                         +
                       </div>
                     </div>
 
                     {/* Like */}
                     <div className="flex flex-col items-center">
-                      <Heart className="h-6 w-6 fill-white/20 stroke-white stroke-[2]" />
-                      <span className="text-[10px] font-bold">48.2K</span>
+                      <Heart className="h-5 w-5 fill-white/20 stroke-white stroke-[2]" />
+                      <span className="text-[9px] font-bold">48.2K</span>
                     </div>
 
                     {/* Comment */}
                     <div className="flex flex-col items-center">
-                      <MessageCircle className="h-6 w-6 stroke-white stroke-[2]" />
-                      <span className="text-[10px] font-bold">1.4K</span>
+                      <MessageCircle className="h-5 w-5 stroke-white stroke-[2]" />
+                      <span className="text-[9px] font-bold">1.4K</span>
                     </div>
 
                     {/* Bookmark */}
                     <div className="flex flex-col items-center">
-                      <Bookmark className="h-6 w-6 stroke-white stroke-[2]" />
-                      <span className="text-[10px] font-bold">8.9K</span>
+                      <Bookmark className="h-5 w-5 stroke-white stroke-[2]" />
+                      <span className="text-[9px] font-bold">8.9K</span>
                     </div>
 
                     {/* Share */}
                     <div className="flex flex-col items-center">
-                      <Share2 className="h-6 w-6 stroke-white stroke-[2]" />
-                      <span className="text-[10px] font-bold">2.1K</span>
+                      <Share2 className="h-5 w-5 stroke-white stroke-[2]" />
+                      <span className="text-[9px] font-bold">2.1K</span>
                     </div>
 
-                    {/* Spinning Audio Disc */}
-                    <div className="h-7 w-7 rounded-full bg-black/80 border border-white/40 flex items-center justify-center animate-spin">
-                      <Disc className="h-4 w-4 text-emerald-400" />
+                    {/* Rotating Vinyl Record */}
+                    <div className="h-6 w-6 rounded-full bg-black/90 border border-white/40 flex items-center justify-center animate-spin">
+                      <Disc className="h-3.5 w-3.5 text-emerald-400" />
                     </div>
                   </div>
                 </div>
-
-                {/* Home Indicator Bar */}
-                <div className="w-28 h-1 bg-white/70 rounded-full mx-auto mt-2" />
-              </div>
+              </>
             )}
           </div>
         </div>
@@ -248,7 +283,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
         </div>
 
         {/* Transport Toolbar */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-1">
           <div className="flex items-center gap-1.5">
             <button
               type="button"
@@ -287,56 +322,88 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
             </button>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            {/* Safe Zone Toggle */}
+          {/* 3-Mode Segmented View Selector: Clean (Hero) | Safe Zone | In-Feed */}
+          <div className="flex items-center bg-[#F6F7F2] p-0.5 rounded-xl border border-[#CBD5C4] text-[10px] font-bold">
             <button
               type="button"
-              onClick={() => setShowSafeZone(!showSafeZone)}
-              title="Toggle Safe Zone Guides"
-              className={`h-8 px-2.5 rounded-xl border text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer ${
-                showSafeZone
-                  ? "bg-emerald-50 border-emerald-500 text-emerald-800 font-bold"
-                  : "bg-transparent border-[#CBD5C4] text-[#4A544A] hover:bg-[#ECEFE7]"
+              onClick={() => setViewMode("clean")}
+              title="Clean Studio Mode (No overlays)"
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                viewMode === "clean"
+                  ? "bg-[#1F3824] text-white shadow-xs"
+                  : "text-[#4A544A] hover:text-[#1B231B]"
+              }`}
+            >
+              Clean
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode("safe_zone")}
+              title="Safe Zone Guides (TikTok & Reels boundaries)"
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-0.5 ${
+                viewMode === "safe_zone"
+                  ? "bg-[#1F3824] text-white shadow-xs"
+                  : "text-[#4A544A] hover:text-[#1B231B]"
               }`}
             >
               <ShieldCheck className="h-3 w-3" />
               <span>Safe Zone</span>
             </button>
 
-            {/* In-Feed Overlay Toggle */}
             <button
               type="button"
-              onClick={() => setShowOverlay(!showOverlay)}
-              title="Toggle TikTok UI Overlay"
-              className={`h-8 px-2.5 rounded-xl border text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer ${
-                showOverlay
-                  ? "bg-[#E2E9DC] border-[#1F3824] text-[#1F3824]"
-                  : "bg-transparent border-[#CBD5C4] text-[#4A544A] hover:bg-[#ECEFE7]"
+              onClick={() => setViewMode("in_feed")}
+              title="In-Feed Mockup Preview (Realistic TikTok feed)"
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                viewMode === "in_feed"
+                  ? "bg-[#1F3824] text-white shadow-xs"
+                  : "text-[#4A544A] hover:text-[#1B231B]"
               }`}
             >
-              {showOverlay ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
-              <span>{showOverlay ? "In-Feed" : "Clean"}</span>
+              In-Feed
             </button>
           </div>
         </div>
       </div>
 
-      {/* Quick Visual Persona & Video Media Switcher */}
+      {/* Quick Visual Persona & Clean Footage Switcher */}
       {onSelectMedia && (
         <div className="w-full max-w-[360px] bg-white border border-[#CBD5C4]/80 rounded-2xl p-2.5 flex flex-col gap-2 shadow-xs">
           <div className="flex items-center justify-between text-[11px] px-1 font-semibold text-[#1B231B]">
             <span>Active Creator Footage:</span>
-            <span className="font-mono text-[10px] text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
-              {compositionProps.videoUrl ? "🎥 Real UGC Video" : "📸 Handheld Creator"}
+            <span
+              className={`font-mono text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                hasActiveVideo
+                  ? "text-amber-800 bg-amber-100"
+                  : "text-emerald-800 bg-emerald-100"
+              }`}
+            >
+              {hasActiveVideo ? "🎥 Video Clip" : "📸 Clean Studio Persona"}
             </span>
           </div>
+
+          {/* If video has burnt-in captions, offer instant reset to clean persona */}
+          {hasActiveVideo && (
+            <div className="flex items-center justify-between px-2 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[10px]">
+              <span>Using external video footage.</span>
+              <button
+                type="button"
+                onClick={() => onSelectMedia("/images/creator-glasses.jpg", false)}
+                className="font-bold underline hover:text-amber-950 flex items-center gap-1 cursor-pointer"
+              >
+                <RefreshCw className="h-3 w-3" />
+                Reset to Clean Persona
+              </button>
+            </div>
+          )}
 
           <div className="grid grid-cols-3 gap-1.5">
             <button
               type="button"
               onClick={() => onSelectMedia("/images/study-creator.jpg", false)}
               className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer ${
-                !compositionProps.videoUrl && compositionProps.productImageUrl === "/images/study-creator.jpg"
+                !hasActiveVideo && compositionProps.productImageUrl === "/images/study-creator.jpg"
                   ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
               }`}
@@ -347,7 +414,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
               type="button"
               onClick={() => onSelectMedia("/images/creator-glasses.jpg", false)}
               className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer ${
-                !compositionProps.videoUrl && compositionProps.productImageUrl === "/images/creator-glasses.jpg"
+                !hasActiveVideo && compositionProps.productImageUrl === "/images/creator-glasses.jpg"
                   ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
               }`}
@@ -358,7 +425,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
               type="button"
               onClick={() => onSelectMedia("/images/creator-male.jpg", false)}
               className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer ${
-                !compositionProps.videoUrl && compositionProps.productImageUrl === "/images/creator-male.jpg"
+                !hasActiveVideo && compositionProps.productImageUrl === "/images/creator-male.jpg"
                   ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
               }`}

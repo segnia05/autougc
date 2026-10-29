@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Type, Sparkles } from "lucide-react";
+import { Type, Sparkles, MoveVertical, ShieldAlert } from "lucide-react";
 import { SubtitleStyleConfig } from "@/remotion/types";
 
 interface SubtitleStylerProps {
@@ -49,6 +49,9 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
     { name: "Pure White", hex: "#FFFFFF" },
     { name: "Warm Amber", hex: "#F59E0B" },
   ];
+
+  const currentPosition = subtitleStyle.position || "center";
+  const hasBackgroundPill = !!subtitleStyle.backgroundPill;
 
   return (
     <div className="flex flex-col gap-5 p-6 rounded-3xl bg-white border border-[#CBD5C4]/70 shadow-sm text-[#1B231B]">
@@ -110,6 +113,92 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
         </div>
       </div>
 
+      {/* Vertical Position Selector (Prevents collisions with bottom captions & faces) */}
+      <div className="flex flex-col gap-2 p-3.5 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]">
+        <div className="flex items-center justify-between text-xs">
+          <label className="font-semibold text-[#1F3824] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+            <MoveVertical className="h-3.5 w-3.5 text-[#1F3824]" /> Vertical Subtitle Position
+          </label>
+          <span className="text-[10px] text-[#717E6C] font-mono">
+            {currentPosition === "top"
+              ? "Upper Third (26%)"
+              : currentPosition === "bottom"
+              ? "Lower Safe Zone (62%)"
+              : "Golden Center (46%)"}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            type="button"
+            onClick={() => onStyleChange({ ...subtitleStyle, position: "top" })}
+            className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center gap-0.5 ${
+              currentPosition === "top"
+                ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
+                : "bg-white text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
+            }`}
+          >
+            <span>⬆️ Top (26%)</span>
+            <span className="text-[9px] font-normal opacity-80">Full-body & Demos</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onStyleChange({ ...subtitleStyle, position: "center" })}
+            className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center gap-0.5 ${
+              currentPosition === "center"
+                ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
+                : "bg-white text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
+            }`}
+          >
+            <span>🎯 Center (46%)</span>
+            <span className="text-[9px] font-normal opacity-80">Viral Sweet Spot</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onStyleChange({ ...subtitleStyle, position: "bottom" })}
+            className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center gap-0.5 ${
+              currentPosition === "bottom"
+                ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
+                : "bg-white text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
+            }`}
+          >
+            <span>⬇️ Lower (62%)</span>
+            <span className="text-[9px] font-normal opacity-80">Above Native UI</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Anti-Clash Pill Backdrop (For high contrast on busy video footage) */}
+      <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]">
+        <div className="flex items-center gap-2">
+          <ShieldAlert className="h-4 w-4 text-[#1F3824]" />
+          <div>
+            <div className="text-xs font-bold text-[#1B231B]">
+              Frosted Anti-Clash Capsule
+            </div>
+            <div className="text-[11px] text-[#717E6C]">
+              Adds dark backdrop pill behind subtitles to eliminate text clashing on busy video footage
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            onStyleChange({ ...subtitleStyle, backgroundPill: !hasBackgroundPill })
+          }
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer shrink-0 ${
+            hasBackgroundPill
+              ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
+              : "bg-white text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
+          }`}
+        >
+          {hasBackgroundPill ? "Pill Active" : "Shadow Only"}
+        </button>
+      </div>
+
       {/* Highlight Color & Live Word Preview */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]">
         <div className="flex flex-col gap-1.5">
@@ -137,7 +226,11 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
         </div>
 
         {/* Live Typography Preview Pill */}
-        <div className="px-4 py-2.5 rounded-xl bg-[#1B231B] text-white flex items-center gap-1.5 shadow-sm">
+        <div
+          className={`px-4 py-2.5 rounded-xl text-white flex items-center gap-1.5 shadow-sm ${
+            hasBackgroundPill ? "bg-[#121812] border border-white/20" : "bg-[#1B231B]"
+          }`}
+        >
           <span className="text-xs font-black uppercase text-white/50">Stop</span>
           <span
             className="text-xs font-black uppercase tracking-tight scale-105"

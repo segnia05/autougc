@@ -6,6 +6,8 @@ export interface SubtitleStyleConfig {
   highlightColor?: string;
   strokeColor?: string;
   fontFamily?: string;
+  position?: "top" | "center" | "bottom";
+  backgroundPill?: boolean;
 }
 
 export interface UgcAdCompositionProps {
@@ -53,5 +55,7 @@ export const DEFAULT_COMPOSITION_PROPS: UgcAdCompositionProps = {
     primaryColor: "#FFFFFF",
     highlightColor: "#FFE600",
     strokeColor: "#000000",
+    position: "center",
+    backgroundPill: false,
   },
 };
