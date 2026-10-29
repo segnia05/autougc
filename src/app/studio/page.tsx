@@ -542,7 +542,7 @@ function StudioContent() {
       )}
 
       {/* Studio Stage: Clean 2-Column Desktop Grid */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start focus:outline-none">
         {/* Left Column: Interactive 9:16 Canvas & Transport Controls (5 cols) */}
         <div className="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-20 gap-3">
           <CanvasPlayer
@@ -557,7 +557,7 @@ function StudioContent() {
         {/* Right Column: Tabbed Precision Creative Suite (7 cols) */}
         <div className="lg:col-span-7 flex flex-col gap-4">
           {/* Segmented Inspector Tab Bar */}
-          <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-1.5 shadow-xs flex items-center justify-between gap-1">
+          <div role="tablist" aria-label="Studio creative tools" className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-1.5 shadow-xs flex items-center justify-between gap-1">
             {[
               { id: "script", label: "Script & Hooks", icon: FileText },
               { id: "creator", label: "Creator & Style", icon: Layers },
@@ -570,8 +570,12 @@ function StudioContent() {
                 <button
                   key={tab.id}
                   type="button"
+                  role="tab"
+                  id={`studio-tab-${tab.id}`}
+                  aria-selected={isActive}
+                  aria-controls={`studio-panel-${tab.id}`}
                   onClick={() => setActiveTab(tab.id as StudioTab)}
-                  className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                  className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
                     isActive
                       ? "bg-[#1F3824] text-white shadow-xs"
                       : "text-[#4A544A] hover:bg-[#F6F7F2] hover:text-[#1B231B]"
@@ -586,7 +590,13 @@ function StudioContent() {
 
           {/* TAB 1: SCRIPT & HOOKS */}
           {activeTab === "script" && (
-            <div className="flex flex-col gap-4">
+            <div
+              id="studio-panel-script"
+              role="tabpanel"
+              aria-labelledby="studio-tab-script"
+              tabIndex={0}
+              className="flex flex-col gap-4 focus:outline-none"
+            >
               {/* Brand Identity Card */}
               <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex flex-col">
@@ -705,7 +715,13 @@ function StudioContent() {
 
           {/* TAB 2: CREATOR & TEMPLATE ARCHETYPE */}
           {activeTab === "creator" && (
-            <div className="flex flex-col gap-4">
+            <div
+              id="studio-panel-creator"
+              role="tabpanel"
+              aria-labelledby="studio-tab-creator"
+              tabIndex={0}
+              className="flex flex-col gap-4 focus:outline-none"
+            >
               {/* Video Format & Template Archetype Selector */}
               <VideoTemplatePicker
                 selectedTemplate={selectedTemplate}
@@ -725,7 +741,13 @@ function StudioContent() {
 
           {/* TAB 3: SUBTITLES & TYPOGRAPHY */}
           {activeTab === "subtitles" && (
-            <div className="flex flex-col gap-4">
+            <div
+              id="studio-panel-subtitles"
+              role="tabpanel"
+              aria-labelledby="studio-tab-subtitles"
+              tabIndex={0}
+              className="flex flex-col gap-4 focus:outline-none"
+            >
               <SubtitleStyler
                 subtitleStyle={subtitleStyle}
                 brandColor={brandColor}
@@ -737,7 +759,13 @@ function StudioContent() {
 
           {/* TAB 4: AUDIO & DUCKING */}
           {activeTab === "audio" && (
-            <div className="flex flex-col gap-4">
+            <div
+              id="studio-panel-audio"
+              role="tabpanel"
+              aria-labelledby="studio-tab-audio"
+              tabIndex={0}
+              className="flex flex-col gap-4 focus:outline-none"
+            >
               {/* Creator Voice Selector */}
               <VoiceSelector
                 selectedVoiceId={selectedVoiceId}

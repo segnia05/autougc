@@ -290,7 +290,8 @@ export function AutoScheduleModal({
               <select
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full bg-[#FAFBF9] border border-[#CBD5C4] rounded-xl px-3 py-2 text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824] cursor-pointer"
+                aria-label="Target Market Timezone"
+                className="w-full bg-[#FAFBF9] border border-[#CBD5C4] rounded-xl px-3 py-2 text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#1F3824]"
               >
                 {Object.entries(TIMEZONE_CONFIGS).map(([tzKey, cfg]) => (
                   <option key={tzKey} value={tzKey} className="bg-white text-[#1B231B]">
@@ -305,7 +306,8 @@ export function AutoScheduleModal({
               <select
                 value={preferredHour}
                 onChange={(e) => setPreferredHour(Number(e.target.value))}
-                className="w-full bg-[#FAFBF9] border border-[#CBD5C4] rounded-xl px-3 py-2 text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824] cursor-pointer"
+                aria-label="Peak Audience Window"
+                className="w-full bg-[#FAFBF9] border border-[#CBD5C4] rounded-xl px-3 py-2 text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#1F3824]"
               >
                 <option value={16} className="bg-white">Afternoon Peak (4:00 PM local)</option>
                 <option value={19} className="bg-white">Prime Evening (7:30 PM local)</option>
@@ -342,8 +344,18 @@ export function AutoScheduleModal({
                 return (
                   <div
                     key={acc.id}
+                    role="checkbox"
+                    tabIndex={0}
+                    aria-checked={isSelected}
+                    aria-label={`Channel ${acc.accountNickname || acc.accountHandle} on ${acc.platform}`}
                     onClick={() => toggleAccount(acc.id)}
-                    className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                    onKeyDown={(e) => {
+                      if (e.key === " " || e.key === "Enter") {
+                        e.preventDefault();
+                        toggleAccount(acc.id);
+                      }
+                    }}
+                    className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
                       isSelected
                         ? "border-[#1F3824] bg-[#E2E9DC]"
                         : "border-[#CBD5C4]/70 bg-[#FAFBF9] opacity-70 hover:opacity-100"

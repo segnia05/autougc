@@ -42,27 +42,27 @@ export function Footer() {
             </span>
             <ul className="flex flex-col gap-2.5 text-xs text-[#4A544A]">
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   TikTok UGC Ads
                 </Link>
               </li>
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Instagram Reels
                 </Link>
               </li>
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   YouTube Shorts
                 </Link>
               </li>
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Multi-Account Army
                 </Link>
               </li>
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Paid Ads Pipelines
                 </Link>
               </li>
@@ -76,27 +76,27 @@ export function Footer() {
             </span>
             <ul className="flex flex-col gap-2.5 text-xs text-[#4A544A]">
               <li>
-                <Link href="/studio" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/studio" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Creative Studio
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/dashboard" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Autopilot Engine
                 </Link>
               </li>
               <li>
-                <Link href="/studio" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/studio" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Kinetic Subtitles
                 </Link>
               </li>
               <li>
-                <Link href="/studio" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/studio" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Voice Synthesizer
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard?tab=vault" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/dashboard?tab=vault" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   1080p Video Vault
                 </Link>
               </li>
@@ -110,27 +110,27 @@ export function Footer() {
             </span>
             <ul className="flex flex-col gap-2.5 text-xs text-[#4A544A]">
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   AI & B2B SaaS
                 </Link>
               </li>
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   DTC & E-Commerce
                 </Link>
               </li>
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Consumer Mobile Apps
                 </Link>
               </li>
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Ed-Tech & Study Tools
                 </Link>
               </li>
               <li>
-                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/templates" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Fintech & Modern Tools
                 </Link>
               </li>
@@ -144,22 +144,22 @@ export function Footer() {
             </span>
             <ul className="flex flex-col gap-2.5 text-xs text-[#4A544A]">
               <li>
-                <Link href="/tools/tiktok-hook-generator" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/tools/tiktok-hook-generator" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   TikTok Hook Generator
                 </Link>
               </li>
               <li>
-                <Link href="/tools/instagram-reels-script-generator" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/tools/instagram-reels-script-generator" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Reels Script Generator
                 </Link>
               </li>
               <li>
-                <Link href="/tools/ugc-video-cost-calculator" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/tools/ugc-video-cost-calculator" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   UGC Cost & ROI Calculator
                 </Link>
               </li>
               <li>
-                <Link href="/tools" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/tools" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   AI Marketing Utilities
                 </Link>
               </li>
@@ -173,32 +173,32 @@ export function Footer() {
             </span>
             <ul className="flex flex-col gap-2.5 text-xs text-[#4A544A]">
               <li>
-                <Link href="/brands" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/brands" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   For SaaS Companies
                 </Link>
               </li>
               <li>
-                <Link href="/brands" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/brands" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   For Digital Product Sellers
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/blog" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Performance Blog
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/pricing" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Pricing Plans
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/terms" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-[#1F3824] font-medium transition-colors">
+                <Link href="/privacy" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Privacy Policy
                 </Link>
               </li>

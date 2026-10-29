@@ -55,7 +55,5 @@ export const DEFAULT_COMPOSITION_PROPS: UgcAdCompositionProps = {
     primaryColor: "#FFFFFF",
     highlightColor: "#FFE600",
     strokeColor: "#000000",
-    position: "center",
-    backgroundPill: false,
   },
 };

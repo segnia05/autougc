@@ -146,3 +146,31 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #353b47;
 }
+
+
+/* ========================================================= */
+/* ACCESSIBILITY & FOCUS VISIBLE FOUNDATIONS (WCAG 2.1 AA)  */
+/* ========================================================= */
+
+/* Universal High-Contrast Focus Ring for Keyboard Users */
+:focus-visible {
+  outline: 2px solid var(--accent-primary, #1f3824);
+  outline-offset: 2px;
+}
+
+/* Remove default outline when mouse is clicked, preserve for keyboard */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Vestibular Safety & Motion Reduction (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -161,7 +161,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
-      <main className="flex-1 w-full">
+      <main id="main-content" tabIndex={-1} className="flex-1 w-full focus:outline-none">
         {/* ========================================================= */}
         {/* HERO SECTION - Fluencify Precision Matching Screenshot 1 & 2 */}
         {/* ========================================================= */}
@@ -191,6 +191,7 @@ export default function Home() {
                 value={productUrl}
                 onChange={(e) => setProductUrl(e.target.value)}
                 placeholder="Enter your SaaS or digital product URL (e.g. https://mysoftware.com)"
+                aria-label="Enter your SaaS or digital product URL"
                 className="w-full py-2.5 bg-transparent text-xs text-[#1B231B] placeholder-[#717E6C] focus:outline-none"
               />
             </div>
@@ -947,18 +948,27 @@ export default function Home() {
                 >
                   <button
                     type="button"
+                    id={`faq-question-${idx}`}
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${idx}`}
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#1B231B] cursor-pointer"
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#1B231B] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-inset"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
                       className={`h-4 w-4 text-[#717E6C] transition-transform duration-200 shrink-0 ${
                         isOpen ? "rotate-180" : ""
                       }`}
+                      aria-hidden="true"
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 text-xs sm:text-sm text-[#4A544A] leading-relaxed border-t border-[#CBD5C4]/30 pt-3">
+                    <div
+                      id={`faq-answer-${idx}`}
+                      role="region"
+                      aria-labelledby={`faq-question-${idx}`}
+                      className="px-5 pb-5 text-xs sm:text-sm text-[#4A544A] leading-relaxed border-t border-[#CBD5C4]/30 pt-3"
+                    >
                       {faq.a}
                     </div>
                   )}

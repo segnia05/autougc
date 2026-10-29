@@ -138,7 +138,7 @@ export default function PricingPage() {
     <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
-      <main className="flex-1 w-full">
+      <main id="main-content" tabIndex={-1} className="flex-1 w-full focus:outline-none">
         {/* Header - Fluencify Editorial Precision */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-14 text-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4] mb-6 text-xs font-semibold">
@@ -157,9 +157,11 @@ export default function PricingPage() {
           </p>
 
           {/* Billing Toggle (Monthly / Annual) */}
-          <div className="inline-flex items-center p-1 rounded-full bg-[#ECEFE7] border border-[#CBD5C4]/70 mb-12">
+          <div role="tablist" aria-label="Billing frequency options" className="inline-flex items-center p-1 rounded-full bg-[#ECEFE7] border border-[#CBD5C4]/70 mb-12">
             <button
               type="button"
+              role="tab"
+              aria-selected={billingCycle === "monthly"}
               onClick={() => setBillingCycle("monthly")}
               className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 billingCycle === "monthly"
@@ -171,6 +173,8 @@ export default function PricingPage() {
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={billingCycle === "annual"}
               onClick={() => setBillingCycle("annual")}
               className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 billingCycle === "annual"
@@ -312,7 +316,12 @@ export default function PricingPage() {
                 max="15"
                 value={adsPerWeek}
                 onChange={(e) => setAdsPerWeek(parseInt(e.target.value, 10))}
-                className="w-full accent-[#1F3824] cursor-pointer h-2 bg-[#ECEFE7] rounded-lg"
+                aria-label="Creative volume in ads per week"
+                aria-valuemin={1}
+                aria-valuemax={15}
+                aria-valuenow={adsPerWeek}
+                aria-valuetext={`${adsPerWeek} ads per week, ${monthlyAds} videos per month`}
+                className="w-full accent-[#1F3824] cursor-pointer h-2 bg-[#ECEFE7] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824]"
               />
               <div className="flex justify-between text-[10px] text-[#717E6C] mt-2">
                 <span>4 ads/mo (Minimal)</span>

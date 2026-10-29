@@ -195,7 +195,8 @@ export function PublishingCalendar() {
               <select
                 value={selectedAccountId}
                 onChange={(e) => setSelectedAccountId(e.target.value)}
-                className="bg-transparent text-xs text-[#1B231B] focus:outline-none cursor-pointer"
+                aria-label="Filter scheduled posts by social account"
+                className="bg-transparent text-xs text-[#1B231B] focus:outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-[#1F3824]"
               >
                 <option value="all" className="bg-white">All Accounts ({uniqueAccounts.length})</option>
                 {uniqueAccounts.map((acc) => (
@@ -208,11 +209,13 @@ export function PublishingCalendar() {
           )}
 
           {/* Status Filter Buttons */}
-          <div className="flex items-center bg-[#ECEFE7] border border-[#CBD5C4]/70 rounded-full p-1 text-xs">
+          <div role="tablist" aria-label="Filter posts by publication status" className="flex items-center bg-[#ECEFE7] border border-[#CBD5C4]/70 rounded-full p-1 text-xs">
             {(["all", "pending", "published"] as const).map((tab) => (
               <button
                 key={tab}
                 type="button"
+                role="tab"
+                aria-selected={statusFilter === tab}
                 onClick={() => setStatusFilter(tab)}
                 className={`px-3 py-1 rounded-full text-xs capitalize transition-colors cursor-pointer ${
                   statusFilter === tab

@@ -15,8 +15,6 @@ const isPublicRoute = createRouteMatcher([
   "/api/v1/scripts/generate",
   "/api/v1/webhooks(.*)",
   "/api/auth(.*)",
-  "/api/health(.*)",
-  "/api/v1/campaigns/approve(.*)",
 ]);
 
 const isProtectedBrowserRoute = createRouteMatcher([

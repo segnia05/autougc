@@ -48,7 +48,7 @@ export default function TemplatesIndexPage() {
     <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-24 w-full">
+      <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-24 w-full focus:outline-none">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4] mb-4 text-xs font-semibold uppercase tracking-wider">
@@ -65,11 +65,13 @@ export default function TemplatesIndexPage() {
         {/* Filter Controls & Search */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 max-w-5xl mx-auto">
           {/* Category Tabs */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div role="tablist" aria-label="Template categories" className="flex flex-wrap items-center gap-2">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
+                role="tab"
+                aria-selected={selectedCategory === cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   selectedCategory === cat.id
@@ -90,6 +92,7 @@ export default function TemplatesIndexPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search hooks or industries..."
+              aria-label="Search templates by hook or industry"
               className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-[#CBD5C4] rounded-full text-[#1B231B] placeholder-[#717E6C] focus:outline-none focus:border-[#1F3824]"
             />
           </div>

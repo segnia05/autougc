@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef } from "react";
+import React, { forwardRef, useId } from "react";
 import { cn } from "@/lib/utils";
 
 export interface InputProps
@@ -28,7 +28,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
+    const generatedId = useId();
+    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : `input-${generatedId}`);
+    const errorId = `${inputId}-error`;
+    const hintId = `${inputId}-hint`;
+
+    const describedBy = [
+      error ? errorId : null,
+      hint && !error ? hintId : null,
+    ]
+      .filter(Boolean)
+      .join(" ") || undefined;
 
     return (
       <div className="w-full flex flex-col gap-1.5">
@@ -42,7 +52,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div className="relative flex items-center w-full">
           {leftIcon && (
-            <div className="absolute left-3.5 flex items-center pointer-events-none text-[var(--text-muted)]">
+            <div className="absolute left-3.5 flex items-center pointer-events-none text-[var(--text-muted)]" aria-hidden="true">
               {leftIcon}
             </div>
           )}
@@ -51,9 +61,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             type={type}
             disabled={disabled}
+            aria-invalid={error ? "true" : "false"}
+            aria-describedby={describedBy}
             className={cn(
               "w-full h-11 px-3.5 bg-[var(--bg-surface)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] text-sm rounded-lg border border-subtle shadow-tactile transition-all outline-none",
-              "focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)] focus:bg-[var(--bg-surface-elevated)]",
+              "focus:border-[var(--accent-primary)] focus:ring-2 focus:ring-[var(--accent-primary)] focus:bg-[var(--bg-surface-elevated)]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               leftIcon && "pl-10",
               rightElement && "pr-12",
@@ -69,9 +82,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error ? (
-          <p className="text-xs text-[var(--accent-rose)] font-medium mt-0.5">{error}</p>
+          <p id={errorId} role="alert" className="text-xs text-[var(--accent-rose)] font-medium mt-0.5">
+            {error}
+          </p>
         ) : hint ? (
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">{hint}</p>
+          <p id={hintId} className="text-xs text-[var(--text-muted)] mt-0.5">
+            {hint}
+          </p>
         ) : null}
       </div>
     );

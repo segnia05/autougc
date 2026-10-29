@@ -9,6 +9,7 @@ export interface ButtonProps
   variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
   size?: "sm" | "md" | "lg" | "icon";
   isLoading?: boolean;
+  loadingText?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
@@ -20,6 +21,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = "primary",
       size = "md",
       isLoading = false,
+      loadingText,
       leftIcon,
       rightIcon,
       children,
@@ -55,16 +57,23 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || isLoading}
+        aria-busy={isLoading ? "true" : undefined}
+        aria-disabled={disabled || isLoading ? "true" : undefined}
         className={cn(baseStyles, variantStyles[variant], sizeStyles[size], className)}
         {...props}
       >
         {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin text-current" />
+          <>
+            <Loader2 className="h-4 w-4 animate-spin text-current" aria-hidden="true" />
+            <span className="sr-only">{loadingText || "Loading, please wait..."}</span>
+          </>
         ) : (
-          leftIcon
+          leftIcon && <span aria-hidden="true" className="inline-flex shrink-0">{leftIcon}</span>
         )}
         {children}
-        {!isLoading && rightIcon}
+        {!isLoading && rightIcon && (
+          <span aria-hidden="true" className="inline-flex shrink-0">{rightIcon}</span>
+        )}
       </button>
     );
   }

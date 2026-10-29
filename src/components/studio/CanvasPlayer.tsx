@@ -108,7 +108,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
           {/* Screen Display Container */}
           <div className="relative w-full h-full rounded-[40px] overflow-hidden bg-[#1B231B] shadow-inner">
             {/* Top iOS Status Bar */}
-            <div className="absolute top-0 inset-x-0 h-10 px-6 z-40 flex items-center justify-between text-[11px] font-semibold text-white/90 drop-shadow-md pointer-events-none">
+            <div className="absolute top-0 inset-x-0 h-10 px-6 z-40 flex items-center justify-between text-[11px] font-semibold text-white/90 drop-shadow-md pointer-events-none" aria-hidden="true">
               <span>9:41</span>
               <div className="flex items-center gap-1.5 text-white/90">
                 <span className="text-[10px] font-bold tracking-tighter">5G</span>
@@ -118,13 +118,25 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
             </div>
 
             {/* Dynamic Island Pill */}
-            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-24 h-5 bg-[#111611] rounded-full z-40 flex items-center justify-between px-2.5 shadow-md pointer-events-none border border-white/10">
+            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-24 h-5 bg-[#111611] rounded-full z-40 flex items-center justify-between px-2.5 shadow-md pointer-events-none border border-white/10" aria-hidden="true">
               <div className="w-2 h-2 rounded-full bg-[#1F3824] ring-1 ring-white/20" />
               <div className="w-1.5 h-1.5 rounded-full bg-[#4A544A]" />
             </div>
 
-            {/* Remotion Player Canvas */}
-            <div className="relative w-full h-full cursor-pointer" onClick={togglePlay}>
+            {/* Remotion Player Canvas with Keyboard Access */}
+            <div
+              role="region"
+              aria-label="Interactive video ad canvas preview"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === " " || e.key === "Enter") {
+                  e.preventDefault();
+                  togglePlay();
+                }
+              }}
+              onClick={togglePlay}
+              className="relative w-full h-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-inset"
+            >
               <Player
                 ref={playerRef}
                 component={UgcAdComposition}
@@ -145,11 +157,11 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
             </div>
 
             {/* Permanent Pinned iOS Home Indicator Bar */}
-            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/70 rounded-full z-45 pointer-events-none shadow-sm" />
+            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/70 rounded-full z-45 pointer-events-none shadow-sm" aria-hidden="true" />
 
             {/* MODE 2: Official 2026 TikTok & Instagram Reels Broadcast Safe Zone HUD */}
             {viewMode === "safe_zone" && (
-              <div className="absolute inset-0 z-35 pointer-events-none flex flex-col justify-between p-2 select-none">
+              <div className="absolute inset-0 z-35 pointer-events-none flex flex-col justify-between p-2 select-none" role="region" aria-label="Broadcast Safe Zone Overlay">
                 {/* Top Exclusion Zone (12%) */}
                 <div className="h-16 border-b border-dashed border-rose-400/80 bg-rose-500/15 rounded-t-3xl flex items-center justify-center p-1">
                   <span className="text-[9px] font-mono font-bold text-rose-300 uppercase tracking-wider bg-black/60 px-2 py-0.5 rounded-full">
@@ -191,16 +203,16 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
             {viewMode === "in_feed" && (
               <>
                 {/* Protective Bottom Gradient Scrim - Eliminates any visual clash with background video */}
-                <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-black/92 via-black/60 to-transparent pointer-events-none z-28" />
+                <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-black/92 via-black/60 to-transparent pointer-events-none z-28" aria-hidden="true" />
 
-                <div className="absolute inset-x-3.5 bottom-7 z-30 pointer-events-none flex items-end justify-between gap-3 text-white">
+                <div className="absolute inset-x-3.5 bottom-7 z-30 pointer-events-none flex items-end justify-between gap-3 text-white" role="region" aria-label="Simulated in-feed display">
                   {/* Left: Native Profile Handle, Hook Caption, and Audio Marquee */}
                   <div className="flex flex-col gap-1.5 max-w-[74%] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-bold text-white tracking-tight">
                         @{compositionProps.brandName.toLowerCase().replace(/[^a-z0-9]/g, "")}.official
                       </span>
-                      <CheckCircle className="h-3.5 w-3.5 text-sky-400 fill-sky-400/20" />
+                      <CheckCircle className="h-3.5 w-3.5 text-sky-400 fill-sky-400/20" aria-hidden="true" />
                     </div>
 
                     <p className="text-[11px] text-white/95 line-clamp-2 leading-snug font-medium">
@@ -209,7 +221,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
                     </p>
 
                     <div className="flex items-center gap-1.5 text-[10px] text-white/85 font-mono mt-0.5">
-                      <span className="animate-pulse">♫</span>
+                      <span className="animate-pulse" aria-hidden="true">♫</span>
                       <span className="truncate">
                         Original Sound • {compositionProps.brandName} UGC
                       </span>
@@ -217,7 +229,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
                   </div>
 
                   {/* Right: Vertical TikTok Engagement Stack */}
-                  <div className="flex flex-col items-center gap-2.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-white shrink-0 pb-1">
+                  <div className="flex flex-col items-center gap-2.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-white shrink-0 pb-1" aria-hidden="true">
                     {/* Creator Avatar Pill */}
                     <div className="relative">
                       <div className="h-9 w-9 rounded-full border-2 border-white bg-[#1F3824] flex items-center justify-center font-bold text-xs text-white shadow-md">
@@ -266,7 +278,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
 
       {/* Pro Studio Transport Scrubber & Playback Controls */}
       <div className="w-full max-w-[360px] bg-white border border-[#CBD5C4]/80 rounded-2xl p-3 flex flex-col gap-2.5 shadow-sm">
-        {/* Scrubber Slider */}
+        {/* Scrubber Slider with Full Accessible Range Semantics */}
         <div className="flex items-center gap-2">
           <input
             type="range"
@@ -274,10 +286,14 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
             max={totalFrames}
             value={currentFrame}
             onChange={handleSeek}
-            aria-label="Timeline Scrubber"
-            className="w-full h-1.5 bg-[#E2E9DC] rounded-lg appearance-none cursor-pointer accent-[#1F3824]"
+            aria-label="Video Timeline Scrubber"
+            aria-valuemin={0}
+            aria-valuemax={totalFrames}
+            aria-valuenow={currentFrame}
+            aria-valuetext={formatTime(currentFrame)}
+            className="w-full h-1.5 bg-[#E2E9DC] rounded-lg appearance-none cursor-pointer accent-[#1F3824] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824]"
           />
-          <span className="text-[11px] font-mono font-semibold text-[#1F3824] shrink-0">
+          <span className="text-[11px] font-mono font-semibold text-[#1F3824] shrink-0" aria-live="off">
             {formatTime(currentFrame)}
           </span>
         </div>
@@ -288,16 +304,17 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
             <button
               type="button"
               onClick={togglePlay}
-              className="h-8 px-3 rounded-xl bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              aria-label={isPlaying ? "Pause video playback" : "Play video playback"}
+              className="h-8 px-3 rounded-xl bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2"
             >
               {isPlaying ? (
                 <>
-                  <Pause className="h-3.5 w-3.5 fill-current" />
+                  <Pause className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
                   <span>Pause</span>
                 </>
               ) : (
                 <>
-                  <Play className="h-3.5 w-3.5 fill-current" />
+                  <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
                   <span>Play</span>
                 </>
               )}
@@ -306,29 +323,41 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
             <button
               type="button"
               onClick={restartVideo}
+              aria-label="Replay video from the beginning"
               title="Replay from start"
-              className="h-8 w-8 rounded-xl bg-[#ECEFE7] hover:bg-[#E2E9DC] text-[#1B231B] flex items-center justify-center transition-colors cursor-pointer"
+              className="h-8 w-8 rounded-xl bg-[#ECEFE7] hover:bg-[#E2E9DC] text-[#1B231B] flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824]"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
 
             <button
               type="button"
               onClick={() => setIsMuted(!isMuted)}
+              aria-label={isMuted ? "Unmute video audio" : "Mute video audio"}
               title={isMuted ? "Unmute" : "Mute"}
-              className="h-8 w-8 rounded-xl bg-[#ECEFE7] hover:bg-[#E2E9DC] text-[#1B231B] flex items-center justify-center transition-colors cursor-pointer"
+              className="h-8 w-8 rounded-xl bg-[#ECEFE7] hover:bg-[#E2E9DC] text-[#1B231B] flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824]"
             >
-              {isMuted ? <VolumeX className="h-3.5 w-3.5 text-rose-600" /> : <Volume2 className="h-3.5 w-3.5" />}
+              {isMuted ? (
+                <VolumeX className="h-3.5 w-3.5 text-rose-600" aria-hidden="true" />
+              ) : (
+                <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
+              )}
             </button>
           </div>
 
           {/* 3-Mode Segmented View Selector: Clean (Hero) | Safe Zone | In-Feed */}
-          <div className="flex items-center bg-[#F6F7F2] p-0.5 rounded-xl border border-[#CBD5C4] text-[10px] font-bold">
+          <div
+            role="tablist"
+            aria-label="Preview display modes"
+            className="flex items-center bg-[#F6F7F2] p-0.5 rounded-xl border border-[#CBD5C4] text-[10px] font-bold"
+          >
             <button
               type="button"
+              role="tab"
+              aria-selected={viewMode === "clean"}
               onClick={() => setViewMode("clean")}
               title="Clean Studio Mode (No overlays)"
-              className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] ${
                 viewMode === "clean"
                   ? "bg-[#1F3824] text-white shadow-xs"
                   : "text-[#4A544A] hover:text-[#1B231B]"
@@ -339,23 +368,27 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
 
             <button
               type="button"
+              role="tab"
+              aria-selected={viewMode === "safe_zone"}
               onClick={() => setViewMode("safe_zone")}
               title="Safe Zone Guides (TikTok & Reels boundaries)"
-              className={`px-2 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-0.5 ${
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] ${
                 viewMode === "safe_zone"
                   ? "bg-[#1F3824] text-white shadow-xs"
                   : "text-[#4A544A] hover:text-[#1B231B]"
               }`}
             >
-              <ShieldCheck className="h-3 w-3" />
+              <ShieldCheck className="h-3 w-3" aria-hidden="true" />
               <span>Safe Zone</span>
             </button>
 
             <button
               type="button"
+              role="tab"
+              aria-selected={viewMode === "in_feed"}
               onClick={() => setViewMode("in_feed")}
               title="In-Feed Mockup Preview (Realistic TikTok feed)"
-              className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] ${
                 viewMode === "in_feed"
                   ? "bg-[#1F3824] text-white shadow-xs"
                   : "text-[#4A544A] hover:text-[#1B231B]"
@@ -390,19 +423,20 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
               <button
                 type="button"
                 onClick={() => onSelectMedia("/images/creator-glasses.jpg", false)}
-                className="font-bold underline hover:text-amber-950 flex items-center gap-1 cursor-pointer"
+                className="font-bold underline hover:text-amber-950 flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-800 rounded"
               >
-                <RefreshCw className="h-3 w-3" />
+                <RefreshCw className="h-3 w-3" aria-hidden="true" />
                 Reset to Clean Persona
               </button>
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className="grid grid-cols-3 gap-1.5" role="group" aria-label="Quick creator footage presets">
             <button
               type="button"
               onClick={() => onSelectMedia("/images/study-creator.jpg", false)}
-              className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer ${
+              aria-label="Select Emma UK creator footage"
+              className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] ${
                 !hasActiveVideo && compositionProps.productImageUrl === "/images/study-creator.jpg"
                   ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
@@ -413,7 +447,8 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
             <button
               type="button"
               onClick={() => onSelectMedia("/images/creator-glasses.jpg", false)}
-              className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer ${
+              aria-label="Select Sarah US creator footage"
+              className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] ${
                 !hasActiveVideo && compositionProps.productImageUrl === "/images/creator-glasses.jpg"
                   ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
@@ -424,7 +459,8 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
             <button
               type="button"
               onClick={() => onSelectMedia("/images/creator-male.jpg", false)}
-              className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer ${
+              aria-label="Select Alex Tech creator footage"
+              className={`px-2 py-1.5 rounded-xl text-center text-[10px] font-bold border transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] ${
                 !hasActiveVideo && compositionProps.productImageUrl === "/images/creator-male.jpg"
                   ? "bg-[#1F3824] text-white border-[#1F3824] shadow-xs"
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"

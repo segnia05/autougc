@@ -373,7 +373,7 @@ function DashboardContent() {
     <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
+      <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full focus:outline-none">
         {upgradeNotification && (
           <div className="mb-6 p-4 rounded-2xl bg-[#E2E9DC] border border-[#CBD5C4] flex items-center justify-between text-xs text-[#1F3824] font-semibold">
             <div className="flex items-center gap-2">
@@ -519,7 +519,7 @@ function DashboardContent() {
         </div>
 
         {/* Command Center Tabs (Fluencify Pill Segmented Container) */}
-        <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-[#ECEFE7] border border-[#CBD5C4]/70 mb-8 overflow-x-auto max-w-fit shadow-xs">
+        <div role="tablist" aria-label="Dashboard command views" className="flex items-center gap-1.5 p-1.5 rounded-full bg-[#ECEFE7] border border-[#CBD5C4]/70 mb-8 overflow-x-auto max-w-fit shadow-xs">
           {[
             { id: "pipeline", label: "30-Day Autopilot Pipeline", icon: Calendar, badge: "Live" },
             { id: "vault", label: "Video Vault & Downloads", icon: Film, count: videos.length },
@@ -532,8 +532,12 @@ function DashboardContent() {
               <button
                 key={tab.id}
                 type="button"
+                role="tab"
+                id={`dashboard-tab-${tab.id}`}
+                aria-selected={isCurrent}
+                aria-controls={`dashboard-panel-${tab.id}`}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-full transition-all cursor-pointer whitespace-nowrap ${isCurrent
+                className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-full transition-all cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${isCurrent
                   ? "bg-[#1F3824] text-white shadow-sm"
                   : "text-[#4A544A] hover:text-[#1B231B]"
                   }`}
@@ -559,7 +563,13 @@ function DashboardContent() {
 
         {/* TAB 1: 30-DAY AUTOPILOT PIPELINE */}
         {activeTab === "pipeline" && (
-          <div className="space-y-6">
+          <div
+            id="dashboard-panel-pipeline"
+            role="tabpanel"
+            aria-labelledby="dashboard-tab-pipeline"
+            tabIndex={0}
+            className="space-y-6 focus:outline-none"
+          >
             <div className="p-4 rounded-2xl bg-white border border-[#CBD5C4]/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
               <div className="flex items-start gap-3">
                 <div className="h-8 w-8 rounded-full bg-[#E2E9DC] flex items-center justify-center text-[#1F3824] shrink-0 mt-0.5">
@@ -590,7 +600,13 @@ function DashboardContent() {
 
         {/* TAB 2: VIDEO VAULT & DOWNLOADS */}
         {activeTab === "vault" && (
-          <div className="space-y-6">
+          <div
+            id="dashboard-panel-vault"
+            role="tabpanel"
+            aria-labelledby="dashboard-tab-vault"
+            tabIndex={0}
+            className="space-y-6 focus:outline-none"
+          >
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">

@@ -212,7 +212,7 @@ export function UpgradePaywallModal({
         )}
 
         {/* 3-Tier Grid */}
-        <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
+        <div role="radiogroup" aria-label="Subscription plan options" className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
           {plans.map((plan) => {
             const isSelected = selectedPlan === plan.id;
             const isCurrent = currentPlanTier === plan.id;
@@ -221,8 +221,18 @@ export function UpgradePaywallModal({
             return (
               <div
                 key={plan.id}
+                role="radio"
+                tabIndex={0}
+                aria-checked={isSelected}
+                aria-label={`${plan.name} Plan, ${plan.price} ${plan.billingPeriod}`}
                 onClick={() => setSelectedPlan(plan.id)}
-                className={`relative rounded-2xl p-5 flex flex-col justify-between transition-all cursor-pointer bg-white ${
+                onKeyDown={(e) => {
+                  if (e.key === " " || e.key === "Enter") {
+                    e.preventDefault();
+                    setSelectedPlan(plan.id);
+                  }
+                }}
+                className={`relative rounded-2xl p-5 flex flex-col justify-between transition-all cursor-pointer bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
                   plan.popular
                     ? "border-2 border-[#1F3824] shadow-md bg-[#FAFBF9]"
                     : isSelected

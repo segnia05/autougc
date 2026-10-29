@@ -66,13 +66,13 @@ export function CreatorVisualPicker({
     <div className="flex flex-col gap-4 p-6 rounded-3xl bg-white border border-[#CBD5C4]/70 shadow-sm text-[#1B231B]">
       <div className="flex items-center justify-between border-b border-[#CBD5C4]/50 pb-3">
         <div className="flex items-center gap-2">
-          <UserCheck className="h-4 w-4 text-[#1F3824]" />
+          <UserCheck className="h-4 w-4 text-[#1F3824]" aria-hidden="true" />
           <h3 className="text-base font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
             Creator visual & B-Roll persona
           </h3>
         </div>
         <span className="text-xs text-[#1F3824] bg-[#E2E9DC] px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1">
-          <Sparkles className="h-3 w-3" />
+          <Sparkles className="h-3 w-3" aria-hidden="true" />
           4K Neural B-Roll
         </span>
       </div>
@@ -81,14 +81,17 @@ export function CreatorVisualPicker({
         Select the visual creator persona featured in your 9:16 vertical ad. AutoUGC dynamically synchronizes voice, pacing, and subtitle hooks to their delivery.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Select Creator Persona">
         {CREATOR_PERSONAS.map((persona) => {
           const isSelected = selectedImageUrl === persona.imageUrl;
           return (
-            <div
+            <button
+              type="button"
               key={persona.id}
               onClick={() => onSelectPersona(persona)}
-              className={`group relative p-3 rounded-2xl border cursor-pointer transition-all flex items-center gap-3.5 ${
+              role="radio"
+              aria-checked={isSelected}
+              className={`group relative p-3 rounded-2xl border text-left cursor-pointer transition-all flex items-center gap-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
                 isSelected
                   ? "bg-[#E2E9DC] border-2 border-[#1F3824] shadow-xs"
                   : "bg-[#F6F7F2] border-[#CBD5C4]/70 hover:border-[#1F3824]/50 hover:bg-[#FAFBF9]"
@@ -98,13 +101,13 @@ export function CreatorVisualPicker({
               <div className="relative h-16 w-16 rounded-xl overflow-hidden shrink-0 border border-[#CBD5C4] shadow-xs">
                 <Image
                   src={persona.imageUrl}
-                  alt={persona.name}
+                  alt={`${persona.name} — ${persona.role}`}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                   sizes="64px"
                 />
                 {isSelected && (
-                  <div className="absolute top-1 right-1 h-5 w-5 rounded-full bg-[#1F3824] flex items-center justify-center text-white shadow-sm">
+                  <div className="absolute top-1 right-1 h-5 w-5 rounded-full bg-[#1F3824] flex items-center justify-center text-white shadow-sm" aria-hidden="true">
                     <Check className="h-3 w-3 stroke-[3]" />
                   </div>
                 )}
@@ -136,7 +139,7 @@ export function CreatorVisualPicker({
                   ))}
                 </div>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
