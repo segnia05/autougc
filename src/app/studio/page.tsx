@@ -587,7 +587,7 @@ function StudioContent() {
       {/* Studio Stage: Clean 2-Column Desktop Grid */}
       <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start focus:outline-none">
         {/* Left Column: Interactive 9:16 Canvas & Transport Controls (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-20 gap-3">
+        <div className="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-24 gap-3 pt-2">
           {selectedVideoUrl ? (
             <div className="w-full max-w-[360px] bg-emerald-50 border border-emerald-300 rounded-xl px-3 py-1.5 flex items-center justify-between text-[11px] text-emerald-900 font-semibold shadow-xs">
               <span className="flex items-center gap-1.5">

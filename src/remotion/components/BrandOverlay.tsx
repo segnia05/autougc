@@ -24,7 +24,7 @@ export const BrandOverlay: React.FC<BrandOverlayProps> = ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: "60px 48px",
+        padding: "170px 52px 140px 52px",
       }}
     >
       {/* Top Header Brand Badge - Modern Frosted Luxury Pill */}

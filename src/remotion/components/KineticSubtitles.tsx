@@ -37,15 +37,23 @@ export const KineticSubtitles: React.FC<KineticSubtitlesProps> = ({
       return currentTime >= firstWord.start - 0.1 && currentTime <= lastWord.end + 0.35;
     }) || chunks[0] || [];
 
+  const isInitialState = currentTime === 0;
+
+  const topPosition =
+    styleConfig.position === "top"
+      ? "28%"
+      : styleConfig.position === "bottom"
+      ? "68%"
+      : "50%";
+
   return (
     <div
       style={{
         position: "absolute",
         left: 60,
         right: 60,
-        // Centered strictly in the official TikTok / Reels Safe Zone (50%-55% from top)
-        // Completely clear of bottom captions, audio marquee, and action icons!
-        top: "50%",
+        // Safe Zone positioning
+        top: topPosition,
         transform: "translateY(-50%)",
         display: "flex",
         flexWrap: "wrap",
@@ -57,8 +65,8 @@ export const KineticSubtitles: React.FC<KineticSubtitlesProps> = ({
       }}
     >
       {activeChunk.map((item, idx) => {
-        const isActive = currentTime >= item.start && currentTime <= item.end;
-        const isPast = currentTime > item.end;
+        const isActive = !isInitialState && currentTime >= item.start && currentTime <= item.end;
+        const isPast = !isInitialState && currentTime > item.end;
 
         const scale = isActive
           ? spring({
@@ -67,6 +75,12 @@ export const KineticSubtitles: React.FC<KineticSubtitlesProps> = ({
               config: { damping: 12, stiffness: 220 },
             }) * 0.12 + 1.08
           : 1.0;
+
+        const wordColor = isActive
+          ? highlightColor
+          : isPast || isInitialState
+          ? primaryColor
+          : "rgba(255, 255, 255, 0.7)";
 
         return (
           <span
@@ -79,7 +93,12 @@ export const KineticSubtitles: React.FC<KineticSubtitlesProps> = ({
               textTransform: "uppercase",
               transform: `scale(${scale})`,
               display: "inline-block",
-              color: isActive ? highlightColor : isPast ? primaryColor : "rgba(255, 255, 255, 0.45)",
+              color: wordColor,
+              backgroundColor: styleConfig.backgroundPill
+                ? "rgba(0, 0, 0, 0.75)"
+                : undefined,
+              padding: styleConfig.backgroundPill ? "4px 16px" : undefined,
+              borderRadius: styleConfig.backgroundPill ? "16px" : undefined,
               textShadow:
                 "0 4px 12px rgba(0, 0, 0, 0.9), 0 0 24px rgba(0, 0, 0, 0.85), -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000",
               transition: "color 0.05s ease-out",

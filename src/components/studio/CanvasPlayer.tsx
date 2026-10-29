@@ -65,6 +65,51 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
     };
   }, []);
 
+  // Real spoken voiceover via Browser Speech Synthesis during live preview
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+    if (isPlaying && !isMuted && !compositionProps.videoUrl) {
+      window.speechSynthesis.cancel();
+      const fullText = `${compositionProps.hookText} ${compositionProps.bodyText} ${compositionProps.ctaText}`;
+      const utterance = new SpeechSynthesisUtterance(fullText);
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const naturalVoice =
+        voices.find(
+          (v) =>
+            v.lang.startsWith("en") &&
+            (v.name.includes("Natural") ||
+              v.name.includes("Google") ||
+              v.name.includes("Aria") ||
+              v.name.includes("Guy") ||
+              v.name.includes("Jenny"))
+        ) || voices.find((v) => v.lang.startsWith("en"));
+
+      if (naturalVoice) {
+        utterance.voice = naturalVoice;
+      }
+      window.speechSynthesis.speak(utterance);
+    } else {
+      window.speechSynthesis.cancel();
+    }
+
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [
+    isPlaying,
+    isMuted,
+    compositionProps.hookText,
+    compositionProps.bodyText,
+    compositionProps.ctaText,
+    compositionProps.videoUrl,
+  ]);
+
   const togglePlay = () => {
     if (!playerRef.current) return;
     if (playerRef.current.isPlaying()) {

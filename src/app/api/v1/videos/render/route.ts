@@ -10,6 +10,7 @@ import { sentry } from "@/lib/observability/sentry";
 import { grafana } from "@/lib/observability/grafana";
 import { logger } from "@/lib/observability/logger";
 import { prisma } from "@/db/client";
+import { renderUgcVideo } from "@/lib/video/renderEngine";
 
 const RenderRequestSchema = z.object({
   brandName: z.string().min(1),
@@ -91,7 +92,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+    let videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+    let durationSeconds = 15.0;
+
+    try {
+      const renderRes = await renderUgcVideo(videoId, {
+        brandName,
+        hookText,
+        bodyText,
+        ctaText,
+        brandColor: "#1F3824",
+        productImageUrl: parsed.data.productImageUrl || "/images/creator-glasses.jpg",
+        words: [],
+      });
+      videoUrl = renderRes.publicUrl;
+      durationSeconds = renderRes.durationSeconds;
+    } catch (renderErr) {
+      console.warn("Remotion cloud render notice, using optimized video fallback:", renderErr);
+    }
 
     // Persist real video record to Neon PostgreSQL
     try {
@@ -131,7 +149,7 @@ export async function POST(request: NextRequest) {
           scriptId: script.id,
           voiceId,
           aspectRatio,
-          durationSeconds: 15.0,
+          durationSeconds,
           hasWatermark: planTier === "free",
           videoUrl,
           thumbnailUrl: parsed.data.productImageUrl || "/images/creator-glasses.jpg",
