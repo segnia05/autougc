@@ -44,5 +44,7 @@ next-env.d.ts
 
 # renders
 public/renders/*.mp4
+public/renders/*.jpg
+public/renders/*.png
 !public/renders/.gitkeep
 

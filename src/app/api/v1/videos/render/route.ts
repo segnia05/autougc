@@ -11,6 +11,7 @@ import { grafana } from "@/lib/observability/grafana";
 import { logger } from "@/lib/observability/logger";
 import { prisma } from "@/db/client";
 import { renderUgcVideo } from "@/lib/video/renderEngine";
+import { synthesizeVoiceover } from "@/lib/audio/ttsProvider";
 
 const RenderRequestSchema = z.object({
   brandName: z.string().min(1),
@@ -96,6 +97,7 @@ export async function POST(request: NextRequest) {
     let durationSeconds = 15.0;
 
     try {
+      const synth = await synthesizeVoiceover(`${hookText} ${bodyText} ${ctaText}`, voiceId);
       const renderRes = await renderUgcVideo(videoId, {
         brandName,
         hookText,
@@ -103,7 +105,7 @@ export async function POST(request: NextRequest) {
         ctaText,
         brandColor: "#1F3824",
         productImageUrl: parsed.data.productImageUrl || "/images/creator-glasses.jpg",
-        words: [],
+        words: synth.words,
       });
       videoUrl = renderRes.publicUrl;
       durationSeconds = renderRes.durationSeconds;
