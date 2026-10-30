@@ -115,10 +115,13 @@ function StudioContent() {
   const [brandColor, setBrandColor] = useState("#1F3824");
   const [selectedVoiceId, setSelectedVoiceId] = useState("sarah_dtc_founder");
   const [selectedTrackId, setSelectedTrackId] = useState("lofi_focus");
-  const [selectedVisualUrl, setSelectedVisualUrl] = useState(() => searchParams.get("image") || "/images/creator-glasses.jpg");
+  const [selectedVisualUrl, setSelectedVisualUrl] = useState(() => searchParams.get("image") || "/images/creator-sarah.jpg");
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>(
-    () => searchParams.get("video") || "/videos/creator-sample.mp4"
+    () => searchParams.get("video") || "/videos/creator-sarah.mp4"
   );
+  const [hookStickerType, setHookStickerType] = useState<"tiktok_question" | "tweet_card" | "pov_badge" | "bold_warning">("tiktok_question");
+  const [showHookSticker, setShowHookSticker] = useState(true);
+  const [showCtaSticker, setShowCtaSticker] = useState(true);
 
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyleConfig>({
     fontSize: 54,
@@ -134,8 +137,11 @@ function StudioContent() {
     bodyText: "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
     ctaText: "Click the link below and get $30 off your setup today.",
     brandColor: "#1F3824",
-    productImageUrl: "/images/creator-glasses.jpg",
-    videoUrl: "/videos/creator-sample.mp4",
+    productImageUrl: "/images/creator-sarah.jpg",
+    videoUrl: "/videos/creator-sarah.mp4",
+    hookStickerType: "tiktok_question",
+    showHookSticker: true,
+    showCtaSticker: true,
     words: [],
     subtitleStyle: {
       fontSize: 54,
@@ -311,6 +317,9 @@ function StudioContent() {
           archetype: selectedTemplate,
           hasVoiceover: selectedTemplate !== "meme_reaction",
           audioMode: selectedTemplate === "meme_reaction" ? "music_only" : "narration_ducked",
+          hookStickerType,
+          showHookSticker,
+          showCtaSticker,
         });
       }
     });
@@ -329,6 +338,9 @@ function StudioContent() {
     selectedVisualUrl,
     selectedVideoUrl,
     selectedTemplate,
+    hookStickerType,
+    showHookSticker,
+    showCtaSticker,
   ]);
 
   const handleSelectPersona = (persona: CreatorPersona) => {
@@ -364,6 +376,9 @@ function StudioContent() {
           aspectRatio: "9:16",
           productImageUrl: selectedVisualUrl,
           videoUrl: selectedVideoUrl || (selectedVisualUrl.endsWith(".mp4") ? selectedVisualUrl : "/videos/creator-sarah.mp4"),
+          hookStickerType,
+          showHookSticker,
+          showCtaSticker,
         }),
       });
 

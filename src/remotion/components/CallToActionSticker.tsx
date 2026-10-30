@@ -70,3 +70,4 @@ export const CallToActionSticker: React.FC<CallToActionStickerProps> = ({
     </div>
   );
 };
+

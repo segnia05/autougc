@@ -22,6 +22,9 @@ const RenderRequestSchema = z.object({
   aspectRatio: z.string().default("9:16"),
   productImageUrl: z.string().optional(),
   videoUrl: z.string().optional(),
+  hookStickerType: z.enum(["tiktok_question", "tweet_card", "pov_badge", "bold_warning"]).optional(),
+  showHookSticker: z.boolean().optional(),
+  showCtaSticker: z.boolean().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -105,8 +108,11 @@ export async function POST(request: NextRequest) {
         bodyText,
         ctaText,
         brandColor: "#1F3824",
-        productImageUrl: parsed.data.productImageUrl || "/images/creator-glasses.jpg",
+        productImageUrl: parsed.data.productImageUrl || "/images/creator-sarah.jpg",
         videoUrl: parsed.data.videoUrl || "/videos/creator-sarah.mp4",
+        hookStickerType: parsed.data.hookStickerType || "tiktok_question",
+        showHookSticker: parsed.data.showHookSticker ?? true,
+        showCtaSticker: parsed.data.showCtaSticker ?? true,
         words: synth.words,
       });
       videoUrl = renderRes.publicUrl;

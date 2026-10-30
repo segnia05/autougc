@@ -31,3 +31,4 @@ const cmd = `node scripts/renderUgcCli.mjs "${JSON.stringify(payload).replace(/"
 console.log("Executing render...");
 const output = execSync(cmd, { encoding: "utf-8" });
 console.log(output);
+

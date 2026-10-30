@@ -212,3 +212,4 @@ export const NativeHookSticker: React.FC<NativeHookStickerProps> = ({
     </div>
   );
 };
+
