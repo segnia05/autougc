@@ -4,16 +4,21 @@ import { UgcAdCompositionProps, DEFAULT_COMPOSITION_PROPS } from "../types";
 import { DynamicBackground } from "../components/DynamicBackground";
 import { KineticSubtitles } from "../components/KineticSubtitles";
 import { BrandOverlay } from "../components/BrandOverlay";
+import { NativeHookSticker } from "../components/NativeHookSticker";
+import { ProductDemoOverlay } from "../components/ProductDemoOverlay";
+import { CallToActionSticker } from "../components/CallToActionSticker";
 
 export const UgcAdComposition: React.FC<UgcAdCompositionProps> = (props) => {
   const mergedProps = { ...DEFAULT_COMPOSITION_PROPS, ...props };
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
 
   const isMemeMode =
     mergedProps.archetype === "meme_reaction" ||
     mergedProps.hasVoiceover === false ||
     mergedProps.audioMode === "music_only";
+
+  const totalDurationSeconds = durationInFrames / fps;
 
   // Smooth pop-in animation for meme punchline card
   const cardScale = spring({
@@ -24,14 +29,30 @@ export const UgcAdComposition: React.FC<UgcAdCompositionProps> = (props) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#F6F7F2", overflow: "hidden" }}>
-      {/* Track 1: Dynamic Visual Background / Creator Reaction */}
+      {/* Track 1: Dynamic Visual Background / Real Creator Video Motion */}
       <DynamicBackground
         productImageUrl={mergedProps.productImageUrl}
         videoUrl={mergedProps.videoUrl}
         brandColor={mergedProps.brandColor}
       />
 
-      {/* Track 2: Subtitles or Kinetic Viral Meme Card */}
+      {/* Track 2: Native Hook Headline Sticker (Fastlane UGC Pattern Interrupt) */}
+      {!isMemeMode && mergedProps.showHookSticker !== false && (
+        <NativeHookSticker
+          hookText={mergedProps.hookText}
+          brandName={mergedProps.brandName}
+          stickerType={mergedProps.hookStickerType || "tiktok_question"}
+        />
+      )}
+
+      {/* Track 3: Middle Product Demo / Proof Mockup Overlay */}
+      <ProductDemoOverlay
+        productImageUrl={mergedProps.productImageUrl}
+        brandName={mergedProps.brandName}
+        totalDurationSeconds={totalDurationSeconds}
+      />
+
+      {/* Track 4: Subtitles or Kinetic Viral Meme Card */}
       {isMemeMode ? (
         <div
           style={{
@@ -92,7 +113,17 @@ export const UgcAdComposition: React.FC<UgcAdCompositionProps> = (props) => {
         />
       )}
 
-      {/* Track 3: Top Brand Mark & Watermark Overlay */}
+      {/* Track 5: Bottom Pulsing Call to Action Sticker */}
+      {!isMemeMode && mergedProps.showCtaSticker !== false && (
+        <CallToActionSticker
+          ctaText={mergedProps.ctaText || `Try ${mergedProps.brandName} Today (Link in Bio)`}
+          brandName={mergedProps.brandName}
+          brandColor={mergedProps.brandColor}
+          totalDurationSeconds={totalDurationSeconds}
+        />
+      )}
+
+      {/* Track 6: Top Brand Mark & Watermark Overlay */}
       <BrandOverlay
         brandName={mergedProps.brandName}
         logoUrl={mergedProps.logoUrl}

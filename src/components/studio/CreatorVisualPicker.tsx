@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { UserCheck, Sparkles, Check } from "lucide-react";
+import { UserCheck, Sparkles, Check, Video, Bot } from "lucide-react";
 
 export interface CreatorPersona {
   id: string;
@@ -13,48 +13,64 @@ export interface CreatorPersona {
   voiceId: string;
   vibe: string;
   tags: string[];
+  characterType: "real_creator" | "ai_avatar";
 }
 
 export const CREATOR_PERSONAS: CreatorPersona[] = [
   {
     id: "sarah",
     name: "Sarah Miller",
-    role: "SaaS & DTC Reviewer",
-    imageUrl: "/images/creator-glasses.jpg",
-    videoUrl: "/videos/creator-sample.mp4",
+    role: "Lifestyle & DTC Creator",
+    imageUrl: "/images/creator-sarah.jpg",
+    videoUrl: "/videos/creator-sarah.mp4",
     voiceId: "sarah_dtc_founder",
-    vibe: "High credibility, conversational & energetic",
-    tags: ["High Energy", "Real Video", "Female"],
+    vibe: "Authentic, energetic smartphone vlog walk-and-talk in 9:16",
+    tags: ["Real Video", "High Energy", "Female"],
+    characterType: "real_creator",
   },
   {
     id: "alex",
-    name: "Alex Chen",
-    role: "Tech Founder & Builder",
-    imageUrl: "/images/creator-male.jpg",
-    videoUrl: "/videos/creator-sarah.mp4",
-    voiceId: "alex_casual_dtc",
-    vibe: "Direct, founder-to-founder authority",
-    tags: ["Authoritative", "Real Video", "Male"],
-  },
-  {
-    id: "emma",
-    name: "Emma Davis",
-    role: "Productivity Specialist",
-    imageUrl: "/images/study-creator.jpg",
+    name: "Alex Vance",
+    role: "Tech Founder & Podcast Host",
+    imageUrl: "/images/creator-alex.jpg",
     videoUrl: "/videos/creator-alex.mp4",
-    voiceId: "emma_storyteller",
-    vibe: "Warm, relatable aesthetic workspace walk-through",
-    tags: ["Relatable", "Real Video", "Female"],
+    voiceId: "alex_casual_dtc",
+    vibe: "Podcast desk setup with mic & laptop, talking directly to camera",
+    tags: ["Real Video", "Authoritative", "Male"],
+    characterType: "real_creator",
   },
   {
     id: "workspace",
-    name: "Minimalist Workspace",
+    name: "Clean Tech Workspace",
     role: "Architectural B-Roll",
     imageUrl: "/images/hero-landscape.jpg",
     videoUrl: "/videos/creator-workspace.mp4",
     voiceId: "marcus_deep_authority",
-    vibe: "Ultra-clean workspace setup for software demos",
-    tags: ["Clean B-Roll", "Real Video", "Ambient"],
+    vibe: "Ultra-clean workspace setup with code reflection",
+    tags: ["Real Video", "Ambient", "Workspace"],
+    characterType: "real_creator",
+  },
+  {
+    id: "marcus_ai",
+    name: "Marcus Thorne (AI)",
+    role: "Digital Enterprise Presenter",
+    imageUrl: "/images/creator-alex.jpg",
+    videoUrl: "/videos/creator-alex.mp4",
+    voiceId: "marcus_deep_authority",
+    vibe: "Executive tone, synthetic corporate presenter",
+    tags: ["AI Avatar", "Corporate", "Male"],
+    characterType: "ai_avatar",
+  },
+  {
+    id: "elena_ai",
+    name: "Elena Rostova (AI)",
+    role: "Global Fintech Creator",
+    imageUrl: "/images/creator-sarah.jpg",
+    videoUrl: "/videos/creator-sarah.mp4",
+    voiceId: "sarah_dtc_founder",
+    vibe: "Polished studio lighting, AI lip-sync persona",
+    tags: ["AI Avatar", "Fintech", "Female"],
+    characterType: "ai_avatar",
   },
 ];
 
@@ -67,28 +83,72 @@ export function CreatorVisualPicker({
   selectedImageUrl,
   onSelectPersona,
 }: CreatorVisualPickerProps) {
+  const [filter, setFilter] = useState<"all" | "real_creator" | "ai_avatar">("all");
+
+  const filteredPersonas = CREATOR_PERSONAS.filter((p) => {
+    if (filter === "all") return true;
+    return p.characterType === filter;
+  });
+
   return (
     <div className="flex flex-col gap-4 p-6 rounded-3xl bg-white border border-[#CBD5C4]/70 shadow-sm text-[#1B231B]">
-      <div className="flex items-center justify-between border-b border-[#CBD5C4]/50 pb-3">
+      <div className="flex flex-wrap items-center justify-between border-b border-[#CBD5C4]/50 pb-3 gap-2">
         <div className="flex items-center gap-2">
           <UserCheck className="h-4 w-4 text-[#1F3824]" aria-hidden="true" />
           <h3 className="text-base font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
-            Creator visual & B-Roll persona
+            Creator & Character Library
           </h3>
         </div>
-        <span className="text-xs text-[#1F3824] bg-[#E2E9DC] px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1">
-          <Sparkles className="h-3 w-3" aria-hidden="true" />
-          4K Neural B-Roll
-        </span>
+
+        {/* Filter Toggle: All vs Real Creators vs AI Avatars */}
+        <div className="flex items-center gap-1 bg-[#F6F7F2] p-1 rounded-full border border-[#CBD5C4]/60 text-xs">
+          <button
+            type="button"
+            onClick={() => setFilter("all")}
+            className={`px-3 py-1 rounded-full transition-all font-semibold ${
+              filter === "all"
+                ? "bg-[#1F3824] text-white shadow-xs"
+                : "text-[#4A544A] hover:text-[#1B231B]"
+            }`}
+          >
+            All ({CREATOR_PERSONAS.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilter("real_creator")}
+            className={`px-3 py-1 rounded-full transition-all font-semibold flex items-center gap-1 ${
+              filter === "real_creator"
+                ? "bg-[#1F3824] text-white shadow-xs"
+                : "text-[#4A544A] hover:text-[#1B231B]"
+            }`}
+          >
+            <Video className="h-3 w-3" />
+            Real Creators
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilter("ai_avatar")}
+            className={`px-3 py-1 rounded-full transition-all font-semibold flex items-center gap-1 ${
+              filter === "ai_avatar"
+                ? "bg-[#1F3824] text-white shadow-xs"
+                : "text-[#4A544A] hover:text-[#1B231B]"
+            }`}
+          >
+            <Bot className="h-3 w-3" />
+            AI Avatars
+          </button>
+        </div>
       </div>
 
       <p className="text-xs text-[#4A544A] leading-relaxed">
-        Select the visual creator persona featured in your 9:16 vertical ad. AutoUGC dynamically synchronizes voice, pacing, and subtitle hooks to their delivery.
+        Choose between <strong>Real-Person Creators</strong> (real humans moving, holding phones, and reacting) or <strong>AI Avatars</strong> (digital synthetic presenters).
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Select Creator Persona">
-        {CREATOR_PERSONAS.map((persona) => {
+        {filteredPersonas.map((persona) => {
           const isSelected = selectedImageUrl === persona.imageUrl;
+          const isReal = persona.characterType === "real_creator";
+
           return (
             <button
               type="button"
@@ -98,48 +158,50 @@ export function CreatorVisualPicker({
               aria-checked={isSelected}
               className={`group relative p-3 rounded-2xl border text-left cursor-pointer transition-all flex items-center gap-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
                 isSelected
-                  ? "bg-[#E2E9DC] border-2 border-[#1F3824] shadow-xs"
-                  : "bg-[#F6F7F2] border-[#CBD5C4]/70 hover:border-[#1F3824]/50 hover:bg-[#FAFBF9]"
+                  ? "border-[#1F3824] bg-[#FAFBF9] ring-1 ring-[#1F3824] shadow-xs"
+                  : "border-[#CBD5C4]/70 hover:border-[#1F3824]/50 bg-white"
               }`}
             >
-              {/* Creator Thumbnail */}
-              <div className="relative h-16 w-16 rounded-xl overflow-hidden shrink-0 border border-[#CBD5C4] shadow-xs">
+              {/* Creator Headshot */}
+              <div className="relative h-14 w-14 shrink-0 rounded-xl overflow-hidden border border-[#CBD5C4]/70 shadow-xs">
                 <Image
                   src={persona.imageUrl}
-                  alt={`${persona.name} — ${persona.role}`}
+                  alt={persona.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  sizes="64px"
+                  sizes="56px"
                 />
-                {isSelected && (
-                  <div className="absolute top-1 right-1 h-5 w-5 rounded-full bg-[#1F3824] flex items-center justify-center text-white shadow-sm" aria-hidden="true">
-                    <Check className="h-3 w-3 stroke-[3]" />
-                  </div>
+                {isReal ? (
+                  <div className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border border-white" title="Real Motion Video" />
+                ) : (
+                  <div className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-indigo-500 border border-white" title="AI Avatar" />
                 )}
               </div>
 
               {/* Creator Info */}
-              <div className="flex flex-col min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-1">
-                  <h4 className="text-xs font-bold text-[#1B231B] truncate">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-sm font-semibold text-[#1B231B] truncate">
                     {persona.name}
-                  </h4>
-                  <span className="text-[10px] font-mono text-[#717E6C] shrink-0">
-                    {persona.role.split("&")[0]}
                   </span>
+                  {isSelected && (
+                    <span className="h-4 w-4 rounded-full bg-[#1F3824] text-white flex items-center justify-center shrink-0">
+                      <Check className="h-2.5 w-2.5" />
+                    </span>
+                  )}
                 </div>
-                <p className="text-[11px] text-[#4A544A] line-clamp-1 mt-0.5">
-                  {persona.vibe}
+                <p className="text-[11px] text-[#4A544A] truncate mb-1">
+                  {persona.role}
                 </p>
-
-                {/* Tags */}
-                <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                  {persona.tags.slice(0, 2).map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[9px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-white border border-[#CBD5C4]/70 text-[#1F3824]"
-                    >
-                      {tag}
+                <div className="flex flex-wrap gap-1">
+                  <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                    isReal ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-indigo-50 text-indigo-800 border border-indigo-200"
+                  }`}>
+                    {isReal ? "Real Creator" : "AI Avatar"}
+                  </span>
+                  {persona.tags.slice(0, 1).map((t) => (
+                    <span key={t} className="text-[9px] text-[#717E6C] bg-[#F6F7F2] px-1.5 py-0.5 rounded border border-[#CBD5C4]/50">
+                      {t}
                     </span>
                   ))}
                 </div>

@@ -16,71 +16,88 @@ export default function PricingPage() {
   const plans = [
     {
       id: "starter" as const,
-      name: "Starter Plan",
-      tagline: "For solo founders & DTC bootstrappers",
-      monthlyPrice: 49,
-      annualPrice: 39,
-      credits: "20 Videos / mo",
-      costPerAd: "$1.95 / video",
+      name: "Starter",
+      tagline: "Solopreneurs starting out.",
+      monthlyPrice: 29,
+      annualPrice: 20,
+      credits: "500 credits a month",
+      costPerAd: "= up to 100 statics or 6 videos",
       badge: null,
       highlight: false,
       features: [
-        "20 1080p Video Exports / month",
-        "1 Brand Account connected",
-        "~4 posts / week (Mon/Wed/Fri/Sun drip)",
-        "Autopilot Scheduler & Peak-Hour Timing",
-        "1080p MP4 Downloads & Permanent Vault",
-        "Zero watermarks & commercial license",
+        "Light planning from Senna",
+        "1 campaign at a time",
+        "1 social account, 1 seat",
+        "25 AI characters",
+        "Trending content library",
+        "TikTok direct posting, unlimited scheduling",
       ],
-      ctaText: "Start Starter Plan",
+      ctaText: "Choose Starter",
     },
     {
       id: "growth" as const,
-      name: "Growth Plan",
-      tagline: "For scaling brands & high-velocity teams",
-      monthlyPrice: 89,
-      annualPrice: 69,
-      credits: "60 Videos / mo",
-      costPerAd: "$1.15 / video",
+      name: "Growth",
+      tagline: "Starting to scale.",
+      monthlyPrice: 79,
+      annualPrice: 55,
+      credits: "2,000 credits a month",
+      costPerAd: "= up to 400 statics or 25 videos",
       badge: "MOST POPULAR",
       highlight: true,
       features: [
-        "60 1080p Video Exports / month",
-        "Up to 5 Accounts (Main + Satellites)",
-        "~2 posts / day automated drip",
-        "Multi-Account Army distribution",
-        "Anti-Duplicate Shadowban Engine",
-        "3 Team Seats for Media Buyers & Editors",
-        "Priority GPU cloud rendering",
-        "All 12 Conversational creator voices",
+        "4x the Senna fuel",
+        "5 campaigns at a time",
+        "10 social accounts per workspace, 3 workspaces",
+        "3 seats included, $10 a month per extra",
+        "Analytics, remix and auto captions",
+        "Unlimited AI characters, 100 real-person characters",
+        "Priority support",
       ],
-      ctaText: "Unlock Growth Plan",
+      ctaText: "Choose Growth",
     },
     {
-      id: "scale" as const,
-      name: "Scale Plan",
-      tagline: "For agencies & aggressive media buyers",
+      id: "pro" as const,
+      name: "Pro",
+      tagline: "Teams pushing high volume.",
       monthlyPrice: 199,
-      annualPrice: 159,
-      credits: "180 Videos / mo",
-      costPerAd: "$0.88 / video",
-      badge: "ENTERPRISE VOLUME",
+      annualPrice: 139,
+      credits: "7,500 credits a month",
+      costPerAd: "= up to 1,500 statics or 93 videos",
+      badge: "SCALE HIGH VOLUME",
       highlight: false,
       features: [
-        "180 1080p Video Exports / month",
-        "Up to 15 Accounts (Multi-Brand / Team)",
-        "~6 posts / day high-velocity blitz",
-        "10 Team Workspace Seats",
-        "Agency Multi-Brand Management",
-        "Anti-Duplicate Matrix on all variants",
-        "Dedicated GPU Rendering Node & API",
-        "Direct VIP support & onboarding",
+        "5x the Senna fuel",
+        "20 campaigns at a time",
+        "500 social accounts per workspace, 10 workspaces",
+        "10 seats included, $10 a month per extra",
+        "Unlimited AI and real-person characters",
+        "Analytics, remix, auto captions, priority support",
       ],
-      ctaText: "Get Scale Access",
+      ctaText: "Choose Pro",
+    },
+    {
+      id: "enterprise" as const,
+      name: "Enterprise",
+      tagline: "Larger teams & agencies.",
+      monthlyPrice: 999,
+      annualPrice: 999,
+      credits: "40,000 credits a month",
+      costPerAd: "= up to 8,000 statics or 500 videos",
+      badge: null,
+      highlight: false,
+      features: [
+        "Every Pro feature included",
+        "14x the Senna fuel",
+        "25 seats included",
+        "20 campaigns at a time",
+        "500 social accounts per workspace, 10 workspaces",
+        "Scales to $2,999/mo in $50 steps (adds 2,000 credits)",
+      ],
+      ctaText: "Book a setup call",
     },
   ];
 
-  const handleCheckout = async (planId: "starter" | "growth" | "scale") => {
+  const handleCheckout = async (planId: "starter" | "growth" | "pro" | "enterprise") => {
     setLoadingCheckoutPlan(planId);
     try {
       const res = await fetch("/api/v1/billing/checkout", {
@@ -191,52 +208,56 @@ export default function PricingPage() {
             </button>
           </div>
 
-          {/* 3-Tier Pricing Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto text-left">
+          {/* 4-Tier Pricing Grid (Fastlane Aligned) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto text-left">
             {plans.map((plan) => {
               const displayPrice = billingCycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
 
               return (
                 <div
                   key={plan.id}
-                  className={`relative rounded-3xl p-8 flex flex-col justify-between transition-all bg-white border ${
+                  className={`relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all bg-white border ${
                     plan.highlight
-                      ? "border-2 border-[#1F3824] shadow-md bg-[#FAFBF9]"
+                      ? "border-2 border-orange-500 shadow-lg bg-[#FAFBF9] ring-2 ring-orange-500/20"
                       : "border-[#CBD5C4]/70 shadow-sm"
                   }`}
                 >
                   {plan.badge && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#1F3824] text-white font-bold text-[10px] uppercase tracking-widest px-3.5 py-1 rounded-full shadow-sm">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-600 text-white font-bold text-[9px] uppercase tracking-widest px-3 py-0.5 rounded-full shadow-sm">
                       {plan.badge}
                     </div>
                   )}
 
                   <div>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-1.5">
                       <h3 className="text-xl font-bold text-[#1B231B]">
                         {plan.name}
                       </h3>
                     </div>
-                    <p className="text-xs text-[#4A544A] mb-6 min-h-[32px]">
+                    <p className="text-xs text-[#4A544A] mb-4 min-h-[28px]">
                       {plan.tagline}
                     </p>
 
                     <div className="flex items-baseline gap-1.5 mb-1">
-                      <span className="text-4xl font-extrabold text-[#1B231B]">
+                      <span className="text-3xl sm:text-4xl font-extrabold text-[#1B231B]">
                         ${displayPrice}
                       </span>
-                      <span className="text-xs text-[#717E6C]">/ month</span>
+                      <span className="text-xs text-[#717E6C]">USD / month</span>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-[#1F3824] font-semibold pb-6 border-b border-[#CBD5C4]/60 mb-6">
-                      <span>{plan.credits}</span>
-                      <span className="text-[#717E6C] font-normal">{plan.costPerAd}</span>
+                    <div className="bg-[#F6F7F2] p-3 rounded-2xl border border-[#CBD5C4]/60 mb-5">
+                      <div className="text-xs font-bold text-[#1F3824]">
+                        {plan.credits}
+                      </div>
+                      <div className="text-[11px] text-[#717E6C] mt-0.5">
+                        {plan.costPerAd}
+                      </div>
                     </div>
 
-                    <ul className="space-y-3 text-xs text-[#4A544A] mb-8">
+                    <ul className="space-y-2.5 text-xs text-[#4A544A] mb-6">
                       {plan.features.map((feat) => (
-                        <li key={feat} className="flex items-start gap-2.5">
-                          <Check className="h-4 w-4 text-[#1F3824] shrink-0 mt-0.5" />
+                        <li key={feat} className="flex items-start gap-2">
+                          <Check className="h-3.5 w-3.5 text-[#1F3824] shrink-0 mt-0.5" />
                           <span className="leading-snug">{feat}</span>
                         </li>
                       ))}
@@ -246,10 +267,10 @@ export default function PricingPage() {
                   <button
                     onClick={() => handleCheckout(plan.id)}
                     disabled={loadingCheckoutPlan === plan.id}
-                    className={`w-full py-3 rounded-full text-xs font-semibold tracking-wider uppercase transition-all cursor-pointer ${
+                    className={`w-full py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-all cursor-pointer ${
                       plan.highlight
-                        ? "bg-[#1F3824] hover:bg-[#162B1B] text-white shadow-sm"
-                        : "border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white"
+                        ? "bg-[#111827] hover:bg-black text-white shadow-sm"
+                        : "bg-[#1B231B] hover:bg-black text-white"
                     }`}
                   >
                     {loadingCheckoutPlan === plan.id ? "Redirecting..." : plan.ctaText}
@@ -257,6 +278,54 @@ export default function PricingPage() {
                 </div>
               );
             })}
+          </div>
+
+          {/* Warmed Accounts Add-On Banner (Direct from Fastlane Feature) */}
+          <div className="max-w-7xl mx-auto mt-10">
+            <div className="rounded-3xl bg-white border border-[#CBD5C4]/80 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 rounded-2xl bg-[#1F3824] flex items-center justify-center text-white shrink-0 shadow-sm">
+                  <Check className="h-6 w-6 text-[#FFE600]" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-[#1B231B] flex items-center gap-2">
+                    Warmed accounts
+                    <span className="text-[10px] uppercase font-bold text-[#1F3824] bg-[#E2E9DC] px-2 py-0.5 rounded-full">
+                      Add-on
+                    </span>
+                  </h3>
+                  <p className="text-xs text-[#4A544A] max-w-2xl mt-1 leading-relaxed">
+                    Real US & EU TikTok and Instagram accounts, created from scratch, warmed up in your niche and managed inside AutoUGC. Bypass algorithmic friction and shadowbans on fresh profiles.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3 mt-2 text-xs">
+                    <span className="font-semibold text-rose-600">+ $1.50 per post upload</span>
+                    <span className="text-[#717E6C]">• Active AutoUGC subscription required</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-5 shrink-0 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0 border-[#CBD5C4]/50">
+                <div className="text-left md:text-right">
+                  <span className="text-3xl font-extrabold text-[#1B231B]">$100</span>
+                  <span className="text-xs text-[#717E6C] block">/ mo per account</span>
+                </div>
+                <button
+                  onClick={() => router.push("/dashboard?tab=accounts")}
+                  className="px-6 py-3 rounded-full bg-[#111827] text-white hover:bg-black text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
+                >
+                  Get started
+                </button>
+              </div>
+            </div>
+
+            {/* Meter & Trial Footnote */}
+            <div className="text-center text-xs text-[#717E6C] mt-6 flex flex-wrap items-center justify-center gap-3">
+              <span>🗓️ 7-day free trial, 50 credits</span>
+              <span>•</span>
+              <span>Credits are the only meter: a static is 5, a 5-second video is 80, any mix</span>
+              <span>•</span>
+              <span>Cancel anytime</span>
+            </div>
           </div>
         </section>
 

@@ -27,6 +27,10 @@ export interface UgcAdCompositionProps {
   audioMode?: "narration_ducked" | "music_only";
   hasVoiceover?: boolean;
   memeCardText?: string;
+  hookStickerType?: "tiktok_question" | "tweet_card" | "pov_badge" | "bold_warning";
+  showHookSticker?: boolean;
+  showCtaSticker?: boolean;
+  durationInSeconds?: number;
 }
 
 export const DEFAULT_COMPOSITION_PROPS: UgcAdCompositionProps = {

@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Modal } from "@/components/ui/Modal";
 import { PublishingCalendar } from "@/components/dashboard/PublishingCalendar";
 import { AutoScheduleModal } from "@/components/dashboard/AutoScheduleModal";
+import { BlitzCampaignModal } from "@/components/dashboard/BlitzCampaignModal";
 import { UpgradePaywallModal, PaywallTriggerReason } from "@/components/billing/UpgradePaywallModal";
 import {
   Calendar,
@@ -137,6 +138,7 @@ function DashboardContent() {
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   const [paywallReason, setPaywallReason] = useState<PaywallTriggerReason>("general");
   const [isWizardOpen, setIsWizardOpen] = useState(() => searchParams.get("launchAutopilot") === "true");
+  const [isBlitzModalOpen, setIsBlitzModalOpen] = useState(false);
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [previewVideo, setPreviewVideo] = useState<VaultVideo | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -418,7 +420,14 @@ function DashboardContent() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3 w-full lg:w-auto">
+            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+              <button
+                onClick={() => setIsBlitzModalOpen(true)}
+                className="px-5 py-2.5 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-2 cursor-pointer shadow-sm border border-[#FFE600]/40"
+              >
+                <Zap className="h-4 w-4 fill-[#FFE600] text-[#FFE600]" />
+                <span>⚡ Blitz Mode</span>
+              </button>
               <Link href="/studio">
                 <button className="px-5 py-2.5 rounded-full border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-2 cursor-pointer shadow-2xs">
                   <Film className="h-4 w-4" />
@@ -434,7 +443,7 @@ function DashboardContent() {
                     setIsWizardOpen(true);
                   }
                 }}
-                className="px-6 py-2.5 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-2 cursor-pointer shadow-xs"
+                className="px-6 py-2.5 rounded-full bg-white hover:bg-[#ECEFE7] border border-[#CBD5C4] text-[#1B231B] text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-2 cursor-pointer shadow-xs"
               >
                 <Sparkles className="h-4 w-4" />
                 <span>Launch 30-Day Autopilot</span>
@@ -1373,6 +1382,13 @@ function DashboardContent() {
           </div>
         </form>
       </Modal>
+
+      {/* Fastlane-style Blitz Batch Generation Modal */}
+      <BlitzCampaignModal
+        isOpen={isBlitzModalOpen}
+        onClose={() => setIsBlitzModalOpen(false)}
+        onComplete={() => fetchVideos()}
+      />
     </div>
   );
 }
