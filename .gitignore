@@ -48,3 +48,7 @@ public/renders/*.jpg
 public/renders/*.png
 !public/renders/.gitkeep
 
+# video assets
+public/videos/*.mp4
+!public/videos/.gitkeep
+

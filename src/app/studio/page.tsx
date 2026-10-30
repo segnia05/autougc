@@ -116,7 +116,9 @@ function StudioContent() {
   const [selectedVoiceId, setSelectedVoiceId] = useState("sarah_dtc_founder");
   const [selectedTrackId, setSelectedTrackId] = useState("lofi_focus");
   const [selectedVisualUrl, setSelectedVisualUrl] = useState(() => searchParams.get("image") || "/images/creator-glasses.jpg");
-  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>(undefined);
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>(
+    () => searchParams.get("video") || "/videos/creator-sample.mp4"
+  );
 
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyleConfig>({
     fontSize: 54,
@@ -133,7 +135,7 @@ function StudioContent() {
     ctaText: "Click the link below and get $30 off your setup today.",
     brandColor: "#1F3824",
     productImageUrl: "/images/creator-glasses.jpg",
-    videoUrl: undefined,
+    videoUrl: "/videos/creator-sample.mp4",
     words: [],
     subtitleStyle: {
       fontSize: 54,
@@ -331,7 +333,7 @@ function StudioContent() {
 
   const handleSelectPersona = (persona: CreatorPersona) => {
     setSelectedVisualUrl(persona.imageUrl);
-    setSelectedVideoUrl(undefined);
+    setSelectedVideoUrl(persona.videoUrl);
     setSelectedVoiceId(persona.voiceId);
   };
 
@@ -361,6 +363,7 @@ function StudioContent() {
           voiceId: selectedVoiceId,
           aspectRatio: "9:16",
           productImageUrl: selectedVisualUrl,
+          videoUrl: selectedVideoUrl || (selectedVisualUrl.endsWith(".mp4") ? selectedVisualUrl : "/videos/creator-sarah.mp4"),
         }),
       });
 

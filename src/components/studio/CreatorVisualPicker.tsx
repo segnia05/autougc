@@ -9,6 +9,7 @@ export interface CreatorPersona {
   name: string;
   role: string;
   imageUrl: string;
+  videoUrl: string;
   voiceId: string;
   vibe: string;
   tags: string[];
@@ -20,36 +21,40 @@ export const CREATOR_PERSONAS: CreatorPersona[] = [
     name: "Sarah Miller",
     role: "SaaS & DTC Reviewer",
     imageUrl: "/images/creator-glasses.jpg",
+    videoUrl: "/videos/creator-sample.mp4",
     voiceId: "sarah_dtc_founder",
     vibe: "High credibility, conversational & energetic",
-    tags: ["High Energy", "B2B / DTC", "Female"],
+    tags: ["High Energy", "Real Video", "Female"],
   },
   {
     id: "alex",
     name: "Alex Chen",
     role: "Tech Founder & Builder",
     imageUrl: "/images/creator-male.jpg",
+    videoUrl: "/videos/creator-sarah.mp4",
     voiceId: "alex_casual_dtc",
     vibe: "Direct, founder-to-founder authority",
-    tags: ["Authoritative", "Dev / SaaS", "Male"],
+    tags: ["Authoritative", "Real Video", "Male"],
   },
   {
     id: "emma",
     name: "Emma Davis",
     role: "Productivity Specialist",
     imageUrl: "/images/study-creator.jpg",
+    videoUrl: "/videos/creator-alex.mp4",
     voiceId: "emma_storyteller",
     vibe: "Warm, relatable aesthetic workspace walk-through",
-    tags: ["Relatable", "Productivity", "Female"],
+    tags: ["Relatable", "Real Video", "Female"],
   },
   {
     id: "workspace",
     name: "Minimalist Workspace",
     role: "Architectural B-Roll",
     imageUrl: "/images/hero-landscape.jpg",
+    videoUrl: "/videos/creator-workspace.mp4",
     voiceId: "marcus_deep_authority",
     vibe: "Ultra-clean workspace setup for software demos",
-    tags: ["Clean B-Roll", "Modern Desk", "Ambient"],
+    tags: ["Clean B-Roll", "Real Video", "Ambient"],
   },
 ];
 

@@ -49,6 +49,11 @@ async function main() {
     productImageUrl: inputProps.productImageUrl?.startsWith("http")
       ? inputProps.productImageUrl
       : `http://localhost:3000${inputProps.productImageUrl?.startsWith("/") ? "" : "/"}${inputProps.productImageUrl || "images/creator-glasses.jpg"}`,
+    videoUrl: inputProps.videoUrl
+      ? inputProps.videoUrl.startsWith("http")
+        ? inputProps.videoUrl
+        : `http://localhost:3000${inputProps.videoUrl.startsWith("/") ? "" : "/"}${inputProps.videoUrl}`
+      : undefined,
   };
 
   const bundleLocation = await getOrBuildBundle();

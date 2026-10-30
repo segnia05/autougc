@@ -21,6 +21,7 @@ const RenderRequestSchema = z.object({
   voiceId: z.string().default("alex_casual_dtc"),
   aspectRatio: z.string().default("9:16"),
   productImageUrl: z.string().optional(),
+  videoUrl: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -105,6 +106,7 @@ export async function POST(request: NextRequest) {
         ctaText,
         brandColor: "#1F3824",
         productImageUrl: parsed.data.productImageUrl || "/images/creator-glasses.jpg",
+        videoUrl: parsed.data.videoUrl || "/videos/creator-sarah.mp4",
         words: synth.words,
       });
       videoUrl = renderRes.publicUrl;
