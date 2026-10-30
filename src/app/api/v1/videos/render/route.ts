@@ -12,6 +12,8 @@ import { logger } from "@/lib/observability/logger";
 import { prisma } from "@/db/client";
 import { renderUgcVideo } from "@/lib/video/renderEngine";
 import { synthesizeVoiceover } from "@/lib/audio/ttsProvider";
+import { jobQueue } from "@/lib/queue/jobQueue";
+import { registerVideoRenderWorker, VideoRenderJobData, VideoRenderJobResult } from "@/lib/video/videoWorker";
 
 const RenderRequestSchema = z.object({
   brandName: z.string().min(1),
@@ -22,9 +24,11 @@ const RenderRequestSchema = z.object({
   aspectRatio: z.string().default("9:16"),
   productImageUrl: z.string().optional(),
   videoUrl: z.string().optional(),
+  characterId: z.string().optional(),
   hookStickerType: z.enum(["tiktok_question", "tweet_card", "pov_badge", "bold_warning"]).optional(),
   showHookSticker: z.boolean().optional(),
   showCtaSticker: z.boolean().optional(),
+  async: z.boolean().optional().default(true),
 });
 
 export async function POST(request: NextRequest) {
@@ -97,8 +101,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
-    let durationSeconds = 15.0;
+    // 3. Asynchronous Render Pipeline for Zero Vercel Timeouts
+    registerVideoRenderWorker();
+
+    if (parsed.data.async !== false) {
+      const job = await jobQueue.enqueue<VideoRenderJobData, VideoRenderJobResult>(
+        "video_render",
+        {
+          videoId,
+          orgId,
+          userId,
+          planTier,
+          brandName,
+          hookText,
+          bodyText,
+          ctaText,
+          voiceId,
+          aspectRatio,
+          productImageUrl: parsed.data.productImageUrl,
+          videoUrl: parsed.data.videoUrl,
+          characterId: parsed.data.characterId,
+          hookStickerType: parsed.data.hookStickerType,
+          showHookSticker: parsed.data.showHookSticker,
+          showCtaSticker: parsed.data.showCtaSticker,
+        },
+        { priority: "critical" }
+      );
+
+      return NextResponse.json(
+        {
+          success: true,
+          status: "queued",
+          jobId: job.id,
+          videoId,
+          pollUrl: `/api/v1/videos/render/status?jobId=${job.id}`,
+          creditsRemaining: deductRes.creditsRemaining,
+        },
+        { status: 202 }
+      );
+    }
+
+    // 4. Synchronous Render Fallback (for local testing/CLI)
+    let videoUrl = parsed.data.videoUrl || "/videos/creator-sarah.mp4";
+    let durationSeconds = 11.2;
 
     try {
       const synth = await synthesizeVoiceover(`${hookText} ${bodyText} ${ctaText}`, voiceId);

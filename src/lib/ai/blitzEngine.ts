@@ -19,10 +19,11 @@ export interface BlitzAdVariation {
   hookStickerType: "tiktok_question" | "tweet_card" | "pov_badge" | "bold_warning";
   benchmarkCtr: string;
   approved: boolean;
+  productImageUrl?: string;
 }
 
 export async function generateBlitzCampaign(
-  input: GenerateScriptsInput
+  input: GenerateScriptsInput & { screenshotUrl?: string }
 ): Promise<BlitzAdVariation[]> {
   const brand = input.brandName || "My Brand";
   const context = input.summary || input.pageTitle || "high-performance software";
@@ -100,7 +101,7 @@ export async function generateBlitzCampaign(
     const body = geminiScript?.body || item.body;
     const cta = geminiScript?.cta || item.cta;
 
-    const persona = CREATOR_PERSONAS[item.personaIndex] || CREATOR_PERSONAS[0];
+    const persona = (CREATOR_PERSONAS[item.personaIndex] || CREATOR_PERSONAS[0])!;
 
     return {
       id: `blitz_ad_${Date.now()}_${index}`,
@@ -120,6 +121,7 @@ export async function generateBlitzCampaign(
       hookStickerType: item.stickerType,
       benchmarkCtr: item.benchmarkCtr,
       approved: true, // Approved by default in Blitz mode
+      productImageUrl: input.screenshotUrl,
     };
   });
 }

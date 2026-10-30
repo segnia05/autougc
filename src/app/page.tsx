@@ -69,7 +69,11 @@ export default function Home() {
           targetUrl
         )}&brand=${encodeURIComponent(
           scrapeJson.data.brandName || "My Brand"
-        )}&projectId=${encodeURIComponent(scrapeJson.data.id || "")}`
+        )}&projectId=${encodeURIComponent(scrapeJson.data.id || "")}${
+          scrapeJson.data.screenshotUrl
+            ? `&screenshotUrl=${encodeURIComponent(scrapeJson.data.screenshotUrl)}`
+            : ""
+        }`
       );
     } catch {
       // In offline/dev fallback, still route cleanly to dashboard autopilot

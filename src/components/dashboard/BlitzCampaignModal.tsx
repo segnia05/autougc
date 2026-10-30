@@ -102,7 +102,9 @@ export function BlitzCampaignModal({
         ad.hook
       )}&body=${encodeURIComponent(ad.body)}&cta=${encodeURIComponent(
         ad.cta
-      )}&video=${encodeURIComponent(ad.creatorPersona.videoUrl)}`
+      )}&video=${encodeURIComponent(ad.creatorPersona.videoUrl)}${
+        ad.productImageUrl ? `&productImage=${encodeURIComponent(ad.productImageUrl)}` : ""
+      }`
     );
   };
 

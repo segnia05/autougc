@@ -21,9 +21,11 @@ export const ProductDemoOverlay: React.FC<ProductDemoOverlayProps> = ({
   }
 
   const currentTime = frame / fps;
-  // Slide in during the middle "Body / Proof" phase: from 4.0s to 9.5s
-  const showStart = 3.8;
-  const showEnd = Math.min(10.5, totalDurationSeconds - 4.0);
+  // Dynamic Proof Phase: In short previews (<= 5s), shows from 1.0s to duration-0.4s.
+  // In full 12-15s ads, slides in during the middle USP proof window from 3.5s to 9.5s.
+  const isShortPreview = totalDurationSeconds <= 5.0;
+  const showStart = isShortPreview ? 1.0 : 3.5;
+  const showEnd = isShortPreview ? Math.max(1.8, totalDurationSeconds - 0.5) : Math.min(10.5, totalDurationSeconds - 3.5);
 
   if (currentTime < showStart || currentTime > showEnd) {
     return null;

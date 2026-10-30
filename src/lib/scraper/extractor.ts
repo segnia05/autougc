@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import { validateSafeUrl } from "./ssrfFilter";
 import { extractBrandColors } from "./colorExtractor";
+import { captureWebsiteScreenshot } from "./screenshotService";
 
 export interface ScrapedAssetItem {
   type: "logo" | "image";
@@ -18,6 +19,7 @@ export interface ScrapedProductData {
     accent: string;
   };
   assets: ScrapedAssetItem[];
+  screenshotUrl?: string;
 }
 
 /**
@@ -129,6 +131,20 @@ export async function scrapeUrl(targetUrl: string): Promise<ScrapedProductData> 
   // 7. Extract Brand Colors
   const brandColors = extractBrandColors(html);
 
+  // 8. Capture High-Resolution Website Viewport Screenshot for Live SaaS Demo Overlay
+  let screenshotUrl: string | undefined;
+  try {
+    const screenshotResult = await captureWebsiteScreenshot(url, {
+      viewportWidth: 1280,
+      viewportHeight: 800,
+    });
+    if (screenshotResult && screenshotResult.screenshotUrl) {
+      screenshotUrl = screenshotResult.screenshotUrl;
+    }
+  } catch (screenshotErr) {
+    console.warn("Screenshot capture skipped or non-fatal failure:", screenshotErr);
+  }
+
   return {
     brandName,
     pageTitle: pageTitle || brandName,
@@ -136,6 +152,7 @@ export async function scrapeUrl(targetUrl: string): Promise<ScrapedProductData> 
     headings: headings.slice(0, 5),
     brandColors,
     assets,
+    screenshotUrl,
   };
 }
 

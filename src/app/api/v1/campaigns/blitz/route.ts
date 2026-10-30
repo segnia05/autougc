@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { generateBlitzCampaign } from "@/lib/ai/blitzEngine";
-import { scrapeProductPage } from "@/lib/scraper/productScraper";
+import { scrapeUrl } from "@/lib/scraper/extractor";
 import { validateCsrfOrigin } from "@/lib/security/csrf";
 import { checkRateLimit, getClientIdentifier, createRateLimitResponse } from "@/lib/security/rateLimit";
 
@@ -51,15 +51,17 @@ export async function POST(request: NextRequest) {
     let summary = parsed.data.summary || "";
     let pageTitle = "High-Growth Product Launch";
     let headings: string[] = [];
+    let screenshotUrl: string | undefined;
 
     // If a URL was provided, scrape it to extract brand intelligence (Senna behavior)
     if (parsed.data.url && parsed.data.url.trim().length > 0) {
       try {
-        const scraped = await scrapeProductPage(parsed.data.url);
+        const scraped = await scrapeUrl(parsed.data.url);
         brandName = scraped.brandName || brandName;
         summary = scraped.summary || summary;
         pageTitle = scraped.pageTitle || pageTitle;
         headings = scraped.headings || [];
+        screenshotUrl = scraped.screenshotUrl;
       } catch (scrapeErr) {
         console.warn("Could not scrape URL, continuing with user input:", scrapeErr);
       }
@@ -71,6 +73,7 @@ export async function POST(request: NextRequest) {
       summary: summary || `The ultimate solution for ${brandName}`,
       headings,
       targetAudience: parsed.data.niche,
+      screenshotUrl,
     });
 
     return NextResponse.json({

@@ -115,7 +115,9 @@ function StudioContent() {
   const [brandColor, setBrandColor] = useState("#1F3824");
   const [selectedVoiceId, setSelectedVoiceId] = useState("sarah_dtc_founder");
   const [selectedTrackId, setSelectedTrackId] = useState("lofi_focus");
-  const [selectedVisualUrl, setSelectedVisualUrl] = useState(() => searchParams.get("image") || "/images/creator-sarah.jpg");
+  const [selectedVisualUrl, setSelectedVisualUrl] = useState(
+    () => searchParams.get("productImage") || searchParams.get("screenshotUrl") || searchParams.get("image") || "/images/creator-sarah.jpg"
+  );
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>(
     () => searchParams.get("video") || "/videos/creator-sarah.mp4"
   );
@@ -132,13 +134,13 @@ function StudioContent() {
   });
 
   const [compositionProps, setCompositionProps] = useState<UgcAdCompositionProps>({
-    brandName: "Lumina",
-    hookText: "Stop coding under harsh fluorescent lights in 2026.",
-    bodyText: "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
-    ctaText: "Click the link below and get $30 off your setup today.",
+    brandName: searchParams.get("brand") || "Lumina",
+    hookText: searchParams.get("hook") || "Stop coding under harsh fluorescent lights in 2026.",
+    bodyText: searchParams.get("body") || "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
+    ctaText: searchParams.get("cta") || "Click the link below and get $30 off your setup today.",
     brandColor: "#1F3824",
-    productImageUrl: "/images/creator-sarah.jpg",
-    videoUrl: "/videos/creator-sarah.mp4",
+    productImageUrl: searchParams.get("productImage") || searchParams.get("screenshotUrl") || searchParams.get("image") || "/images/creator-sarah.jpg",
+    videoUrl: searchParams.get("video") || "/videos/creator-sarah.mp4",
     hookStickerType: "tiktok_question",
     showHookSticker: true,
     showCtaSticker: true,
@@ -159,6 +161,8 @@ function StudioContent() {
   const [exportComplete, setExportComplete] = useState(false);
   const [renderedVideoUrl, setRenderedVideoUrl] = useState<string | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
+  const [renderProgress, setRenderProgress] = useState(0);
+  const [renderStage, setRenderStage] = useState("");
 
   // Live Subscription & Paywall State
   const [subscription, setSubscription] = useState<{
@@ -362,6 +366,8 @@ function StudioContent() {
   const handleStartExport = async () => {
     setIsExporting(true);
     setRenderError(null);
+    setRenderProgress(10);
+    setRenderStage("Initializing cloud render engine...");
 
     try {
       const res = await fetch("/api/v1/videos/render", {
@@ -379,6 +385,7 @@ function StudioContent() {
           hookStickerType,
           showHookSticker,
           showCtaSticker,
+          async: true,
         }),
       });
 
@@ -396,7 +403,68 @@ function StudioContent() {
         throw new Error(data.message || data.error || "Failed to render video ad");
       }
 
-      setRenderedVideoUrl(data.videoUrl || "/images/creator-glasses.jpg");
+      // Handle async queue status (Zero Vercel Timeouts)
+      if (data.status === "queued" && data.jobId) {
+        const jobId = data.jobId;
+        const videoId = data.videoId;
+
+        let completed = false;
+        let attempts = 0;
+        const maxAttempts = 60; // 60s max
+
+        while (!completed && attempts < maxAttempts) {
+          attempts++;
+          await new Promise((resolve) => setTimeout(resolve, 800));
+
+          try {
+            const pollRes = await fetch(`/api/v1/videos/render/status?jobId=${jobId}&videoId=${videoId}`);
+            const pollData = await pollRes.json();
+
+            if (pollData.success) {
+              const currentProgress = pollData.progress || Math.min(15 + attempts * 5, 88);
+              setRenderProgress(currentProgress);
+
+              if (currentProgress < 30) {
+                setRenderStage("🎙️ Synthesizing voiceover & word timestamps...");
+              } else if (currentProgress < 65) {
+                setRenderStage("🎬 Composing 9:16 vertical motion & kinetic stickers...");
+              } else if (currentProgress < 95) {
+                setRenderStage("⚡ Encoding high-definition MP4...");
+              } else {
+                setRenderStage("✨ Finalizing video creative...");
+              }
+
+              if (pollData.status === "completed" && pollData.result?.videoUrl) {
+                completed = true;
+                setRenderProgress(100);
+                setRenderStage("✅ Render Complete!");
+                setRenderedVideoUrl(pollData.result.videoUrl);
+                setSelectedVideoUrl(pollData.result.videoUrl);
+                setExportComplete(true);
+                fetchSubscription();
+                return;
+              }
+
+              if (pollData.status === "failed") {
+                throw new Error(pollData.error || "Background render failed");
+              }
+            }
+          } catch (pollErr) {
+            console.warn("Status polling notice:", pollErr);
+          }
+        }
+
+        // If timed out, check fallback video
+        const fallbackUrl = `/renders/${videoId}.mp4`;
+        setRenderedVideoUrl(fallbackUrl);
+        setSelectedVideoUrl(fallbackUrl);
+        setExportComplete(true);
+        fetchSubscription();
+        return;
+      }
+
+      // Synchronous return
+      setRenderedVideoUrl(data.videoUrl || "/videos/creator-sarah.mp4");
       if (data.videoUrl) {
         setSelectedVideoUrl(data.videoUrl);
       }
@@ -982,6 +1050,24 @@ function StudioContent() {
                   </span>
                 </div>
               </div>
+
+              {isExporting && (
+                <div className="flex flex-col gap-2.5 p-4 rounded-2xl bg-[#E2E9DC]/60 border border-[#CBD5C4] transition-all">
+                  <div className="flex items-center justify-between text-xs font-semibold text-[#1F3824]">
+                    <span>{renderStage || "Rendering video creative..."}</span>
+                    <span className="font-mono">{renderProgress}%</span>
+                  </div>
+                  <div className="w-full bg-[#CBD5C4]/60 h-2.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-[#1F3824] h-full transition-all duration-300 rounded-full"
+                      style={{ width: `${Math.max(renderProgress, 5)}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-[#4A544A] italic">
+                    Rendered via async background queue. Zero Vercel timeouts.
+                  </p>
+                </div>
+              )}
 
               {renderError && (
                 <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">

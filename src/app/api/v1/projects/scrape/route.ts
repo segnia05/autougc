@@ -135,6 +135,7 @@ export async function POST(request: NextRequest) {
         headings: scrapedData.headings,
         brandColors: scrapedData.brandColors,
         assets: scrapedData.assets,
+        screenshotUrl: scrapedData.screenshotUrl,
       },
       meta: {
         timestamp: new Date().toISOString(),
