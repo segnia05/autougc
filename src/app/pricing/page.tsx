@@ -320,7 +320,7 @@ export default function PricingPage() {
 
             {/* Meter & Trial Footnote */}
             <div className="text-center text-xs text-[#717E6C] mt-6 flex flex-wrap items-center justify-center gap-3">
-              <span>🗓️ 7-day free trial, 50 credits</span>
+              <span>7-day free trial, 50 credits</span>
               <span>•</span>
               <span>Credits are the only meter: a static is 5, a 5-second video is 80, any mix</span>
               <span>•</span>

@@ -426,7 +426,7 @@ function DashboardContent() {
                 className="px-5 py-2.5 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-2 cursor-pointer shadow-sm border border-[#FFE600]/40"
               >
                 <Zap className="h-4 w-4 fill-[#FFE600] text-[#FFE600]" />
-                <span>⚡ Blitz Mode</span>
+                <span>Blitz Mode</span>
               </button>
               <Link href="/studio">
                 <button className="px-5 py-2.5 rounded-full border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-2 cursor-pointer shadow-2xs">

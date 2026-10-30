@@ -31,3 +31,4 @@ export function isLambdaConfigured(): boolean {
       process.env.REMOTION_SERVE_URL
   );
 }
+

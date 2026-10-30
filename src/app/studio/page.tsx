@@ -425,19 +425,19 @@ function StudioContent() {
               setRenderProgress(currentProgress);
 
               if (currentProgress < 30) {
-                setRenderStage("🎙️ Synthesizing voiceover & word timestamps...");
+                setRenderStage("Synthesizing voiceover & word timestamps...");
               } else if (currentProgress < 65) {
-                setRenderStage("🎬 Composing 9:16 vertical motion & kinetic stickers...");
+                setRenderStage("Composing 9:16 vertical motion & layout...");
               } else if (currentProgress < 95) {
-                setRenderStage("⚡ Encoding high-definition MP4...");
+                setRenderStage("Encoding high-definition MP4...");
               } else {
-                setRenderStage("✨ Finalizing video creative...");
+                setRenderStage("Finalizing video creative...");
               }
 
               if (pollData.status === "completed" && pollData.result?.videoUrl) {
                 completed = true;
                 setRenderProgress(100);
-                setRenderStage("✅ Render Complete!");
+                setRenderStage("Render complete");
                 setRenderedVideoUrl(pollData.result.videoUrl);
                 setSelectedVideoUrl(pollData.result.videoUrl);
                 setExportComplete(true);
@@ -615,8 +615,8 @@ function StudioContent() {
             leftIcon={<Sparkles className="h-3.5 w-3.5 text-emerald-300" />}
             className="text-xs px-2.5 sm:px-3 font-semibold shadow-xs"
           >
-            <span className="hidden sm:inline">⚡ Generate Video (1 Credit)</span>
-            <span className="sm:hidden">⚡ Generate</span>
+            <span className="hidden sm:inline">Generate Video (1 Credit)</span>
+            <span className="sm:hidden">Generate Video</span>
           </Button>
         </div>
       </header>

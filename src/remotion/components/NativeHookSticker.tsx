@@ -58,14 +58,18 @@ export const NativeHookSticker: React.FC<NativeHookStickerProps> = ({
             marginBottom: "8px",
           }}
         >
-          <div
-            style={{
-              fontSize: "14px",
-              lineHeight: 1,
-            }}
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#6B7280"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            💬
-          </div>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
           <span
             style={{
               fontSize: "14px",
@@ -187,7 +191,9 @@ export const NativeHookSticker: React.FC<NativeHookStickerProps> = ({
     >
       <div
         style={{
-          display: "inline-block",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "6px",
           fontSize: "13px",
           fontWeight: 900,
           textTransform: "uppercase",
@@ -196,7 +202,19 @@ export const NativeHookSticker: React.FC<NativeHookStickerProps> = ({
           marginBottom: "8px",
         }}
       >
-        ⚠️ WARNING TO {brandName.toUpperCase()} CREATORS
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#FFE600"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        <span>URGENT NOTICE · {brandName.toUpperCase()}</span>
       </div>
       <div
         style={{

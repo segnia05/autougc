@@ -217,7 +217,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
                 {/* Central Protected Safe Box */}
                 <div className="flex-1 mx-2 my-2 border-2 border-emerald-400/90 rounded-2xl flex flex-col items-center justify-between p-2 relative bg-emerald-500/5">
                   <span className="text-[9px] font-mono font-bold text-emerald-300 uppercase tracking-wider bg-[#1F3824]/90 px-2.5 py-0.5 rounded-full border border-emerald-400/40">
-                    ✓ Protected Subtitle & Hook Safe Area
+                    Protected Subtitle & Hook Safe Area
                   </span>
 
                   {/* Right Exclusion Rail Marker */}
@@ -235,7 +235,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
                 {/* Bottom Platform Danger Zone (22%) */}
                 <div className="h-28 border-t border-dashed border-rose-400/80 bg-rose-500/15 rounded-b-3xl flex flex-col items-center justify-center p-2 gap-1">
                   <span className="text-[9px] font-mono font-bold text-rose-300 uppercase tracking-wider bg-black/70 px-2 py-0.5 rounded-full">
-                    ⚠️ Bottom UI Zone: Native Captions & Audio Bar (22%)
+                    Bottom UI Zone: Native Captions & Audio Bar (22%)
                   </span>
                   <span className="text-[8px] font-mono text-rose-200/80 text-center">
                     Do not place text or logos here
@@ -457,7 +457,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
                   : "text-emerald-800 bg-emerald-100"
               }`}
             >
-              {hasActiveVideo ? "🎥 Video Clip" : "📸 Clean Studio Persona"}
+              {hasActiveVideo ? "Video Clip" : "Clean Studio Persona"}
             </span>
           </div>
 
@@ -487,7 +487,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
               }`}
             >
-              👩 Emma (UK)
+              Emma (UK)
             </button>
             <button
               type="button"
@@ -499,7 +499,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
               }`}
             >
-              👩 Sarah (US)
+              Sarah (US)
             </button>
             <button
               type="button"
@@ -511,7 +511,7 @@ export const CanvasPlayer: React.FC<CanvasPlayerProps> = ({
                   : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:bg-[#E2E9DC]"
               }`}
             >
-              👨 Alex (Tech)
+              Alex (Tech)
             </button>
           </div>
         </div>
