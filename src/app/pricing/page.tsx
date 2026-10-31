@@ -25,7 +25,7 @@ export default function PricingPage() {
       badge: null,
       highlight: false,
       features: [
-        "Light planning from Senna",
+        "Light planning from AutoUGC AI",
         "1 campaign at a time",
         "1 social account, 1 seat",
         "25 AI characters",
@@ -45,7 +45,7 @@ export default function PricingPage() {
       badge: "MOST POPULAR",
       highlight: true,
       features: [
-        "4x the Senna fuel",
+        "4x generation fuel",
         "5 campaigns at a time",
         "10 social accounts per workspace, 3 workspaces",
         "3 seats included, $10 a month per extra",
@@ -66,7 +66,7 @@ export default function PricingPage() {
       badge: "SCALE HIGH VOLUME",
       highlight: false,
       features: [
-        "5x the Senna fuel",
+        "5x generation fuel",
         "20 campaigns at a time",
         "500 social accounts per workspace, 10 workspaces",
         "10 seats included, $10 a month per extra",
@@ -87,7 +87,7 @@ export default function PricingPage() {
       highlight: false,
       features: [
         "Every Pro feature included",
-        "14x the Senna fuel",
+        "14x generation fuel",
         "25 seats included",
         "20 campaigns at a time",
         "500 social accounts per workspace, 10 workspaces",

@@ -4,7 +4,7 @@ import React from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SignIn, SignUp } from "@clerk/nextjs";
-import { FastlaneLogo } from "@/components/auth/FastlaneLogo";
+import { AutoUGCLogo } from "@/components/auth/AutoUGCLogo";
 
 interface AuthFormProps {
   mode: "sign-in" | "sign-up";
@@ -25,8 +25,8 @@ export function AuthForm({ mode }: AuthFormProps) {
     redirectQuery ? `?redirect_url=${encodeURIComponent(redirectQuery)}` : ""
   }`;
 
-  // Unified Fastlane Appearance Configuration for Clerk
-  const fastlaneClerkAppearance = {
+  // Custom Luxury Appearance Configuration for Clerk
+  const autougcClerkAppearance = {
     layout: {
       socialButtonsVariant: "blockButton" as const,
       logoPlacement: "none" as const,
@@ -72,10 +72,9 @@ export function AuthForm({ mode }: AuthFormProps) {
     <div className="w-full min-h-screen bg-[#FAF8F5] flex flex-col justify-between p-6 sm:p-10 lg:p-12">
       {/* Top Bar: Brand Logo & Segmented Pill Toggle */}
       <header className="flex items-center justify-between w-full">
-        <FastlaneLogo
+        <AutoUGCLogo
           className="flex items-center gap-2.5"
-          markClassName="h-4 w-7 text-neutral-900 fill-current"
-          textClassName="text-base font-bold tracking-tight text-neutral-900 font-sans"
+          textClassName="text-xl font-medium tracking-tight text-neutral-900 font-serif"
         />
 
         {/* Pill Segmented Control: [ Sign in | Create account ] */}
@@ -115,7 +114,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             signUpUrl={toggleSignUpUrl}
             fallbackRedirectUrl={targetRedirect}
             forceRedirectUrl={redirectQuery ? targetRedirect : undefined}
-            appearance={fastlaneClerkAppearance}
+            appearance={autougcClerkAppearance}
           />
         ) : (
           <SignUp
@@ -124,13 +123,13 @@ export function AuthForm({ mode }: AuthFormProps) {
             signInUrl={toggleSignInUrl}
             fallbackRedirectUrl={targetRedirect}
             forceRedirectUrl={redirectQuery ? targetRedirect : undefined}
-            appearance={fastlaneClerkAppearance}
+            appearance={autougcClerkAppearance}
           />
         )}
 
         {/* Terms & Privacy Notice */}
         <p className="text-center text-xs text-neutral-500 leading-relaxed mt-6">
-          By continuing you agree to our{" "}
+          By continuing you agree to AutoUGC&apos;s{" "}
           <Link
             href="/terms"
             className="underline underline-offset-2 hover:text-neutral-900 transition-colors"
@@ -150,14 +149,14 @@ export function AuthForm({ mode }: AuthFormProps) {
 
       {/* Footer Support Info */}
       <footer className="w-full flex items-center justify-between text-xs text-neutral-400 font-mono pt-4 border-t border-[#EFECE6]">
-        <span>Fastlane Engine</span>
+        <span>AutoUGC Studio</span>
         <div className="flex items-center gap-2">
           <span>Need help?</span>
           <a
-            href="mailto:support@usefastlane.ai"
+            href="mailto:support@autougc.com"
             className="hover:text-neutral-800 transition-colors underline underline-offset-2"
           >
-            support@usefastlane.ai
+            support@autougc.com
           </a>
         </div>
       </footer>

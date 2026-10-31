@@ -141,7 +141,7 @@ export function BlitzCampaignModal({
                   className="w-full px-3.5 py-2.5 bg-white border border-[#CBD5C4] rounded-xl text-sm text-[#1B231B] placeholder-[#717E6C] focus:outline-none focus:ring-2 focus:ring-[#1F3824]"
                 />
                 <span className="text-[11px] text-[#717E6C] mt-1 block">
-                  Senna will crawl your landing page to extract USPs, features, and target audience pain points.
+                  AutoUGC AI will crawl your landing page to extract USPs, features, and target audience pain points.
                 </span>
               </div>
 

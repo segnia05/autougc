@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     let headings: string[] = [];
     let screenshotUrl: string | undefined;
 
-    // If a URL was provided, scrape it to extract brand intelligence (Senna behavior)
+    // If a URL was provided, scrape it to extract brand intelligence (AutoUGC crawler)
     if (parsed.data.url && parsed.data.url.trim().length > 0) {
       try {
         const scraped = await scrapeUrl(parsed.data.url);
