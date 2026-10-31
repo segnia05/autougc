@@ -7,7 +7,6 @@ import { logger } from "@/lib/observability/logger";
 
 const isPublicRoute = createRouteMatcher([
   "/",
-  "/onboarding(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/pricing",
@@ -34,6 +33,7 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 const isProtectedBrowserRoute = createRouteMatcher([
+  "/onboarding(.*)",
   "/dashboard(.*)",
   "/campaigns(.*)",
   "/studio(.*)",
@@ -59,7 +59,10 @@ export default clerkMiddleware(async (auth, request) => {
     const hasDevHeader = request.headers.get("x-user-id") || request.cookies.get("x-user-id")?.value;
     if (!userId && !hasDevHeader) {
       const signInUrl = new URL("/sign-in", request.url);
-      signInUrl.searchParams.set("redirect_url", request.nextUrl.pathname);
+      const targetPath = request.nextUrl.search
+        ? `${request.nextUrl.pathname}${request.nextUrl.search}`
+        : request.nextUrl.pathname;
+      signInUrl.searchParams.set("redirect_url", targetPath);
       return NextResponse.redirect(signInUrl);
     }
 

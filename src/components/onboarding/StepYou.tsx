@@ -30,8 +30,12 @@ export default function StepYou({
       setError("Please enter your website URL.");
       return;
     }
+    if (!url.includes(".") || url.trim().length < 4) {
+      setError("Please enter a valid website domain (e.g. yourproduct.com or https://yourproduct.com).");
+      return;
+    }
     if (!founderName.trim()) {
-      setError("Please enter your name so we can address you properly.");
+      setError("Please enter your first name so we can address you properly.");
       return;
     }
 
@@ -135,8 +139,8 @@ export default function StepYou({
         <div className="pt-2">
           <button
             type="submit"
-            disabled={isLoading}
-            className="w-full btn-fastlane-black py-3 text-xs justify-center font-semibold gap-2 shadow-sm"
+            disabled={!url.trim() || !founderName.trim() || isLoading}
+            className="w-full btn-fastlane-black py-3 text-xs justify-center font-semibold gap-2 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>

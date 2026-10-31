@@ -29,34 +29,38 @@ import {
   Globe,
   AlertCircle,
 } from "lucide-react";
-import { BrandExtractorModal } from "@/components/home/BrandExtractorModal";
 
 export default function Home() {
   const router = useRouter();
   const [productUrl, setProductUrl] = useState("");
+  const [urlValidationError, setUrlValidationError] = useState<string | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [activeTab, setActiveTab] = useState<"All" | "Pending" | "Approved" | "Declined">("All");
 
-  // Brand Extraction & Intelligence Review Modal state
-  const [isExtractorModalOpen, setIsExtractorModalOpen] = useState(false);
-  const [extractorTargetUrl, setExtractorTargetUrl] = useState("");
-  const [isManualExtraction, setIsManualExtraction] = useState(false);
-
   const sampleUrls = [
     { label: "AI Humanizer SaaS", url: "https://humanizeai.io", brand: "HumanizeAI" },
-    { label: "DTC Ergonomic Desk", url: "https://luminalight.com/bar", brand: "Lumina" },
-    { label: "B2B Lead CRM", url: "https://leadsync.io/growth", brand: "LeadSync" },
+    { label: "DTC Ergonomic Desk", url: "https://luminalight.com", brand: "Lumina" },
+    { label: "B2B Lead CRM", url: "https://leadsync.io", brand: "LeadSync" },
   ];
 
   const handleStartGeneration = (e?: React.FormEvent, customUrl?: string) => {
     if (e) e.preventDefault();
-    const targetUrl = customUrl || productUrl.trim();
+    const rawUrl = (customUrl || productUrl).trim();
 
-    if (targetUrl) {
-      router.push(`/onboarding?url=${encodeURIComponent(targetUrl)}`);
-    } else {
-      router.push("/onboarding");
+    // Strict validation: cannot submit without URL
+    if (!rawUrl) {
+      setUrlValidationError("Please enter your website URL before starting.");
+      return;
     }
+
+    if (!rawUrl.includes(".") || rawUrl.length < 4) {
+      setUrlValidationError("Please enter a valid website domain (e.g. https://yourbrand.com).");
+      return;
+    }
+
+    setUrlValidationError(null);
+    const formattedUrl = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+    router.push(`/onboarding?url=${encodeURIComponent(formattedUrl)}`);
   };
 
   const creatorCards = [
@@ -159,14 +163,18 @@ export default function Home() {
           {/* Primary Action - Website URL Paste Box to Intelligence Extraction */}
           <form
             onSubmit={(e) => handleStartGeneration(e)}
-            className="w-full max-w-xl mx-auto mb-3 flex flex-col sm:flex-row items-center gap-2 p-1.5 bg-white border border-[#CBD5C4] rounded-full shadow-md hover:border-[#1F3824] transition-all"
+            className="w-full max-w-xl mx-auto mb-2 flex flex-col sm:flex-row items-center gap-2 p-1.5 bg-white border border-[#CBD5C4] rounded-full shadow-md hover:border-[#1F3824] transition-all"
           >
             <div className="flex items-center gap-2.5 px-4 flex-1 w-full text-xs">
               <Globe className="h-4 w-4 text-[#717E6C] shrink-0" />
               <input
                 type="text"
+                required
                 value={productUrl}
-                onChange={(e) => setProductUrl(e.target.value)}
+                onChange={(e) => {
+                  setProductUrl(e.target.value);
+                  if (urlValidationError) setUrlValidationError(null);
+                }}
                 placeholder="Enter your SaaS or product URL (e.g. https://linear.app)"
                 aria-label="Enter your SaaS or product URL"
                 className="w-full py-2.5 bg-transparent text-xs text-[#1B231B] placeholder-[#717E6C] focus:outline-none"
@@ -174,31 +182,23 @@ export default function Home() {
             </div>
             <button
               type="submit"
-              className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-[11px] font-semibold tracking-widest uppercase transition-all shadow-sm cursor-pointer shrink-0 flex items-center justify-center gap-2"
+              disabled={!productUrl.trim()}
+              className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#1F3824] hover:bg-[#162B1B] disabled:opacity-40 disabled:cursor-not-allowed text-white text-[11px] font-semibold tracking-widest uppercase transition-all shadow-sm shrink-0 flex items-center justify-center gap-2"
             >
               <span>Generate Video Ads</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </form>
 
-          {/* Manual Entry Option for users who don't have a live website URL */}
-          <div className="flex items-center justify-center gap-1.5 text-xs text-[#717E6C] mb-4">
-            <span>Don&apos;t have a live website URL?</span>
-            <button
-              type="button"
-              onClick={() => {
-                setIsManualExtraction(true);
-                setExtractorTargetUrl("");
-                setIsExtractorModalOpen(true);
-              }}
-              className="text-[#1F3824] font-semibold underline hover:text-black cursor-pointer transition-colors"
-            >
-              Enter product details manually
-            </button>
-          </div>
+          {/* Validation Error Message */}
+          {urlValidationError && (
+            <div className="text-xs text-red-600 font-semibold mb-3 animate-in fade-in">
+              {urlValidationError}
+            </div>
+          )}
 
           {/* Preset Sample URLs for 1-Click Testing */}
-          <div className="flex items-center justify-center gap-2 text-[11px] text-[#717E6C] flex-wrap mb-14">
+          <div className="flex items-center justify-center gap-2 text-[11px] text-[#717E6C] flex-wrap mb-14 mt-2">
             <span>Or test with live URL:</span>
             {sampleUrls.map((sample) => (
               <button
@@ -728,21 +728,31 @@ export default function Home() {
               Our autonomous scraper extracts your product hooks, generates 3 psychological scripts, and prepares 1080p preview videos in under 60 seconds.
             </p>
 
-            <form onSubmit={(e) => handleStartGeneration(e)} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-2.5 mb-4">
+            <form onSubmit={(e) => handleStartGeneration(e)} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-2.5 mb-2">
               <input
                 type="text"
+                required
                 value={productUrl}
-                onChange={(e) => setProductUrl(e.target.value)}
-                placeholder="https://yourbrand.com (or leave empty to enter manually)"
+                onChange={(e) => {
+                  setProductUrl(e.target.value);
+                  if (urlValidationError) setUrlValidationError(null);
+                }}
+                placeholder="https://yourbrand.com"
                 className="flex-1 bg-[#F6F7F2] border border-[#CBD5C4] px-4 py-3 rounded-full text-sm text-[#1B231B] placeholder-[#717E6C] focus:outline-none focus:border-[#1F3824]"
               />
               <button
                 type="submit"
-                className="px-6 py-3 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold tracking-wider uppercase transition-all shadow-sm cursor-pointer shrink-0"
+                disabled={!productUrl.trim()}
+                className="px-6 py-3 rounded-full bg-[#1F3824] hover:bg-[#162B1B] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold tracking-wider uppercase transition-all shadow-sm shrink-0"
               >
                 Generate Video Ads
               </button>
             </form>
+            {urlValidationError && (
+              <div className="text-xs text-red-600 font-semibold mb-3 animate-in fade-in">
+                {urlValidationError}
+              </div>
+            )}
 
             <div className="flex items-center justify-center gap-2 flex-wrap text-xs text-[#717E6C]">
               <span>Or click a sample:</span>
@@ -950,14 +960,6 @@ export default function Home() {
             })}
           </div>
         </section>
-
-        {/* Brand Extraction & Value Review Modal */}
-        <BrandExtractorModal
-          isOpen={isExtractorModalOpen}
-          onClose={() => setIsExtractorModalOpen(false)}
-          initialUrl={extractorTargetUrl}
-          isManualMode={isManualExtraction}
-        />
       </main>
 
       <Footer />
