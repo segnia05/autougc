@@ -150,23 +150,19 @@ export function Navbar() {
 
           <Suspense fallback={<div className="h-8 w-24 bg-[#E2E6DC] rounded-full animate-pulse" />}>
             <Show when="signed-out">
-              <SignInButton mode="modal">
-                <button
-                  type="button"
-                  className="text-xs font-semibold uppercase tracking-wider text-[#1B231B] hover:text-black transition-colors cursor-pointer px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-lg"
-                >
-                  SIGN IN
-                </button>
-              </SignInButton>
+              <Link
+                href="/sign-in"
+                className="text-xs font-semibold uppercase tracking-wider text-[#1B231B] hover:text-black transition-colors cursor-pointer px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-lg"
+              >
+                SIGN IN
+              </Link>
 
-              <SignUpButton mode="modal">
-                <button
-                  type="button"
-                  className="btn-primary px-6 py-2.5 text-xs font-semibold uppercase tracking-wider cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2"
-                >
-                  GET STARTED
-                </button>
-              </SignUpButton>
+              <Link
+                href="/sign-up"
+                className="btn-primary px-6 py-2.5 text-xs font-semibold uppercase tracking-wider cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2"
+              >
+                GET STARTED
+              </Link>
             </Show>
 
             <Show when="signed-in">

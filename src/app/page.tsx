@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import {
@@ -32,6 +33,7 @@ import {
 
 export default function Home() {
   const router = useRouter();
+  const { isSignedIn } = useAuth();
   const [productUrl, setProductUrl] = useState("");
   const [urlValidationError, setUrlValidationError] = useState<string | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
@@ -60,7 +62,13 @@ export default function Home() {
 
     setUrlValidationError(null);
     const formattedUrl = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
-    router.push(`/onboarding?url=${encodeURIComponent(formattedUrl)}`);
+    const targetOnboarding = `/onboarding?url=${encodeURIComponent(formattedUrl)}`;
+
+    if (!isSignedIn) {
+      router.push(`/sign-in?redirect_url=${encodeURIComponent(targetOnboarding)}`);
+    } else {
+      router.push(targetOnboarding);
+    }
   };
 
   const creatorCards = [
