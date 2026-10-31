@@ -14,15 +14,16 @@ interface AppShellProps {
 export default function AppShell({
   children,
   title,
-  brandName = "HumanifyLab",
+  brandName,
 }: AppShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const effectiveBrand = brandName || (typeof window !== "undefined" ? localStorage.getItem("autougc_brand_name") : null) || "Your Brand";
 
   return (
     <div className="min-h-screen flex bg-[#FAF8F5] text-[#18181B] fastlane-grid-bg antialiased">
       {/* Desktop Sidebar (Persistent) */}
       <div className="hidden md:block flex-shrink-0">
-        <AppSidebar />
+        <AppSidebar brandName={effectiveBrand} />
       </div>
 
       {/* Mobile Drawer Trigger Bar */}
@@ -35,7 +36,7 @@ export default function AppShell({
         >
           <Menu className="w-5 h-5" />
         </button>
-        <span className="text-xs font-semibold">{brandName}</span>
+        <span className="text-xs font-semibold">{effectiveBrand}</span>
         <div className="w-8" />
       </div>
 
@@ -55,14 +56,14 @@ export default function AppShell({
             >
               <X className="w-4 h-4" />
             </button>
-            <AppSidebar />
+            <AppSidebar brandName={effectiveBrand} />
           </div>
         </div>
       )}
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <TopHeaderBar brandName={brandName} title={title} />
+        <TopHeaderBar brandName={effectiveBrand} title={title} />
         <main id="main-content" className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
           {children}
         </main>
@@ -70,3 +71,4 @@ export default function AppShell({
     </div>
   );
 }
+

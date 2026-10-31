@@ -78,7 +78,7 @@ export default function RadarPage() {
   };
 
   return (
-    <AppShell brandName="HumanifyLab" title="Radar">
+    <AppShell title="Radar">
       <div className="space-y-6 select-none">
         {/* Header & Subtitle */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -179,3 +179,4 @@ export default function RadarPage() {
     </AppShell>
   );
 }
+

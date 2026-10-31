@@ -59,8 +59,8 @@ export default function CampaignsPage() {
   const [posts, setPosts] = useState<CampaignPost[]>(SEED_POSTS);
   const [credits, setCredits] = useState(50);
   const [isRendering, setIsRendering] = useState(false);
-  const [brandName, setBrandName] = useState("HumanifyLab");
-  const [goal, setGoal] = useState("Sell more HumanifyLab plans to people who want natural sounding text");
+  const [brandName, setBrandName] = useState("");
+  const [goal, setGoal] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {

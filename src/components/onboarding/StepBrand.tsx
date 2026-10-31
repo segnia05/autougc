@@ -28,15 +28,15 @@ export default function StepBrand({
   onConfirm,
   onBack,
 }: StepBrandProps) {
-  const [brandName, setBrandName] = useState(initialBrandName || "HumanifyLab");
+  const [brandName, setBrandName] = useState(initialBrandName || "Your Brand");
   const [audience, setAudience] = useState(
-    initialAudience || "Students, founders, and professionals writing high-stakes essays"
+    initialAudience || "High-intent customers and target buyers"
   );
   const [usp, setUsp] = useState(
-    initialUsp || "Bypasses AI detectors by rewriting with authentic human cadence"
+    initialUsp || "High-converting software platform"
   );
   const [goal, setGoal] = useState(
-    initialGoal || `Sell more ${initialBrandName || "HumanifyLab"} plans to people who want natural sounding text`
+    initialGoal || `Sell more ${initialBrandName || "product"} plans to target customers`
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -181,3 +181,4 @@ export default function StepBrand({
     </div>
   );
 }
+

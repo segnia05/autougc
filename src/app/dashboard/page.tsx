@@ -11,30 +11,59 @@ import { useRouter } from "next/navigation";
 export default function DashboardPage() {
   const router = useRouter();
 
-  // Local state hydrated from onboarding or defaults
-  const [founderName, setFounderName] = useState("Segni");
-  const [brandName, setBrandName] = useState("HumanifyLab");
-  const [brandGoal, setBrandGoal] = useState(
-    "Sell more HumanifyLab plans to people who want natural sounding text"
-  );
+  // Dynamic state populated exclusively from real user data
+  const [isLoading, setIsLoading] = useState(true);
+  const [founderName, setFounderName] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [brandGoal, setBrandGoal] = useState("");
   const [credits, setCredits] = useState(50);
   const [screenshotUrl, setScreenshotUrl] = useState("");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedName = localStorage.getItem("autougc_founder_name");
-      const storedBrand = localStorage.getItem("autougc_brand_name");
-      const storedGoal = localStorage.getItem("autougc_brand_goal");
-      const storedCredits = localStorage.getItem("autougc_credits");
-      const storedShot = localStorage.getItem("autougc_screenshot_url");
+    async function loadUserWorkspace() {
+      try {
+        const res = await fetch("/api/v1/workspace/active");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.onboarded && json.brandName) {
+            setBrandName(json.brandName);
+            setFounderName(json.founderName || "Founder");
+            setBrandGoal(json.goal || `Scale paid creator ads for ${json.brandName}`);
+            setScreenshotUrl(json.screenshotUrl || "");
+            setCredits(json.credits ?? 50);
+            setIsLoading(false);
+            return;
+          }
+        }
 
-      if (storedName) setFounderName(storedName);
-      if (storedBrand) setBrandName(storedBrand);
-      if (storedGoal) setBrandGoal(storedGoal);
-      if (storedCredits) setCredits(parseInt(storedCredits, 10));
-      if (storedShot) setScreenshotUrl(storedShot);
+        // Check local storage fallback
+        if (typeof window !== "undefined") {
+          const storedBrand = localStorage.getItem("autougc_brand_name");
+          const storedName = localStorage.getItem("autougc_founder_name");
+          const storedGoal = localStorage.getItem("autougc_brand_goal");
+          const storedCredits = localStorage.getItem("autougc_credits");
+          const storedShot = localStorage.getItem("autougc_screenshot_url");
+
+          if (storedBrand) {
+            setBrandName(storedBrand);
+            setFounderName(storedName || "Founder");
+            setBrandGoal(storedGoal || `Scale paid creator ads for ${storedBrand}`);
+            setScreenshotUrl(storedShot || "");
+            if (storedCredits) setCredits(parseInt(storedCredits, 10));
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        // If user has no brand profile, strictly block dashboard and route to onboarding
+        router.replace("/onboarding");
+      } catch {
+        router.replace("/onboarding");
+      }
     }
-  }, []);
+
+    loadUserWorkspace();
+  }, [router]);
 
   const handleCopilotSubmit = (prompt: string, intent: string) => {
     // When the user submits a copilot prompt, route to Studio with preloaded prompt
@@ -50,6 +79,22 @@ export default function DashboardPage() {
     "/images/creator-alex.jpg",
     "/images/creator-sarah.jpg",
   ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center fastlane-grid-bg">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-[#18181B] flex items-center justify-center animate-pulse">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 15L14 4H10L2 15H4Z" fill="#D95D39" />
+              <path d="M10 20L20 9H16L8 20H10Z" fill="#D95D39" />
+            </svg>
+          </div>
+          <span className="text-xs text-[#8E8B85] font-medium">Loading command center...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AppShell brandName={brandName}>

@@ -62,6 +62,13 @@ export default clerkMiddleware(async (auth, request) => {
       signInUrl.searchParams.set("redirect_url", request.nextUrl.pathname);
       return NextResponse.redirect(signInUrl);
     }
+
+    // Strictly enforce onboarding: users who haven't completed onboarding are blocked from dashboard
+    const isOnboarded = request.cookies.get("autougc_onboarded")?.value === "true";
+    if (!isOnboarded && !path.startsWith("/onboarding")) {
+      const onboardingUrl = new URL("/onboarding", request.url);
+      return NextResponse.redirect(onboardingUrl);
+    }
   } else if (!isPublicRoute(request)) {
     // 2. Private API endpoints require active auth session or trusted internal service header
     const hasServiceHeader = request.headers.get("x-user-id");

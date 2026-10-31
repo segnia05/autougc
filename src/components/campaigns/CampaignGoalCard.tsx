@@ -9,8 +9,8 @@ interface CampaignGoalCardProps {
 }
 
 export default function CampaignGoalCard({
-  goalTitle = "Sell more HumanifyLab plans to people who want natural sounding text",
-  goalDescription = "Help their essays sound natural while keeping their original ideas and citations intact.",
+  goalTitle = "Scale paid customer acquisition",
+  goalDescription = "Convert high-intent audience with automated creator video ads and software proof.",
 }: CampaignGoalCardProps) {
   return (
     <div className="fastlane-card p-6 bg-white space-y-4 flex flex-col justify-between select-none">
@@ -37,3 +37,4 @@ export default function CampaignGoalCard({
     </div>
   );
 }
+

@@ -103,7 +103,7 @@ export default function StepYou({
           <input
             type="text"
             required
-            placeholder="e.g. Segni"
+            placeholder="e.g. Sarah"
             value={founderName}
             onChange={(e) => setFounderName(e.target.value)}
             className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39] text-xs text-[#18181B] transition-all"
@@ -155,3 +155,4 @@ export default function StepYou({
     </div>
   );
 }
+

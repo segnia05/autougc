@@ -16,7 +16,7 @@ interface WorkspaceSelectorProps {
 }
 
 export default function WorkspaceSelector({
-  currentBrand = "HumanifyLab",
+  currentBrand = "Your Brand",
   onSelectBrand,
 }: WorkspaceSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -126,3 +126,4 @@ export default function WorkspaceSelector({
     </div>
   );
 }
+

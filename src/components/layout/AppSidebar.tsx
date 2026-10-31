@@ -33,8 +33,14 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
 
-export default function AppSidebar() {
+interface AppSidebarProps {
+  brandName?: string;
+  credits?: number;
+}
+
+export default function AppSidebar({ brandName, credits = 50 }: AppSidebarProps) {
   const pathname = usePathname();
+  const effectiveBrand = brandName || (typeof window !== "undefined" ? localStorage.getItem("autougc_brand_name") : null) || "Your Brand";
 
   return (
     <aside className="w-64 h-screen sticky top-0 flex flex-col justify-between p-4 bg-[#FAF8F5] border-r border-[#EFECE6] select-none">
@@ -42,7 +48,7 @@ export default function AppSidebar() {
       <div className="space-y-6">
         {/* Workspace Brand Switcher */}
         <div className="pt-1 px-1">
-          <WorkspaceSelector currentBrand="HumanifyLab" />
+          <WorkspaceSelector currentBrand={effectiveBrand} />
         </div>
 
         {/* Primary Navigation Stack */}
@@ -110,8 +116,8 @@ export default function AppSidebar() {
       {/* Bottom Section: Credit Consumption Badge */}
       <div className="pt-4">
         <WorkspaceCreditBadge
-          brandName="HumanifyLab"
-          credits={50}
+          brandName={effectiveBrand}
+          credits={credits}
           maxCredits={250}
           percentageUsed={20}
         />
@@ -119,3 +125,4 @@ export default function AppSidebar() {
     </aside>
   );
 }
+

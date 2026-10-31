@@ -12,7 +12,7 @@ interface TopHeaderBarProps {
 }
 
 export default function TopHeaderBar({
-  brandName = "HumanifyLab",
+  brandName = "Active Brand",
   credits = 50,
   trialEndDays = 7,
   title,
@@ -108,3 +108,4 @@ export default function TopHeaderBar({
     </header>
   );
 }
+

@@ -12,7 +12,7 @@ interface WorkspaceCreditBadgeProps {
 }
 
 export default function WorkspaceCreditBadge({
-  brandName = "HumanifyLab",
+  brandName = "Active Brand",
   credits = 50,
   maxCredits = 250,
   percentageUsed = 20,
@@ -135,3 +135,4 @@ export default function WorkspaceCreditBadge({
     </div>
   );
 }
+

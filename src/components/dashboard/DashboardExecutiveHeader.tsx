@@ -13,9 +13,9 @@ interface DashboardExecutiveHeaderProps {
 }
 
 export default function DashboardExecutiveHeader({
-  founderName = "Segni",
-  brandName = "HumanifyLab",
-  goal = "Sell more HumanifyLab plans to people who want natural sounding text",
+  founderName = "Founder",
+  brandName = "Your Brand",
+  goal = "Scale paid creator ad campaigns",
   credits = 50,
   trialEndDays = 7,
   onAskCopilot,
@@ -93,3 +93,4 @@ export default function DashboardExecutiveHeader({
     </div>
   );
 }
+

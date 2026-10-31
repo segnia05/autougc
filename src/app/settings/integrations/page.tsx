@@ -81,7 +81,7 @@ export default function IntegrationsSettingsPage() {
   const connectedCount = channels.filter((c) => c.isConnected).length + (metaConnected ? 1 : 0);
 
   return (
-    <AppShell brandName="HumanifyLab">
+    <AppShell title="Integrations">
       <div className="max-w-4xl mx-auto space-y-6 select-none">
         {/* Header Breadcrumb & Title (Screenshot 2 Match) */}
         <div>
@@ -204,3 +204,4 @@ export default function IntegrationsSettingsPage() {
     </AppShell>
   );
 }
+

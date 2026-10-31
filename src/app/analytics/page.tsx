@@ -6,7 +6,7 @@ import { TrendingUp, Eye, DollarSign, Target, BarChart2 } from "lucide-react";
 
 export default function AnalyticsPage() {
   return (
-    <AppShell brandName="HumanifyLab" title="Analytics">
+    <AppShell title="Analytics">
       <div className="space-y-6 select-none">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[#18181B]">
@@ -84,3 +84,4 @@ export default function AnalyticsPage() {
     </AppShell>
   );
 }
+

@@ -143,18 +143,34 @@ function OnboardingContent() {
     setCurrentStep("first_ads");
   };
 
-  // Step 4: Finalize & Launch into Dashboard
-  const handleLaunchDashboard = () => {
-    // Persist brand profile locally for seamless dashboard hydration
-    if (typeof window !== "undefined") {
-      localStorage.setItem("autougc_founder_name", formData.founderName || "Founder");
-      localStorage.setItem("autougc_brand_name", formData.brandName || "HumanifyLab");
-      localStorage.setItem("autougc_brand_goal", formData.goal || "Scale paid ads across Meta and TikTok");
-      localStorage.setItem("autougc_screenshot_url", formData.screenshotUrl || "");
-      localStorage.setItem("autougc_credits", "50");
-    }
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    router.push("/dashboard");
+  // Step 4: Finalize & Launch into Dashboard
+  const handleLaunchDashboard = async () => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/v1/onboarding/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (typeof window !== "undefined") {
+          localStorage.setItem("autougc_founder_name", json.founderName || formData.founderName || "Founder");
+          localStorage.setItem("autougc_brand_name", json.brandName || formData.brandName);
+          localStorage.setItem("autougc_brand_goal", json.goal || formData.goal);
+          localStorage.setItem("autougc_screenshot_url", json.screenshotUrl || formData.screenshotUrl);
+          localStorage.setItem("autougc_credits", String(json.credits || 50));
+        }
+      }
+    } catch (err) {
+      console.warn("Saved in local state fallback", err);
+    } finally {
+      setIsSubmitting(false);
+      router.push("/dashboard");
+    }
   };
 
   return (

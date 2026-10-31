@@ -6,10 +6,10 @@ import Image from "next/image";
 import { Fingerprint, Target, Sparkles, Check, Globe } from "lucide-react";
 
 export default function BrandKnowledgePage() {
-  const [brandName, setBrandName] = useState("HumanifyLab");
-  const [goal, setGoal] = useState("Sell more HumanifyLab plans to people who want natural sounding text");
-  const [audience, setAudience] = useState("Students, founders, and professionals writing high-stakes essays");
-  const [usp, setUsp] = useState("Bypasses AI detectors by rewriting with authentic human cadence and original citations");
+  const [brandName, setBrandName] = useState("");
+  const [goal, setGoal] = useState("");
+  const [audience, setAudience] = useState("");
+  const [usp, setUsp] = useState("");
   const [screenshotUrl, setScreenshotUrl] = useState("");
   const [isSaved, setIsSaved] = useState(false);
 
@@ -153,3 +153,4 @@ export default function BrandKnowledgePage() {
     </AppShell>
   );
 }
+
