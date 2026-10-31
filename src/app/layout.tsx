@@ -1,6 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import { Newsreader, Plus_Jakarta_Sans, Inter, Geist_Mono } from "next/font/google";
+import { Newsreader, Plus_Jakarta_Sans, Inter, Geist_Mono, Silkscreen } from "next/font/google";
 import { Suspense } from "react";
 import SentryErrorBoundary from "@/components/observability/SentryErrorBoundary";
 import PostHogProvider from "@/components/observability/PostHogProvider";
@@ -27,6 +27,13 @@ const inter = Inter({
 
 const geistMono = Geist_Mono({
   variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const silkscreen = Silkscreen({
+  weight: ["400", "700"],
+  variable: "--font-digital",
   subsets: ["latin"],
   display: "swap",
 });
@@ -65,9 +72,9 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <meta name="theme-color" content="#f6f7f2" />
+        <meta name="theme-color" content="#FAF8F5" />
       </head>
-      <body className="min-h-full bg-[var(--bg-app)] text-[var(--text-primary)] font-[family-name:var(--font-body)] selection:bg-[#2A482E] selection:text-white">
+      <body className={`min-h-full bg-[var(--bg-canvas)] text-[var(--text-primary)] font-[family-name:var(--font-body)] ${newsreader.variable} ${jakarta.variable} ${inter.variable} ${geistMono.variable} ${silkscreen.variable} selection:bg-[#D95D39] selection:text-white fastlane-grid-bg antialiased`}>
         {/* Skip to Main Content Link for Keyboard & Screen Reader Users (WCAG 2.4.1 Bypass Blocks) */}
         <a
           href="#main-content"

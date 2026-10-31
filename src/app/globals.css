@@ -1,176 +1,176 @@
 @import "tailwindcss";
 
 :root {
-  /* Fluencify Signature Editorial Organic Palette */
-  --bg-app: #f6f7f2;               /* Organic Heritage Warm Cream / Linen */
-  --bg-surface: #ffffff;           /* Crisp White Card Surface */
-  --bg-surface-elevated: #ecefe7;  /* Soft Sage Cream Container */
-  --bg-surface-hover: #e3e8dc;     /* Interactive Hover Tint */
+  /* Fastlane Warm Luxury Ivory & Cream Canvas */
+  --bg-canvas: #FAF8F5;          /* Warm Ivory Canvas Base */
+  --bg-canvas-subtle: #F5F2EC;   /* Warm Linen Secondary Canvas */
+  --bg-surface: #FFFFFF;         /* Crisp White Card Surface */
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-hover: #FDFCFB;
 
-  /* Text & Typography */
-  --text-primary: #1b231b;         /* Deep Forest Charcoal */
-  --text-secondary: #4a544a;       /* Warm Olive Slate */
-  --text-muted: #738072;           /* Soft Sage Slate */
+  /* Fastlane Tactile Warm Borders */
+  --border-subtle: #EFECE6;      /* Ultra-soft warm divider */
+  --border-default: #E5E0D8;     /* Standard card border */
+  --border-active: #D9D2C7;      /* Hover / focused border */
 
-  /* Accents */
-  --accent-primary: #1f3824;       /* Fluencify Signature Deep Forest Green */
-  --accent-primary-hover: #162b1b;
-  --accent-secondary: #e2e9dc;     /* Sage Pill Background */
-  --accent-emerald: #2d6a28;       /* Operational Approved Emerald */
-  --accent-amber: #c05621;         /* Warm Peach / Pending Amber */
-  --accent-rose: #be123c;          /* Alert Crimson */
+  /* Fastlane Terracotta & Burnt Orange Accent */
+  --brand-primary: #D95D39;      /* Fastlane Signature Burnt Orange */
+  --brand-primary-hover: #C54E2C;
+  --brand-subtle: #FDF3EF;       /* 10% tinted terracotta background */
+  --brand-border: #F3CEBE;       /* Soft terracotta border */
+  --brand-glow: rgba(217, 93, 57, 0.18);
 
-  /* Precision Tactile Borders */
-  --border-subtle: rgba(27, 35, 27, 0.09);
-  --border-prominent: rgba(27, 35, 27, 0.18);
-  --border-dashed: #cbd5c4;
+  /* Deep Charcoal Action Neutrals */
+  --action-primary: #18181B;     /* Deep charcoal pill buttons */
+  --action-primary-hover: #09090B;
+  --action-text: #FFFFFF;
+
+  /* Fastlane Text Hierarchy */
+  --text-primary: #18181B;       /* Near-black primary text */
+  --text-secondary: #52525B;     /* Muted body text */
+  --text-muted: #8E8B85;         /* Metadata, hints, subtle labels */
+  --text-terracotta: #D95D39;    /* Goal labels, active indicators */
+
+  /* Dot Grid Pattern */
+  --dot-color: #E8E3DA;
+  --dot-spacing: 24px;
 }
 
 @theme inline {
-  --color-bg-app: var(--bg-app);
+  --color-bg-canvas: var(--bg-canvas);
+  --color-bg-canvas-subtle: var(--bg-canvas-subtle);
   --color-bg-surface: var(--bg-surface);
   --color-bg-surface-elevated: var(--bg-surface-elevated);
   --color-bg-surface-hover: var(--bg-surface-hover);
 
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-active: var(--border-active);
+
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-subtle: var(--brand-subtle);
+  --color-brand-border: var(--brand-border);
+
+  --color-action-primary: var(--action-primary);
+  --color-action-primary-hover: var(--action-primary-hover);
+
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
-
-  --color-accent-primary: var(--accent-primary);
-  --color-accent-primary-hover: var(--accent-primary-hover);
-  --color-accent-secondary: var(--accent-secondary);
-  --color-accent-emerald: var(--accent-emerald);
-  --color-accent-amber: var(--accent-amber);
-  --color-accent-rose: var(--accent-rose);
-
-  --color-border-subtle: var(--border-subtle);
-  --color-border-prominent: var(--border-prominent);
-  --color-border-dashed: var(--border-dashed);
+  --color-text-terracotta: var(--text-terracotta);
 
   --font-serif: var(--font-serif);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
+  --font-digital: var(--font-digital);
 }
 
-/* Custom Base Styles */
+/* Base Styles */
 * {
   box-sizing: border-box;
 }
 
 body {
-  background-color: var(--bg-app);
+  background-color: var(--bg-canvas);
   color: var(--text-primary);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.012em;
 }
 
-/* Tactile Micro-Border Utilities */
-.border-subtle {
+/* Fastlane Signature Dot Grid Background */
+.fastlane-grid-bg {
+  background-color: var(--bg-canvas);
+  background-image: radial-gradient(var(--dot-color) 1.25px, transparent 1.25px);
+  background-size: var(--dot-spacing) var(--dot-spacing);
+  background-position: 0 0;
+}
+
+/* Fastlane Card Surface */
+.fastlane-card {
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 3px rgba(24, 24, 27, 0.02), 0 6px 16px -4px rgba(24, 24, 27, 0.04);
 }
 
-.border-prominent {
-  border: 1px solid var(--border-prominent);
+.fastlane-card-elevated {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 12px -2px rgba(24, 24, 27, 0.06), 0 16px 32px -8px rgba(24, 24, 27, 0.05);
 }
 
-/* Fluencify Specular & Soft Shadow Depth */
-.card-specular {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 1px 3px 0 rgba(27, 35, 27, 0.04), 0 10px 24px -8px rgba(27, 35, 27, 0.06);
-}
-
-.card-specular-elevated {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 4px 6px -1px rgba(27, 35, 27, 0.05), 0 20px 35px -10px rgba(27, 35, 27, 0.09);
-}
-
-.card-sage {
-  background: var(--bg-surface-elevated);
-  border: 1px solid rgba(27, 35, 27, 0.06);
-}
-
-/* Pill and Button Styles */
-.btn-primary {
-  background-color: var(--accent-primary);
+/* Fastlane Pill Buttons */
+.btn-fastlane-black {
+  background-color: var(--action-primary);
   color: #ffffff;
   border-radius: 9999px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 4px rgba(31, 56, 36, 0.2);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  padding: 0.45rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.btn-primary:hover {
-  background-color: var(--accent-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(31, 56, 36, 0.28);
+.btn-fastlane-black:hover {
+  background-color: var(--action-primary-hover);
+  transform: translateY(-0.5px);
 }
 
-.btn-outline {
-  border: 1px solid #c8cfbf;
-  background-color: transparent;
+.btn-fastlane-white {
+  background-color: #ffffff;
   color: var(--text-primary);
+  border: 1px solid var(--border-default);
   border-radius: 9999px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  padding: 0.45rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-.btn-outline:hover {
-  background-color: #eaefe5;
-  border-color: #b4bea9;
+.btn-fastlane-white:hover {
+  background-color: #faf9f6;
+  border-color: var(--border-active);
 }
 
-/* Custom Scrollbar for Studio Timeline */
+/* Fastlane Digital LCD Font Utility */
+.font-digital {
+  font-family: var(--font-digital), var(--font-mono), monospace;
+  font-feature-settings: "tnum";
+  letter-spacing: 0.02em;
+}
+
+/* Fastlane Terracotta Glow Utility */
+.glow-terracotta-top {
+  border-top: 1.5px solid transparent;
+  border-image: linear-gradient(90deg, transparent 5%, #D95D39 50%, transparent 95%) 1;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--bg-surface);
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #23272e;
+  background: #ded9d0;
   border-radius: 9999px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #353b47;
-}
-
-
-/* ========================================================= */
-/* ACCESSIBILITY & FOCUS VISIBLE FOUNDATIONS (WCAG 2.1 AA)  */
-/* ========================================================= */
-
-/* Universal High-Contrast Focus Ring for Keyboard Users */
-:focus-visible {
-  outline: 2px solid var(--accent-primary, #1f3824);
-  outline-offset: 2px;
-}
-
-/* Remove default outline when mouse is clicked, preserve for keyboard */
-:focus:not(:focus-visible) {
-  outline: none;
-}
-
-/* Vestibular Safety & Motion Reduction (WCAG 2.3.3) */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
+  background: #c7c0b4;
 }

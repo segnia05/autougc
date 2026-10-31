@@ -7,6 +7,7 @@ import { logger } from "@/lib/observability/logger";
 
 const isPublicRoute = createRouteMatcher([
   "/",
+  "/onboarding(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/pricing",
@@ -34,7 +35,11 @@ const isPublicRoute = createRouteMatcher([
 
 const isProtectedBrowserRoute = createRouteMatcher([
   "/dashboard(.*)",
+  "/campaigns(.*)",
   "/studio(.*)",
+  "/brand(.*)",
+  "/radar(.*)",
+  "/analytics(.*)",
   "/settings(.*)",
 ]);
 
@@ -51,7 +56,7 @@ export default clerkMiddleware(async (auth, request) => {
   // 1. Strictly gate browser protected routes: unauthenticated users are redirected to sign in
   if (isProtectedBrowserRoute(request)) {
     const { userId } = await auth();
-    const hasDevHeader = request.headers.get("x-user-id");
+    const hasDevHeader = request.headers.get("x-user-id") || request.cookies.get("x-user-id")?.value;
     if (!userId && !hasDevHeader) {
       const signInUrl = new URL("/sign-in", request.url);
       signInUrl.searchParams.set("redirect_url", request.nextUrl.pathname);

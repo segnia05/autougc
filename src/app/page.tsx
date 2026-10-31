@@ -52,18 +52,11 @@ export default function Home() {
     if (e) e.preventDefault();
     const targetUrl = customUrl || productUrl.trim();
 
-    if (!targetUrl) {
-      // If customer doesn't have a URL, open the manual creation and preview editor
-      setIsManualExtraction(true);
-      setExtractorTargetUrl("");
-      setIsExtractorModalOpen(true);
-      return;
+    if (targetUrl) {
+      router.push(`/onboarding?url=${encodeURIComponent(targetUrl)}`);
+    } else {
+      router.push("/onboarding");
     }
-
-    // Customer provided a URL: open extraction review with live preview
-    setIsManualExtraction(false);
-    setExtractorTargetUrl(targetUrl);
-    setIsExtractorModalOpen(true);
   };
 
   const creatorCards = [
