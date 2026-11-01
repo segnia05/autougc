@@ -1,29 +1,25 @@
-import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
-export const metadata = {
-  title: "Privacy Policy | AutoUGC",
-  description: "AutoUGC privacy policy, data security practices, and GDPR compliance.",
-};
-
-export default function PrivacyPage() {
+export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
+    <div className="min-h-screen bg-[#F6F7F2] text-[#1B231B] flex flex-col font-sans selection:bg-[#1F3824] selection:text-white">
       <Navbar />
 
-      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 pt-16 pb-24 w-full">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4] mb-4 text-xs font-semibold uppercase tracking-wider">
-          Legal & Compliance
+      <main id="main-content" className="flex-1 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div className="space-y-4 mb-12 border-b border-[#CBD5C4]/60 pb-8">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#1F3824] bg-[#1F3824]/10 px-3 py-1 rounded-full">
+            Legal & Compliance
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-black text-[#1B231B] tracking-tight">
+            Privacy Policy
+          </h1>
+          <p className="text-xs text-[#717E6C]">
+            Effective Date: January 1, 2026 &bull; Last Updated: November 1, 2026
+          </p>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B] mb-3">
-          Privacy Policy
-        </h1>
-        <p className="text-xs text-[#717E6C] font-mono mb-8">
-          Last updated: October 2026 • Effective Date: January 1, 2026
-        </p>
 
-        <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8 text-xs text-[#4A544A] leading-relaxed">
+        <div className="space-y-8 text-sm text-[#4A544A] leading-relaxed">
           <section className="space-y-3">
             <h2 className="text-base font-bold text-[#1B231B]">
               1. Information We Collect
@@ -35,7 +31,7 @@ export default function PrivacyPage() {
               <li>Product URLs submitted for autonomous parsing and script generation.</li>
               <li>Account registration details (email address, brand name).</li>
               <li>OAuth authorization tokens for scheduling to TikTok, Instagram Reels, and YouTube Shorts.</li>
-              <li>Payment and billing information processed securely via Stripe (we do not store raw credit card numbers).</li>
+              <li>Payment and billing information processed securely via our Merchant of Record partners (Polar.sh / Paddle.com). We do not store raw credit card numbers.</li>
             </ul>
           </section>
 
@@ -81,7 +77,7 @@ export default function PrivacyPage() {
             </p>
             <ul className="list-disc pl-5 space-y-1 text-[#717E6C]">
               <li><strong>Clerk Inc.</strong> — Identity verification, multi-tenant session authentication, and MFA.</li>
-              <li><strong>Stripe Inc.</strong> — PCI-DSS Level 1 compliant subscription billing and payment processing.</li>
+              <li><strong>Polar.sh / Paddle.com</strong> — PCI-DSS Level 1 compliant Merchant of Record (MoR) billing platforms and worldwide sales tax/VAT remittance.</li>
               <li><strong>Neon Inc.</strong> — Serverless multi-region PostgreSQL primary relational database.</li>
               <li><strong>Google LLC</strong> — Gemini AI infrastructure for automated script and video creative synthesis.</li>
             </ul>

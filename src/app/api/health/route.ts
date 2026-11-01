@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
   const circuitBreakerStatus = {
     geminiAi: geminiBreaker.getState(),
     socialPublisher: socialDispatcherBreaker.getState(),
+    paymentGateway: stripeBreaker.getState(),
     stripeBilling: stripeBreaker.getState(),
   };
 

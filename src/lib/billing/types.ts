@@ -53,3 +53,4 @@ export interface WebhookProcessingResult {
   creditsGranted?: number;
   error?: string;
 }
+

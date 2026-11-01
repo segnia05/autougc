@@ -1,15 +1,3 @@
-/**
- * Enterprise Circuit Breaker Pattern.
- *
- * Prevents cascading service degradation by isolating failing downstream dependencies
- * (e.g., TikTok/Instagram OAuth APIs, Gemini AI, Stripe).
- *
- * Lifecycle States:
- * - CLOSED: Normal healthy traffic.
- * - OPEN: Downstream outage detected. Calls fail fast immediately without waiting.
- * - HALF_OPEN: Trial canary request sent to verify downstream recovery before full resumption.
- */
-
 export type CircuitState = "CLOSED" | "OPEN" | "HALF_OPEN";
 
 export interface CircuitBreakerOptions {
@@ -112,4 +100,5 @@ export class CircuitBreaker {
 // Pre-configured global circuit breakers
 export const geminiBreaker = new CircuitBreaker("gemini_ai", { failureThreshold: 5, recoveryTimeoutMs: 15_000 });
 export const socialDispatcherBreaker = new CircuitBreaker("social_publisher", { failureThreshold: 4, recoveryTimeoutMs: 10_000 });
-export const stripeBreaker = new CircuitBreaker("stripe_billing", { failureThreshold: 3, recoveryTimeoutMs: 10_000 });
+export const paymentGatewayBreaker = new CircuitBreaker("payment_gateway", { failureThreshold: 3, recoveryTimeoutMs: 10_000 });
+export const stripeBreaker = paymentGatewayBreaker; // Backward compatibility alias
