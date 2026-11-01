@@ -30,6 +30,7 @@ import {
   ChevronRight,
   Globe,
   AlertCircle,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function Home() {
@@ -41,21 +42,41 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"All" | "Pending" | "Approved" | "Declined">("All");
   const [dynamicPlans, setDynamicPlans] = useState<NormalizedPlan[]>([]);
   const [providerName, setProviderName] = useState<string>("polar");
+  const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
+  const [missingKeys, setMissingKeys] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoadingPlans, setIsLoadingPlans] = useState<boolean>(true);
 
   useEffect(() => {
     let isMounted = true;
     fetch("/api/v1/billing/plans")
       .then((res) => res.json())
       .then((data) => {
-        if (isMounted && data.success && Array.isArray(data.plans) && data.plans.length > 0) {
+        if (!isMounted) return;
+        setIsLoadingPlans(false);
+        if (data.provider) {
+          setProviderName(data.provider);
+        }
+
+        if (data.configured === false || !data.success || !Array.isArray(data.plans) || data.plans.length === 0) {
+          setIsConfigured(false);
+          setMissingKeys(data.missingKeys || []);
+          setErrorMessage(data.error || "Need product id and api key");
+          setDynamicPlans([]);
+        } else {
+          setIsConfigured(true);
           setDynamicPlans(data.plans);
-          if (data.provider) {
-            setProviderName(data.provider);
-          }
+          setMissingKeys([]);
+          setErrorMessage(null);
         }
       })
       .catch((err) => {
+        if (!isMounted) return;
         console.warn("Failed to load dynamic plans on homepage:", err);
+        setIsLoadingPlans(false);
+        setIsConfigured(false);
+        setErrorMessage("Need product id and api key");
+        setDynamicPlans([]);
       });
 
     return () => {
@@ -832,138 +853,111 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Starter */}
-            <div className="rounded-3xl bg-white p-8 border border-[#CBD5C4]/60 shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#717E6C] mb-2">
-                  {starterPlan?.name || "Starter"} Pipeline
-                </div>
-                <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-bold font-sans text-[#1B231B]">
-                    {starterPlan?.formattedPrice || "$49"}
-                  </span>
-                  <span className="text-xs text-[#717E6C]">
-                    / {starterPlan?.billingInterval || "month"}
-                  </span>
-                </div>
-                <p className="text-xs text-[#4A544A] mb-6">
-                  {starterPlan?.description || "Perfect for indie hackers and early stage SaaS launching their first creator ad tests."}
-                </p>
-                <div className="space-y-3 text-xs text-[#1B231B] font-medium mb-8">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>{starterPlan?.creditsMonthlyAllowance ?? 20} high-retention 1080p videos / mo</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>3 TikTok psychological script angles</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>1 Brand Account Autopilot</span>
-                  </div>
-                </div>
+          {isLoadingPlans ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#1F3824] border-t-transparent" />
+                <span className="text-xs text-[#717E6C] font-mono">Syncing live catalog from {providerName === "paddle" ? "Paddle" : "Polar"}...</span>
               </div>
-
-              <Link
-                href="/pricing"
-                className="w-full py-3 rounded-full border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white text-center text-xs font-semibold tracking-wider uppercase transition-colors"
-              >
-                Choose {starterPlan?.name || "Starter"}
-              </Link>
             </div>
-
-            {/* Growth (Featured) */}
-            <div className="rounded-3xl bg-[#ECEFE7] p-8 border-2 border-[#1F3824] shadow-md flex flex-col justify-between relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#1F3824] text-white text-[10px] font-bold uppercase tracking-widest">
-                Most Popular
+          ) : !isConfigured || dynamicPlans.length === 0 ? (
+            /* Missing Credentials Alert Card */
+            <div className="rounded-3xl bg-[#FEF3C7]/40 border-2 border-[#F59E0B]/60 p-8 sm:p-12 text-center max-w-3xl mx-auto shadow-sm">
+              <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-[#FEF3C7] text-[#D97706] mb-5 border border-[#F59E0B]/30 shadow-xs">
+                <AlertTriangle className="h-7 w-7" />
               </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#1B231B] mb-3">
+                Need Product ID and API Key
+              </h3>
+              <p className="text-sm text-[#4A544A] max-w-lg mx-auto mb-6 leading-relaxed">
+                AutoUGC strictly prohibits static pricing. Plan names, tier pricing, and monthly video quotas must be dynamically fetched from <strong className="text-[#1B231B]">{providerName === "paddle" ? "Paddle" : "Polar"}</strong> using your product IDs and API key.
+              </p>
 
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#1F3824] mb-2">
-                  {growthPlan?.name || "Growth"} Autopilot
+              {missingKeys.length > 0 && (
+                <div className="bg-white/80 rounded-2xl p-5 border border-[#CBD5C4]/70 max-w-md mx-auto text-left mb-6 shadow-xs">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#717E6C] mb-3 flex items-center justify-between">
+                    <span>Missing Environment Variables</span>
+                    <span className="text-[10px] text-[#D97706] bg-[#FEF3C7] px-2 py-0.5 rounded-full font-semibold">Action Required</span>
+                  </div>
+                  <ul className="space-y-2 font-mono text-xs text-[#991B1B]">
+                    {missingKeys.map((key) => (
+                      <li key={key} className="flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+                        <code className="bg-red-50 text-red-700 px-1.5 py-0.5 rounded border border-red-200">{key}</code>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-bold font-sans text-[#1B231B]">
-                    {growthPlan?.formattedPrice || "$89"}
-                  </span>
-                  <span className="text-xs text-[#717E6C]">
-                    / {growthPlan?.billingInterval || "month"}
-                  </span>
-                </div>
-                <p className="text-xs text-[#4A544A] mb-6">
-                  {growthPlan?.description || "For scaling DTC, e-commerce, and SaaS brands ready to deploy multi-account reach."}
-                </p>
-                <div className="space-y-3 text-xs text-[#1B231B] font-medium mb-8">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>{growthPlan?.creditsMonthlyAllowance ?? 60} high-retention 1080p videos / mo</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>Multi-Account Army (1 Main + 4 Satellites)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>100% Commercial Usage Rights</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>Priority Rendering & Voice Synthesis</span>
-                  </div>
-                </div>
-              </div>
+              )}
 
-              <Link
-                href="/pricing"
-                className="w-full py-3 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-center text-xs font-semibold tracking-wider uppercase transition-colors shadow-sm"
-              >
-                Choose {growthPlan?.name || "Growth"}
-              </Link>
+              <p className="text-xs text-[#717E6C] max-w-md mx-auto">
+                Configure these keys in your <code className="text-xs bg-[#ECEFE7] px-1.5 py-0.5 rounded text-[#1B231B]">.env.local</code> file to dynamically synchronize your live Merchant of Record pricing catalog.
+              </p>
             </div>
+          ) : (
+            /* Dynamic Live Plans Grid */
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {dynamicPlans.map((plan) => {
+                const isPopular = plan.popular || plan.planTier === "growth";
+                return (
+                  <div
+                    key={plan.planTier}
+                    className={`rounded-3xl p-8 shadow-sm flex flex-col justify-between relative ${
+                      isPopular
+                        ? "bg-[#ECEFE7] border-2 border-[#1F3824] shadow-md"
+                        : "bg-white border border-[#CBD5C4]/60"
+                    }`}
+                  >
+                    {isPopular && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#1F3824] text-white text-[10px] font-bold uppercase tracking-widest">
+                        Most Popular
+                      </div>
+                    )}
 
-            {/* Scale */}
-            <div className="rounded-3xl bg-white p-8 border border-[#CBD5C4]/60 shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#717E6C] mb-2">
-                  {scalePlan?.name || "Scale"} Dominance
-                </div>
-                <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-bold font-sans text-[#1B231B]">
-                    {scalePlan?.formattedPrice || "$199"}
-                  </span>
-                  <span className="text-xs text-[#717E6C]">
-                    / {scalePlan?.billingInterval || "month"}
-                  </span>
-                </div>
-                <p className="text-xs text-[#4A544A] mb-6">
-                  {scalePlan?.description || "For enterprise brands and media houses requiring continuous creative volume."}
-                </p>
-                <div className="space-y-3 text-xs text-[#1B231B] font-medium mb-8">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>{scalePlan?.creditsMonthlyAllowance ?? 150} high-retention 1080p videos / mo</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>15 Connected Brand & Satellite Channels</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>Instant Webhook & Zapier Automation</span>
-                  </div>
-                </div>
-              </div>
+                    <div>
+                      <div
+                        className={`text-xs font-bold uppercase tracking-wider mb-2 ${
+                          isPopular ? "text-[#1F3824]" : "text-[#717E6C]"
+                        }`}
+                      >
+                        {plan.name} Pipeline
+                      </div>
+                      <div className="flex items-baseline gap-1 mb-4">
+                        <span className="text-4xl font-bold font-sans text-[#1B231B]">
+                          {plan.formattedPrice}
+                        </span>
+                        <span className="text-xs text-[#717E6C]">
+                          / {plan.billingInterval || "month"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#4A544A] mb-6">
+                        {plan.description}
+                      </p>
+                      <div className="space-y-3 text-xs text-[#1B231B] font-medium mb-8">
+                        {plan.features?.map((feat, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-[#1F3824] shrink-0" />
+                            <span>{feat}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-              <Link
-                href="/pricing"
-                className="w-full py-3 rounded-full border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white text-center text-xs font-semibold tracking-wider uppercase transition-colors"
-              >
-                Choose {scalePlan?.name || "Scale"}
-              </Link>
+                    <Link
+                      href="/pricing"
+                      className={`w-full py-3 rounded-full text-center text-xs font-semibold tracking-wider uppercase transition-colors shadow-sm ${
+                        isPopular
+                          ? "bg-[#1F3824] hover:bg-[#162B1B] text-white"
+                          : "border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white"
+                      }`}
+                    >
+                      Choose {plan.name}
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
-          </div>
+          )}
         </section>
 
         {/* ========================================================= */}

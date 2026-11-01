@@ -1,9 +1,20 @@
-import { fetchPolarPlans, createPolarCheckoutSession, processPolarWebhook } from "../src/lib/billing/polarProvider";
-import { fetchPaddlePlans, createPaddleCheckoutSession, processPaddleWebhook } from "../src/lib/billing/paddleProvider";
+import {
+  fetchPolarPlans,
+  createPolarCheckoutSession,
+  processPolarWebhook,
+  getPolarConfigurationStatus,
+} from "../src/lib/billing/polarProvider";
+import {
+  fetchPaddlePlans,
+  createPaddleCheckoutSession,
+  processPaddleWebhook,
+  getPaddleConfigurationStatus,
+} from "../src/lib/billing/paddleProvider";
 import {
   getActivePaymentProviderName,
   fetchActiveBillingPlans,
   createActiveCheckoutSession,
+  getActiveConfigurationStatus,
 } from "../src/lib/billing/paymentProvider";
 import {
   grantCredits,
@@ -44,6 +55,50 @@ async function runTests() {
 
   process.env.PAYMENT_PROVIDER = "polar";
   assert(getActivePaymentProviderName() === "polar", "Provider toggles back to 'polar'");
+
+  // -------------------------------------------------------------------------
+  // TEST 1.5: Missing Credentials Error Detection (Zero Static Pricing)
+  // -------------------------------------------------------------------------
+  delete process.env.POLAR_ACCESS_TOKEN;
+  delete process.env.POLAR_PRODUCT_STARTER_ID;
+  delete process.env.PADDLE_API_KEY;
+  delete process.env.PADDLE_PRODUCT_STARTER_ID;
+
+  const unconfiguredPolar = getPolarConfigurationStatus();
+  assert(unconfiguredPolar.isConfigured === false, "Polar correctly reports isConfigured=false when credentials are unset");
+  assert(unconfiguredPolar.missing.includes("POLAR_ACCESS_TOKEN"), "Polar reports POLAR_ACCESS_TOKEN in missing keys");
+  assert(unconfiguredPolar.missing.includes("POLAR_PRODUCT_STARTER_ID"), "Polar reports POLAR_PRODUCT_STARTER_ID in missing keys");
+
+  const unconfiguredPolarPlans = await fetchPolarPlans();
+  assert(unconfiguredPolarPlans.length === 0, "fetchPolarPlans returns [] when unconfigured (no static fallback)");
+
+  const unconfiguredPaddle = getPaddleConfigurationStatus();
+  assert(unconfiguredPaddle.isConfigured === false, "Paddle correctly reports isConfigured=false when credentials are unset");
+  assert(unconfiguredPaddle.missing.includes("PADDLE_API_KEY"), "Paddle reports PADDLE_API_KEY in missing keys");
+
+  const unconfiguredPaddlePlans = await fetchPaddlePlans();
+  assert(unconfiguredPaddlePlans.length === 0, "fetchPaddlePlans returns [] when unconfigured (no static fallback)");
+
+  const unconfiguredActive = await fetchActiveBillingPlans();
+  assert(unconfiguredActive.isConfigured === false, "fetchActiveBillingPlans returns isConfigured=false when active provider lacks credentials");
+  assert(unconfiguredActive.plans.length === 0, "fetchActiveBillingPlans returns empty plans array when unconfigured");
+
+  // Now set sandbox credentials for full end-to-end integration testing
+  process.env.POLAR_ACCESS_TOKEN = "polar_at_sandbox_test_token_12345";
+  process.env.POLAR_PRODUCT_STARTER_ID = "prod_polar_starter_123";
+  process.env.POLAR_PRODUCT_GROWTH_ID = "prod_polar_growth_123";
+  process.env.POLAR_PRODUCT_SCALE_ID = "prod_polar_scale_123";
+
+  process.env.PADDLE_API_KEY = "pdl_nt_sandbox_test_token_12345";
+  process.env.PADDLE_PRODUCT_STARTER_ID = "prod_paddle_starter_123";
+  process.env.PADDLE_PRODUCT_GROWTH_ID = "prod_paddle_growth_123";
+  process.env.PADDLE_PRODUCT_SCALE_ID = "prod_paddle_scale_123";
+
+  const configuredPolar = getPolarConfigurationStatus();
+  assert(configuredPolar.isConfigured === true, "Polar reports isConfigured=true when credentials and product IDs are set");
+
+  const configuredPaddle = getPaddleConfigurationStatus();
+  assert(configuredPaddle.isConfigured === true, "Paddle reports isConfigured=true when credentials and product IDs are set");
 
   // -------------------------------------------------------------------------
   // TEST 2: Dynamic Plan Fetching & Normalization (Polar)

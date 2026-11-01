@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Check, ChevronDown, ShieldCheck } from "lucide-react";
+import { Check, ChevronDown, ShieldCheck, AlertTriangle } from "lucide-react";
 import { NormalizedPlan } from "@/lib/billing/types";
 
 export default function PricingPage() {
@@ -15,21 +15,41 @@ export default function PricingPage() {
   const [loadingCheckoutPlan, setLoadingCheckoutPlan] = useState<string | null>(null);
   const [dynamicPlans, setDynamicPlans] = useState<NormalizedPlan[]>([]);
   const [providerName, setProviderName] = useState<string>("polar");
+  const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
+  const [missingKeys, setMissingKeys] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoadingPlans, setIsLoadingPlans] = useState<boolean>(true);
 
   useEffect(() => {
     let isMounted = true;
     fetch("/api/v1/billing/plans")
       .then((res) => res.json())
       .then((data) => {
-        if (isMounted && data.success && Array.isArray(data.plans) && data.plans.length > 0) {
+        if (!isMounted) return;
+        setIsLoadingPlans(false);
+        if (data.provider) {
+          setProviderName(data.provider);
+        }
+
+        if (data.configured === false || !data.success || !Array.isArray(data.plans) || data.plans.length === 0) {
+          setIsConfigured(false);
+          setMissingKeys(data.missingKeys || []);
+          setErrorMessage(data.error || "Need product id and api key");
+          setDynamicPlans([]);
+        } else {
+          setIsConfigured(true);
           setDynamicPlans(data.plans);
-          if (data.provider) {
-            setProviderName(data.provider);
-          }
+          setMissingKeys([]);
+          setErrorMessage(null);
         }
       })
       .catch((err) => {
+        if (!isMounted) return;
         console.warn("Failed to load dynamic plans on pricing page:", err);
+        setIsLoadingPlans(false);
+        setIsConfigured(false);
+        setErrorMessage("Need product id and api key");
+        setDynamicPlans([]);
       });
 
     return () => {
@@ -37,106 +57,33 @@ export default function PricingPage() {
     };
   }, []);
 
-  const getDynamicPrice = (tier: string, defaultMonthly: number, defaultAnnual: number) => {
-    const found = dynamicPlans.find((p) => p.planTier === tier);
-    if (found) {
-      const monthly = Math.round(found.amountCents / 100);
-      const annual = Math.round(monthly * 0.7);
-      return billingCycle === "annual" ? annual : monthly;
-    }
-    return billingCycle === "annual" ? defaultAnnual : defaultMonthly;
-  };
+  const displayPlans = dynamicPlans.map((p) => {
+    const isMonthly = billingCycle === "monthly";
+    const monthlyDollars = Math.round(p.amountCents / 100);
+    const annualDollars = Math.round(monthlyDollars * 0.8);
+    const price = isMonthly ? monthlyDollars : annualDollars;
+    const isPopular = p.popular || p.planTier === "growth";
 
-  const getDynamicName = (tier: string, defaultName: string) => {
-    const found = dynamicPlans.find((p) => p.planTier === tier);
-    return found?.name || defaultName;
-  };
+    return {
+      id: p.planTier as "starter" | "growth" | "scale",
+      name: p.name,
+      tagline: p.description,
+      price,
+      credits: `${p.creditsMonthlyAllowance} high-definition video credits / mo`,
+      costPerAd:
+        p.planTier === "starter"
+          ? "Full 1080p vertical video exports"
+          : p.planTier === "growth"
+          ? "Priority cloud rendering"
+          : "Dedicated GPU cluster",
+      badge: isPopular ? "MOST POPULAR" : p.planTier === "scale" ? "SCALE HIGH VOLUME" : null,
+      highlight: isPopular,
+      features: p.features || [],
+      ctaText: `Choose ${p.name}`,
+    };
+  });
 
-  const plans = [
-    {
-      id: "starter" as const,
-      name: getDynamicName("starter", "Starter"),
-      tagline: "Solopreneurs starting out.",
-      price: getDynamicPrice("starter", 49, 39),
-      credits: "20 high-definition video credits / mo",
-      costPerAd: "Full 1080p vertical video exports",
-      badge: null,
-      highlight: false,
-      features: [
-        "Automated UGC script variations",
-        "1 brand account connection",
-        "Voiceover synthesis & kinetic subtitles",
-        "AI avatar library & deterministic hooks",
-        "Direct multi-platform scheduling",
-        "Commercial rights & zero watermarks",
-      ],
-      ctaText: "Choose Starter",
-    },
-    {
-      id: "growth" as const,
-      name: getDynamicName("growth", "Growth"),
-      tagline: "Starting to scale.",
-      price: getDynamicPrice("growth", 89, 69),
-      credits: "60 high-definition video credits / mo",
-      costPerAd: "Priority cloud rendering",
-      badge: "MOST POPULAR",
-      highlight: true,
-      features: [
-        "60 1080p video exports / mo",
-        "Up to 5 brand & burner accounts",
-        "Automated drip publishing",
-        "Anti-shadowban audio-video pitch variations",
-        "3 team workspace seats",
-        "Priority GPU cloud rendering",
-      ],
-      ctaText: "Choose Growth",
-    },
-    {
-      id: "scale" as const,
-      name: getDynamicName("scale", "Scale"),
-      tagline: "Teams pushing high volume.",
-      price: getDynamicPrice("scale", 199, 159),
-      credits: "150 high-definition video credits / mo",
-      costPerAd: "Dedicated GPU cluster",
-      badge: "SCALE HIGH VOLUME",
-      highlight: false,
-      features: [
-        "150 1080p video exports / mo",
-        "Up to 15 connected accounts",
-        "Automated viral blitz scheduling",
-        "10 team workspace seats",
-        "Multi-brand workspace routing",
-        "Direct API & VIP support",
-      ],
-      ctaText: "Choose Scale",
-    },
-    {
-      id: "enterprise" as const,
-      name: "Enterprise",
-      tagline: "Larger teams & agencies.",
-      price: billingCycle === "annual" ? 799 : 999,
-      credits: "Custom video allowances",
-      costPerAd: "Dedicated private rendering",
-      badge: null,
-      highlight: false,
-      features: [
-        "Every Scale feature included",
-        "Custom video rendering pipeline",
-        "Unlimited seats & workspaces",
-        "Custom branded avatar training",
-        "Dedicated account manager",
-        "Custom invoicing & SLA guarantees",
-      ],
-      ctaText: "Book a setup call",
-    },
-  ];
-
-  const handleCheckout = async (planId: "starter" | "growth" | "scale" | "enterprise") => {
-    if (planId === "enterprise") {
-      router.push("/dashboard?tab=support&contact=enterprise");
-      return;
-    }
-
+  const handleCheckout = async (planId: "starter" | "growth" | "scale") => {
     setLoadingCheckoutPlan(planId);
     try {
       const res = await fetch("/api/v1/billing/checkout", {
@@ -161,11 +108,23 @@ export default function PricingPage() {
   // ROI Calculator Calculations
   const monthlyAds = adsPerWeek * 4;
   const traditionalAgencyCost = monthlyAds * 350; // $350 avg per UGC video
+  const starterPlan = dynamicPlans.find((p) => p.planTier === "starter");
+  const growthPlan = dynamicPlans.find((p) => p.planTier === "growth");
+  const scalePlan = dynamicPlans.find((p) => p.planTier === "scale");
+
+  const starterCost = starterPlan
+    ? Math.round((starterPlan.amountCents / 100) * (billingCycle === "annual" ? 0.8 : 1))
+    : 49;
+  const growthCost = growthPlan
+    ? Math.round((growthPlan.amountCents / 100) * (billingCycle === "annual" ? 0.8 : 1))
+    : 89;
+  const scaleCost = scalePlan
+    ? Math.round((scalePlan.amountCents / 100) * (billingCycle === "annual" ? 0.8 : 1))
+    : 199;
+
   const autoUgcCost =
-    monthlyAds <= 20 ? (billingCycle === "annual" ? 39 : 49) :
-    monthlyAds <= 60 ? (billingCycle === "annual" ? 69 : 89) :
-    (billingCycle === "annual" ? 159 : 199);
-  const netSavings = traditionalAgencyCost - autoUgcCost;
+    monthlyAds <= 20 ? starterCost : monthlyAds <= 60 ? growthCost : scaleCost;
+  const netSavings = Math.max(0, traditionalAgencyCost - autoUgcCost);
 
   const faqs = [
     {
@@ -238,84 +197,153 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* 4-Tier Pricing Grid */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-            {plans.map((plan) => {
-              const isLoading = loadingCheckoutPlan === plan.id;
+        {/* Live Dynamic Pricing Section */}
+        <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+          {isLoadingPlans ? (
+            <div className="flex items-center justify-center py-24">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#1F3824] border-t-transparent" />
+                <span className="text-xs text-[#717E6C] font-mono">
+                  Syncing live catalog from {providerName === "paddle" ? "Paddle" : "Polar"}...
+                </span>
+              </div>
+            </div>
+          ) : !isConfigured || dynamicPlans.length === 0 ? (
+            /* Missing Credentials Alert Card */
+            <div className="rounded-3xl bg-[#FEF3C7]/40 border-2 border-[#F59E0B]/60 p-8 sm:p-12 text-center max-w-3xl mx-auto shadow-sm">
+              <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-[#FEF3C7] text-[#D97706] mb-5 border border-[#F59E0B]/30 shadow-xs">
+                <AlertTriangle className="h-7 w-7" />
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#1B231B] mb-3">
+                Need Product ID and API Key
+              </h3>
+              <p className="text-sm text-[#4A544A] max-w-lg mx-auto mb-6 leading-relaxed">
+                AutoUGC strictly prohibits static pricing. Plan names, tier pricing, and monthly video quotas must be dynamically fetched from <strong className="text-[#1B231B]">{providerName === "paddle" ? "Paddle" : "Polar"}</strong> using your product IDs and API key.
+              </p>
 
-              return (
-                <div
-                  key={plan.id}
-                  className={`relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all bg-white border ${
-                    plan.highlight
-                      ? "border-2 border-orange-500 shadow-lg bg-[#FAFBF9] ring-2 ring-orange-500/20"
-                      : "border-[#CBD5C4]/70 shadow-sm"
-                  }`}
-                >
-                  {plan.badge && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-600 text-white font-bold text-[9px] uppercase tracking-widest px-3 py-0.5 rounded-full shadow-sm">
-                      {plan.badge}
-                    </div>
-                  )}
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <h3 className="text-xl font-bold text-[#1B231B]">
-                        {plan.name}
-                      </h3>
-                    </div>
-                    <p className="text-xs text-[#4A544A] mb-4 min-h-[28px]">
-                      {plan.tagline}
-                    </p>
-
-                    <div className="flex items-baseline gap-1.5 mb-1">
-                      <span className="text-3xl sm:text-4xl font-extrabold text-[#1B231B]">
-                        ${plan.price}
-                      </span>
-                      <span className="text-xs text-[#717E6C]">USD / month</span>
-                    </div>
-
-                    <div className="bg-[#F6F7F2] p-3 rounded-2xl border border-[#CBD5C4]/60 mb-5">
-                      <div className="text-xs font-bold text-[#1F3824]">
-                        {plan.credits}
-                      </div>
-                      <div className="text-[11px] text-[#717E6C] mt-0.5">
-                        {plan.costPerAd}
-                      </div>
-                    </div>
-
-                    <ul className="space-y-2.5 text-xs text-[#4A544A] mb-6">
-                      {plan.features.map((feat) => (
-                        <li key={feat} className="flex items-start gap-2">
-                          <Check className="h-3.5 w-3.5 text-[#1F3824] shrink-0 mt-0.5" />
-                          <span className="leading-snug">{feat}</span>
-                        </li>
-                      ))}
-                    </ul>
+              {missingKeys.length > 0 && (
+                <div className="bg-white/80 rounded-2xl p-5 border border-[#CBD5C4]/70 max-w-md mx-auto text-left mb-6 shadow-xs">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#717E6C] mb-3 flex items-center justify-between">
+                    <span>Missing Environment Variables</span>
+                    <span className="text-[10px] text-[#D97706] bg-[#FEF3C7] px-2 py-0.5 rounded-full font-semibold">Action Required</span>
                   </div>
+                  <ul className="space-y-2 font-mono text-xs text-[#991B1B]">
+                    {missingKeys.map((key) => (
+                      <li key={key} className="flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+                        <code className="bg-red-50 text-red-700 px-1.5 py-0.5 rounded border border-red-200">{key}</code>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-                  <div className="pt-4 border-t border-[#CBD5C4]/40">
-                    <button
-                      disabled={isLoading}
-                      onClick={() => handleCheckout(plan.id)}
-                      className={`w-full py-3 px-4 rounded-full font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+              <p className="text-xs text-[#717E6C] max-w-md mx-auto">
+                Configure these keys in your <code className="text-xs bg-[#ECEFE7] px-1.5 py-0.5 rounded text-[#1B231B]">.env.local</code> file to dynamically synchronize your live Merchant of Record pricing catalog.
+              </p>
+            </div>
+          ) : (
+            /* 3-Tier Dynamic Pricing Grid */
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                {displayPlans.map((plan) => {
+                  const isLoading = loadingCheckoutPlan === plan.id;
+
+                  return (
+                    <div
+                      key={plan.id}
+                      className={`relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all bg-white border ${
                         plan.highlight
-                          ? "bg-orange-500 text-white hover:bg-orange-600 shadow-md shadow-orange-500/20 active:scale-95"
-                          : "bg-[#1F3824] text-white hover:bg-[#162719] active:scale-95"
+                          ? "border-2 border-orange-500 shadow-lg bg-[#FAFBF9] ring-2 ring-orange-500/20"
+                          : "border-[#CBD5C4]/70 shadow-sm"
                       }`}
                     >
-                      {isLoading ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <span>{plan.ctaText}</span>
+                      {plan.badge && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-600 text-white font-bold text-[9px] uppercase tracking-widest px-3 py-0.5 rounded-full shadow-sm">
+                          {plan.badge}
+                        </div>
                       )}
-                    </button>
-                  </div>
+
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <h3 className="text-xl font-bold text-[#1B231B]">
+                            {plan.name}
+                          </h3>
+                        </div>
+                        <p className="text-xs text-[#4A544A] mb-4 min-h-[28px]">
+                          {plan.tagline}
+                        </p>
+
+                        <div className="flex items-baseline gap-1.5 mb-1">
+                          <span className="text-3xl sm:text-4xl font-extrabold text-[#1B231B]">
+                            ${plan.price}
+                          </span>
+                          <span className="text-xs text-[#717E6C]">USD / month</span>
+                        </div>
+
+                        <div className="bg-[#F6F7F2] p-3 rounded-2xl border border-[#CBD5C4]/60 mb-5">
+                          <div className="text-xs font-bold text-[#1F3824]">
+                            {plan.credits}
+                          </div>
+                          <div className="text-[11px] text-[#717E6C] mt-0.5">
+                            {plan.costPerAd}
+                          </div>
+                        </div>
+
+                        <ul className="space-y-2.5 text-xs text-[#4A544A] mb-6">
+                          {plan.features.map((feat, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <Check className="h-3.5 w-3.5 text-[#1F3824] shrink-0 mt-0.5" />
+                              <span className="leading-snug">{feat}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="pt-4 border-t border-[#CBD5C4]/40">
+                        <button
+                          disabled={isLoading}
+                          onClick={() => handleCheckout(plan.id)}
+                          className={`w-full py-3 px-4 rounded-full font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                            plan.highlight
+                              ? "bg-orange-500 text-white hover:bg-orange-600 shadow-md shadow-orange-500/20 active:scale-95"
+                              : "bg-[#1F3824] text-white hover:bg-[#162719] active:scale-95"
+                          }`}
+                        >
+                          {isLoading ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <span>{plan.ctaText}</span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Enterprise Custom Inquiry Banner */}
+              <div className="mt-12 bg-white rounded-3xl p-6 sm:p-8 border border-[#CBD5C4]/70 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#1F3824] bg-[#1F3824]/10 px-2.5 py-1 rounded-full inline-block mb-2">
+                    Enterprise Custom
+                  </span>
+                  <h4 className="text-xl font-bold text-[#1B231B] mb-1">
+                    Need custom video pipelines or dedicated GPU clusters?
+                  </h4>
+                  <p className="text-xs text-[#4A544A] max-w-xl">
+                    For high-growth agencies and venture-backed SaaS requiring unlimited seats, custom AI avatar training, and bespoke invoicing.
+                  </p>
                 </div>
-              );
-            })}
-          </div>
+                <button
+                  onClick={() => router.push("/dashboard?tab=support&contact=enterprise")}
+                  className="px-6 py-3 rounded-full border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white font-bold text-xs uppercase tracking-wider transition-colors shrink-0"
+                >
+                  Contact Enterprise Sales
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ROI Calculator Section */}

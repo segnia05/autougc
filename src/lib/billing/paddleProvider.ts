@@ -54,9 +54,42 @@ const DEFAULT_TIER_CONFIG: Record<
 };
 
 /**
+ * Inspects environment variables to verify Paddle credentials and product IDs.
+ */
+export function getPaddleConfigurationStatus(): {
+  isConfigured: boolean;
+  missing: string[];
+} {
+  const missing: string[] = [];
+  if (!process.env.PADDLE_API_KEY) {
+    missing.push("PADDLE_API_KEY");
+  }
+  if (!process.env.PADDLE_PRODUCT_STARTER_ID) {
+    missing.push("PADDLE_PRODUCT_STARTER_ID");
+  }
+  if (!process.env.PADDLE_PRODUCT_GROWTH_ID) {
+    missing.push("PADDLE_PRODUCT_GROWTH_ID");
+  }
+  if (!process.env.PADDLE_PRODUCT_SCALE_ID) {
+    missing.push("PADDLE_PRODUCT_SCALE_ID");
+  }
+
+  return {
+    isConfigured: missing.length === 0,
+    missing,
+  };
+}
+
+/**
  * Dynamically fetches billing plans from Paddle API using Product IDs.
+ * Returns empty array if product IDs or credentials are not configured.
  */
 export async function fetchPaddlePlans(): Promise<NormalizedPlan[]> {
+  const status = getPaddleConfigurationStatus();
+  if (!status.isConfigured) {
+    return [];
+  }
+
   const now = Date.now();
   if (cachedPaddlePlans && now - lastPaddleFetchTime < CACHE_TTL_MS) {
     return cachedPaddlePlans;
@@ -179,6 +212,10 @@ export async function fetchPaddlePlans(): Promise<NormalizedPlan[]> {
 export async function createPaddleCheckoutSession(
   params: CheckoutSessionParams
 ): Promise<CheckoutSessionResult> {
+  const status = getPaddleConfigurationStatus();
+  if (!status.isConfigured) {
+    throw new Error(`Paddle is not configured. Missing: ${status.missing.join(", ")}`);
+  }
   const plans = await fetchPaddlePlans();
   const targetPlan = plans.find((p) => p.planTier === params.planTier);
 

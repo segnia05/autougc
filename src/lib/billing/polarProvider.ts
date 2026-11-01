@@ -56,10 +56,42 @@ const DEFAULT_TIER_CONFIG: Record<
 };
 
 /**
+ * Inspects environment variables to verify Polar credentials and product IDs.
+ */
+export function getPolarConfigurationStatus(): {
+  isConfigured: boolean;
+  missing: string[];
+} {
+  const missing: string[] = [];
+  if (!process.env.POLAR_ACCESS_TOKEN) {
+    missing.push("POLAR_ACCESS_TOKEN");
+  }
+  if (!process.env.POLAR_PRODUCT_STARTER_ID) {
+    missing.push("POLAR_PRODUCT_STARTER_ID");
+  }
+  if (!process.env.POLAR_PRODUCT_GROWTH_ID) {
+    missing.push("POLAR_PRODUCT_GROWTH_ID");
+  }
+  if (!process.env.POLAR_PRODUCT_SCALE_ID) {
+    missing.push("POLAR_PRODUCT_SCALE_ID");
+  }
+
+  return {
+    isConfigured: missing.length === 0,
+    missing,
+  };
+}
+
+/**
  * Dynamically fetches billing plans from Polar API using product IDs and access token.
- * Falls back to deterministic defaults if network or credentials are unavailable.
+ * Returns empty array if product IDs or credentials are not configured.
  */
 export async function fetchPolarPlans(): Promise<NormalizedPlan[]> {
+  const status = getPolarConfigurationStatus();
+  if (!status.isConfigured) {
+    return [];
+  }
+
   const now = Date.now();
   if (cachedPlans && now - lastFetchTime < CACHE_TTL_MS) {
     return cachedPlans;
@@ -170,6 +202,10 @@ export async function fetchPolarPlans(): Promise<NormalizedPlan[]> {
 export async function createPolarCheckoutSession(
   params: CheckoutSessionParams
 ): Promise<CheckoutSessionResult> {
+  const status = getPolarConfigurationStatus();
+  if (!status.isConfigured) {
+    throw new Error(`Polar is not configured. Missing: ${status.missing.join(", ")}`);
+  }
   const plans = await fetchPolarPlans();
   const targetPlan = plans.find((p) => p.planTier === params.planTier);
 
