@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { stripe, BILLING_PLANS } from "@/lib/billing/stripe";
 import { getAuthContext } from "@/lib/auth/getAuthContext";
 import { prisma } from "@/db/client";
+import { createActiveCheckoutSession, getActivePaymentProviderName } from "@/lib/billing/paymentProvider";
+import { BillingTier } from "@/lib/billing/types";
 
 const CheckoutRequestSchema = z.object({
-  planId: z.enum(["starter", "growth", "scale"]),
+  planId: z.enum(["starter", "growth", "scale"]).optional(),
+  planTier: z.enum(["starter", "growth", "scale"]).optional(),
+}).refine((data) => data.planId || data.planTier, {
+  message: "Either planId or planTier must be provided",
 });
 
 export async function POST(request: NextRequest) {
@@ -16,7 +20,8 @@ export async function POST(request: NextRequest) {
     if (!orgId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const body = await request.json();
+
+    const body = await request.json().catch(() => ({}));
     const parsed = CheckoutRequestSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -26,14 +31,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { planId } = parsed.data;
-    const plan = BILLING_PLANS[planId];
+    const selectedTier = (parsed.data.planTier || parsed.data.planId) as BillingTier;
     const origin = request.nextUrl.origin;
+    const provider = getActivePaymentProviderName();
 
-    // Check if live Stripe credentials are configured
-    const isMock =
-      !process.env.STRIPE_SECRET_KEY ||
-      process.env.STRIPE_SECRET_KEY.startsWith("sk_test_mock");
+    // Check if live MoR credentials are configured
+    const isPolar = provider === "polar";
+    const polarKey = process.env.POLAR_ACCESS_TOKEN || "";
+    const paddleKey = process.env.PADDLE_API_KEY || "";
+
+    const isMock = isPolar
+      ? !polarKey || polarKey.startsWith("polar_at_mock") || polarKey.startsWith("polar_at_sandbox_test")
+      : !paddleKey || paddleKey.startsWith("pdl_nt_sandbox_test") || paddleKey.startsWith("pdl_mock");
+
+    const allowances: Record<BillingTier, number> = {
+      starter: 20,
+      growth: 60,
+      scale: 150,
+    };
+    const credits = allowances[selectedTier];
 
     if (isMock) {
       // In local dev/mock mode, persist the upgrade directly to Neon DB so the user immediately receives full plan benefits
@@ -41,29 +57,30 @@ export async function POST(request: NextRequest) {
         await prisma.subscription.upsert({
           where: { organizationId: orgId },
           update: {
-            planTier: planId,
-            creditsMonthlyAllowance: plan.monthlyCredits,
-            creditsRemaining: plan.monthlyCredits,
+            planTier: selectedTier,
+            creditsMonthlyAllowance: credits,
+            creditsRemaining: credits,
             status: "active",
             currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           },
           create: {
             organizationId: orgId,
-            stripeCustomerId: `cus_${orgId.slice(-12)}`,
-            planTier: planId,
+            stripeCustomerId: `${provider}_cust_${orgId.slice(-12)}`,
+            planTier: selectedTier,
             status: "active",
-            creditsMonthlyAllowance: plan.monthlyCredits,
-            creditsRemaining: plan.monthlyCredits,
+            creditsMonthlyAllowance: credits,
+            creditsRemaining: credits,
             currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           },
         });
+
         await prisma.creditTransaction.create({
           data: {
             organizationId: orgId,
             userId: authContext?.userId || null,
-            amount: plan.monthlyCredits,
-            balanceAfter: plan.monthlyCredits,
-            reason: `plan_upgrade_${planId}`,
+            amount: credits,
+            balanceAfter: credits,
+            reason: `plan_upgrade_${selectedTier}`,
           },
         });
       } catch (err) {
@@ -71,38 +88,33 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json({
-        url: `${origin}/dashboard?tab=billing&upgraded=true&plan=${planId}&credits=${plan.monthlyCredits}`,
+        url: `${origin}/dashboard?tab=billing&upgraded=true&plan=${selectedTier}&credits=${credits}`,
         isMock: true,
-        planId,
-        credits: plan.monthlyCredits,
+        planId: selectedTier,
+        planTier: selectedTier,
+        credits,
+        provider,
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      line_items: [
-        {
-          price: plan.stripePriceId,
-          quantity: 1,
-        },
-      ],
-      metadata: {
-        organizationId: orgId,
-        planId,
-      },
-      subscription_data: {
-        metadata: {
-          organizationId: orgId,
-          planId,
-        },
-      },
-      success_url: `${origin}/studio?upgraded=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/#pricing`,
+    // Live MoR session generation (Polar or Paddle)
+    const checkoutResult = await createActiveCheckoutSession({
+      orgId,
+      userId: authContext?.userId || "user_anonymous",
+      email: authContext?.email,
+      planTier: selectedTier,
+      returnUrl: `${origin}/dashboard?tab=billing&upgraded=true&session_id={CHECKOUT_ID}`,
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({
+      url: checkoutResult.checkoutUrl,
+      sessionId: checkoutResult.sessionId,
+      provider: checkoutResult.provider,
+      planTier: selectedTier,
+    });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to initiate Stripe checkout";
+    const message = error instanceof Error ? error.message : "Failed to initiate checkout session";
+    console.error("Checkout route error:", error);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Badge } from "@/components/ui/Badge";
 import {
@@ -12,7 +12,7 @@ import {
   ArrowRight,
   Layers,
 } from "lucide-react";
-import { SubscriptionTier } from "@/lib/billing/stripe";
+import { NormalizedPlan } from "@/lib/billing/types";
 
 export type PaywallTriggerReason =
   | "credits_exhausted"
@@ -27,7 +27,7 @@ export interface UpgradePaywallModalProps {
   onClose: () => void;
   triggerReason?: PaywallTriggerReason;
   currentPlanTier?: string;
-  onUpgradeSuccess?: (planTier: SubscriptionTier) => void;
+  onUpgradeSuccess?: (planTier: "starter" | "growth" | "scale") => void;
 }
 
 export function UpgradePaywallModal({
@@ -40,6 +40,30 @@ export function UpgradePaywallModal({
   const [selectedPlan, setSelectedPlan] = useState<"starter" | "growth" | "scale">("growth");
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [dynamicPlans, setDynamicPlans] = useState<NormalizedPlan[]>([]);
+  const [providerName, setProviderName] = useState<string>("polar");
+
+  // Dynamically fetch live prices, names, and billing periods from Polar/Paddle API
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/v1/billing/plans")
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data.success && Array.isArray(data.plans) && data.plans.length > 0) {
+          setDynamicPlans(data.plans);
+          if (data.provider) {
+            setProviderName(data.provider);
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to load dynamic plans, using clean defaults:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const getHeaderContext = () => {
     switch (triggerReason) {
@@ -92,7 +116,7 @@ export function UpgradePaywallModal({
       const res = await fetch("/api/v1/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId }),
+        body: JSON.stringify({ planTier: planId }),
       });
 
       const data = await res.json();
@@ -114,216 +138,213 @@ export function UpgradePaywallModal({
     }
   };
 
-  const plans = [
-    {
-      id: "starter" as const,
-      name: "Starter",
-      price: "$49",
-      billingPeriod: "/ month",
-      credits: "20 Videos / mo",
-      accounts: "1 Brand Account",
-      cadence: "~4 posts / week drip",
-      seats: "1 Seat (Solo Founder)",
-      highlight: false,
-      popular: false,
-      features: [
-        "20 1080p Video Exports / mo",
-        "1 Connected Account",
-        "~4 Posts / Week Scheduler",
-        "Full Studio & Subtitle Engine",
+  // Base configurations with dynamic price override
+  const getPlanDetails = (tier: "starter" | "growth" | "scale") => {
+    const dynamic = dynamicPlans.find((p) => p.planTier === tier);
+
+    const fallbacks = {
+      starter: {
+        name: "Starter",
+        price: "$49",
+        billingPeriod: "/ month",
+        credits: "20 Videos / mo",
+        accounts: "1 Brand Account",
+        seats: "1 Seat (Solo Founder)",
+        highlight: false,
+        popular: false,
+      },
+      growth: {
+        name: "Growth",
+        price: "$89",
+        billingPeriod: "/ month",
+        credits: "60 Videos / mo",
+        accounts: "Up to 5 Accounts",
+        seats: "3 Team Seats",
+        highlight: true,
+        popular: true,
+      },
+      scale: {
+        name: "Scale",
+        price: "$199",
+        billingPeriod: "/ month",
+        credits: "150 Videos / mo",
+        accounts: "Up to 15 Accounts",
+        seats: "10 Team Seats",
+        highlight: false,
+        popular: false,
+      },
+    }[tier];
+
+    return {
+      id: tier,
+      name: dynamic?.name || fallbacks.name,
+      price: dynamic?.formattedPrice || fallbacks.price,
+      billingPeriod: dynamic?.billingInterval ? `/ ${dynamic.billingInterval}` : fallbacks.billingPeriod,
+      credits: dynamic ? `${dynamic.creditsMonthlyAllowance} Videos / mo` : fallbacks.credits,
+      accounts: fallbacks.accounts,
+      seats: fallbacks.seats,
+      highlight: fallbacks.highlight,
+      popular: fallbacks.popular,
+      features: dynamic?.features?.length ? dynamic.features : [
+        `${dynamic?.creditsMonthlyAllowance || 20} 1080p Video Exports / mo`,
+        fallbacks.accounts,
+        "Subtitles & Voiceover Synthesis",
+        "Multi-Platform Distribution",
         "Zero Watermarks",
       ],
-    },
-    {
-      id: "growth" as const,
-      name: "Growth",
-      price: "$89",
-      billingPeriod: "/ month",
-      credits: "60 Videos / mo",
-      accounts: "Up to 5 Accounts",
-      cadence: "~2 posts / day automated drip",
-      seats: "3 Team Seats",
-      highlight: true,
-      popular: true,
-      features: [
-        "60 1080p Video Exports / mo",
-        "Up to 5 Brand & Burner Accounts",
-        "~2 Posts / Day Automated Drip",
-        "Multi-Account Clipping Army",
-        "Anti-Duplicate Shadowban Engine",
-        "3 Team Workspace Seats",
-        "Priority GPU Cloud Rendering",
-      ],
-    },
-    {
-      id: "scale" as const,
-      name: "Scale",
-      price: "$199",
-      billingPeriod: "/ month",
-      credits: "180 Videos / mo",
-      accounts: "Up to 15 Accounts",
-      cadence: "~6 posts / day viral blitz",
-      seats: "10 Team Seats",
-      highlight: false,
-      popular: false,
-      features: [
-        "180 1080p Video Exports / mo",
-        "Up to 15 Accounts (Multi-Brand)",
-        "~6 Posts / Day Viral Blitz",
-        "10 Team Workspace Seats",
-        "Dedicated GPU Rendering Cluster",
-        "Agency Multi-Brand Management",
-        "Direct API & VIP Support",
-      ],
-    },
+    };
+  };
+
+  const plans = [
+    getPlanDetails("starter"),
+    getPlanDetails("growth"),
+    getPlanDetails("scale"),
   ];
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      maxWidth="xl"
-      className="p-0 overflow-hidden bg-[#F6F7F2] border border-[#CBD5C4] rounded-3xl shadow-2xl text-[#1B231B]"
-    >
-      <div className="flex flex-col relative overflow-hidden">
-        {/* Header Alert Banner */}
-        <div className="p-6 sm:p-7 border-b border-[#CBD5C4]/60 bg-white relative z-10">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#E2E9DC] text-[#1F3824] font-semibold">
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="xl">
+      <div className="p-6 md:p-8 space-y-8 bg-zinc-950 text-white rounded-2xl border border-zinc-800">
+        {/* Header Section */}
+        <div className="text-center space-y-3 max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-2">
+            <Badge variant="amber" className="px-3 py-1 font-semibold tracking-wide uppercase text-xs">
               {headerInfo.badgeText}
-            </span>
-            <span className="text-[11px] text-[#717E6C] font-mono">
-              Current Plan: <span className="uppercase text-[#1B231B] font-semibold">{currentPlanTier}</span>
-            </span>
+            </Badge>
+            <Badge variant="outline" className="px-3 py-1 text-xs border-zinc-700 text-zinc-400 capitalize">
+              Powered by {providerName} (MoR)
+            </Badge>
           </div>
-          <h3 className="text-xl sm:text-2xl font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B]">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
             {headerInfo.title}
-          </h3>
-          <p className="text-xs text-[#4A544A] mt-1.5 max-w-xl leading-relaxed">
+          </h2>
+          <p className="text-zinc-400 text-sm md:text-base leading-relaxed">
             {headerInfo.description}
           </p>
         </div>
 
         {errorMessage && (
-          <div className="mx-6 mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+          <div className="p-4 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-sm flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* 3-Tier Grid */}
-        <div role="radiogroup" aria-label="Subscription plan options" className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan) => {
-            const isSelected = selectedPlan === plan.id;
             const isCurrent = currentPlanTier === plan.id;
+            const isSelected = selectedPlan === plan.id;
             const isLoading = loadingPlan === plan.id;
 
             return (
               <div
                 key={plan.id}
-                role="radio"
-                tabIndex={0}
-                aria-checked={isSelected}
-                aria-label={`${plan.name} Plan, ${plan.price} ${plan.billingPeriod}`}
                 onClick={() => setSelectedPlan(plan.id)}
-                onKeyDown={(e) => {
-                  if (e.key === " " || e.key === "Enter") {
-                    e.preventDefault();
-                    setSelectedPlan(plan.id);
-                  }
-                }}
-                className={`relative rounded-2xl p-5 flex flex-col justify-between transition-all cursor-pointer bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
-                  plan.popular
-                    ? "border-2 border-[#1F3824] shadow-md bg-[#FAFBF9]"
+                className={`relative flex flex-col justify-between p-6 rounded-2xl border transition-all cursor-pointer ${
+                  plan.highlight
+                    ? "bg-zinc-900/90 border-amber-500/70 shadow-lg shadow-amber-500/10"
                     : isSelected
-                    ? "border border-[#1F3824]/80 shadow-xs"
-                    : "border border-[#CBD5C4]/70 hover:border-[#1F3824]/40"
+                    ? "bg-zinc-900 border-zinc-600"
+                    : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700"
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#1F3824] text-white font-bold text-[9px] uppercase tracking-widest px-3 py-0.5 rounded-full shadow-sm">
-                    Most Popular
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" />
+                      Most Popular
+                    </span>
                   </div>
                 )}
 
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-[#1B231B]">
-                      {plan.name}
-                    </span>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold text-white">{plan.name}</span>
                     {isCurrent && (
-                      <Badge variant="neutral" size="sm" className="text-[9px] font-mono bg-[#E2E9DC] text-[#1F3824]">
-                        Active
+                      <Badge variant="outline" className="text-[10px] border-zinc-700 text-zinc-400">
+                        Current Plan
                       </Badge>
                     )}
                   </div>
 
-                  <div className="flex items-baseline gap-1 mb-4">
-                    <span className="text-2xl font-extrabold text-[#1B231B]">
-                      {plan.price}
-                    </span>
-                    <span className="text-[11px] text-[#717E6C]">
-                      {plan.billingPeriod}
-                    </span>
+                  <div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                        {plan.price}
+                      </span>
+                      <span className="text-zinc-500 text-xs">{plan.billingPeriod}</span>
+                    </div>
+                    <p className="text-xs text-amber-400/90 font-medium mt-1">
+                      {plan.credits}
+                    </p>
                   </div>
 
-                  <div className="space-y-1.5 pb-4 border-b border-[#CBD5C4]/60 mb-4">
-                    <div className="text-[11px] font-semibold text-[#1F3824] flex items-center gap-1.5">
-                      <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                      <span>{plan.credits}</span>
-                    </div>
-                    <div className="text-[11px] text-[#4A544A] flex items-center gap-1.5">
-                      <Layers className="h-3.5 w-3.5 shrink-0 text-[#717E6C]" />
+                  {/* Highlights Pill */}
+                  <div className="py-2.5 px-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1 text-xs">
+                    <div className="flex items-center gap-2 text-zinc-300">
+                      <Layers className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                       <span>{plan.accounts}</span>
                     </div>
-                    <div className="text-[11px] text-[#4A544A] flex items-center gap-1.5">
-                      <Users className="h-3.5 w-3.5 shrink-0 text-[#717E6C]" />
+                    <div className="flex items-center gap-2 text-zinc-300">
+                      <Users className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                       <span>{plan.seats}</span>
                     </div>
                   </div>
 
-                  <ul className="space-y-2 mb-6">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="text-[11px] text-[#4A544A] flex items-start gap-2">
-                        <Check className="h-3.5 w-3.5 text-[#1F3824] shrink-0 mt-0.5" />
-                        <span>{feature}</span>
+                  {/* Features List */}
+                  <ul className="space-y-2 pt-2 text-xs text-zinc-300">
+                    {plan.features.slice(0, 5).map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="leading-tight">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <button
-                  disabled={isLoading}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSelectPlan(plan.id);
-                  }}
-                  className={`w-full py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    plan.popular
-                      ? "bg-[#1F3824] hover:bg-[#162B1B] text-white shadow-sm"
-                      : "border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white"
-                  }`}
-                >
-                  {isLoading ? "Redirecting..." : isCurrent ? "Current Plan" : `Upgrade to ${plan.name}`}
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
+                <div className="pt-6 mt-6 border-t border-zinc-800/60">
+                  <button
+                    disabled={isCurrent || isLoading}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectPlan(plan.id);
+                    }}
+                    className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                      isCurrent
+                        ? "bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700/50"
+                        : plan.highlight
+                        ? "bg-amber-500 text-black hover:bg-amber-400 shadow-md shadow-amber-500/20 active:scale-95"
+                        : "bg-white text-black hover:bg-zinc-200 active:scale-95"
+                    }`}
+                  >
+                    {isLoading ? (
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    ) : isCurrent ? (
+                      "Active Plan"
+                    ) : (
+                      <>
+                        <span>Upgrade to {plan.name}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             );
           })}
         </div>
 
         {/* Footer Guarantee */}
-        <div className="px-6 py-4 bg-[#EEF1EA] border-t border-[#CBD5C4]/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#4A544A]">
+        <div className="pt-4 border-t border-zinc-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-[#1F3824] shrink-0" />
-            <span>Cancel anytime with 1 click. Zero lock-in. Instant credit allotment.</span>
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Secure Checkout & Global Sales Tax handled via {providerName.toUpperCase()}</span>
           </div>
-          <button
-            onClick={onClose}
-            className="text-xs text-[#717E6C] hover:text-[#1B231B] hover:underline transition-colors cursor-pointer"
-          >
-            Dismiss
-          </button>
+          <div className="flex items-center gap-4">
+            <span>Cancel anytime</span>
+            <span>Instant credit allocation</span>
+            <span>100% Commercial rights</span>
+          </div>
         </div>
       </div>
     </Modal>

@@ -19,7 +19,9 @@ export function validateCsrfOrigin(request: NextRequest): { isValid: boolean; er
     const hasAuthToken =
       request.headers.get("authorization") ||
       request.headers.get("x-user-id") ||
-      request.headers.get("stripe-signature");
+      request.headers.get("stripe-signature") ||
+      request.headers.get("webhook-signature") ||
+      request.headers.get("paddle-signature");
 
     if (hasAuthToken) {
       return { isValid: true };
