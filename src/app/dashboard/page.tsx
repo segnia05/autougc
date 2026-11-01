@@ -98,7 +98,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell brandName={brandName}>
-      <div className="space-y-6">
+      <main id="main-content" tabIndex={-1} className="space-y-6 focus:outline-none">
         {/* Executive Header & Goal Strip (Screenshot 3 Match) */}
         <DashboardExecutiveHeader
           founderName={founderName}
@@ -141,7 +141,7 @@ export default function DashboardPage() {
             onSubmit={handleCopilotSubmit}
           />
         </div>
-      </div>
+      </main>
     </AppShell>
   );
 }

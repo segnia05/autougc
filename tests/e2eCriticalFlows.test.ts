@@ -247,6 +247,7 @@ async function runCriticalFlowsE2E() {
       ctaText: firstScript.cta || "Try Lumina today",
       voiceId: "alex_casual_dtc",
       aspectRatio: "9:16",
+      async: false,
     }),
   });
 

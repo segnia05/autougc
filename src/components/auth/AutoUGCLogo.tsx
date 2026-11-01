@@ -37,3 +37,4 @@ export function AutoUGCLogo({
 
   return content;
 }
+
