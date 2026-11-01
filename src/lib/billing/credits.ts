@@ -1,6 +1,13 @@
 import { prisma } from "@/db/client";
 import { cacheManager } from "@/lib/cache/cacheManager";
 
+export const TIER_CREDIT_ALLOWANCES: Record<string, number> = {
+  free: 3,
+  starter: 20,
+  growth: 60,
+  scale: 150,
+};
+
 export interface CreditBalanceResult {
   creditsRemaining: number;
   monthlyAllowance: number;
@@ -40,8 +47,9 @@ export async function getOrganizationCredits(
     console.warn("Prisma subscription query error (using dev fallback):", err);
   }
 
+  const devBal = devBalances[orgId];
   return {
-    creditsRemaining: devBalances[orgId] ?? 20,
+    creditsRemaining: devBal !== undefined ? devBal : 20,
     monthlyAllowance: 20,
     planTier: "starter",
     status: "active",
@@ -111,6 +119,7 @@ export async function deductCredit(
         },
       });
 
+      devBalances[orgId] = updated.creditsRemaining;
       await cacheManager.invalidateTag(orgId);
       return {
         success: true,
@@ -148,7 +157,7 @@ export async function deductCredit(
 }
 
 /**
- * Atomically grants credits to an organization (e.g. Stripe checkout or subscription renewal).
+ * Atomically grants credits to an organization (e.g. one-off top-up pack).
  */
 export async function grantCredits(
   orgId: string,
@@ -198,6 +207,7 @@ export async function grantCredits(
         },
       });
 
+      devBalances[orgId] = sub.creditsRemaining;
       await cacheManager.invalidateTag(orgId);
       return {
         success: true,
@@ -205,10 +215,103 @@ export async function grantCredits(
       };
     }, { maxWait: 10000, timeout: 20000 });
   } catch {
-    const current = devBalances[orgId] ?? 24;
+    const current = devBalances[orgId] ?? 0;
     const newBalance = current + amount;
     devBalances[orgId] = newBalance;
     await cacheManager.invalidateTag(orgId);
     return { success: true, newBalance };
+  }
+}
+
+/**
+ * Resets an organization's credit balance to their subscription tier allowance
+ * upon recurring subscription cycle renewal or payment confirmation.
+ *
+ * Implements a strict "use-it-or-lose-it" SaaS quota policy (no endless accumulation).
+ * E.g., Starter resets to 20 credits, Growth to 60 credits, Scale to 150 credits.
+ */
+export async function refreshSubscriptionAllowance(
+  orgId: string,
+  planTier: string = "starter",
+  reason: string = "subscription_cycle_refresh",
+  referenceId?: string
+): Promise<{ success: boolean; newBalance: number; previousBalance: number }> {
+  const normalizedTier = (["starter", "growth", "scale"].includes(planTier)
+    ? planTier
+    : "starter") as "starter" | "growth" | "scale";
+  const allowance = TIER_CREDIT_ALLOWANCES[normalizedTier] ?? 20;
+
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const org = await tx.organization.findUnique({ where: { id: orgId } });
+      if (!org) {
+        await tx.organization.create({
+          data: {
+            id: orgId,
+            name: "Organization",
+            slug: `org-${orgId.toLowerCase().replace(/[^a-z0-9]/g, "").slice(-12)}`,
+            billingEmail: `${orgId}@autougc.com`,
+          },
+        });
+      }
+
+      const existingSub = await tx.subscription.findUnique({
+        where: { organizationId: orgId },
+      });
+
+      const previousBalance = existingSub ? existingSub.creditsRemaining : 0;
+      const adjustment = allowance - previousBalance;
+
+      await tx.subscription.upsert({
+        where: { organizationId: orgId },
+        update: {
+          planTier: normalizedTier,
+          status: "active",
+          creditsMonthlyAllowance: allowance,
+          creditsRemaining: allowance, // Reset directly to exact monthly tier quota
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          cancelAtPeriodEnd: false,
+        },
+        create: {
+          organizationId: orgId,
+          stripeCustomerId: `cus_${orgId.slice(-12)}`,
+          planTier: normalizedTier,
+          status: "active",
+          creditsMonthlyAllowance: allowance,
+          creditsRemaining: allowance,
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          cancelAtPeriodEnd: false,
+        },
+      });
+
+      await tx.creditTransaction.create({
+        data: {
+          organizationId: orgId,
+          amount: adjustment,
+          balanceAfter: allowance,
+          reason,
+          referenceId: referenceId || null,
+        },
+      });
+
+      devBalances[orgId] = allowance;
+      await cacheManager.invalidateTag(orgId);
+      return {
+        success: true,
+        newBalance: allowance,
+        previousBalance,
+      };
+    }, { maxWait: 10000, timeout: 20000 });
+  } catch {
+    const previousBalance = devBalances[orgId] ?? 0;
+    devBalances[orgId] = allowance;
+    await cacheManager.invalidateTag(orgId);
+    return {
+      success: true,
+      newBalance: allowance,
+      previousBalance,
+    };
   }
 }

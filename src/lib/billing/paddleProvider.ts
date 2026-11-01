@@ -10,7 +10,7 @@ import {
   WebhookProcessingResult,
 } from "./types";
 import { prisma } from "@/db/client";
-import { grantCredits } from "./credits";
+import { grantCredits, refreshSubscriptionAllowance } from "./credits";
 import { cacheManager } from "@/lib/cache/cacheManager";
 
 let cachedPaddlePlans: NormalizedPlan[] | null = null;
@@ -361,15 +361,39 @@ export async function processPaddleWebhook(
   if (eventType === EventName.TransactionCompleted || eventType === "transaction.completed") {
     if (orgId) {
       const allowance = TIER_ALLOWANCES[planTier];
-      await grantCredits(orgId, allowance, `paddle_transaction:${data.id || eventId}`, data.id);
-      return {
-        handled: true,
-        provider: "paddle",
-        eventType,
-        organizationId: orgId,
-        planTier,
-        creditsGranted: allowance,
-      };
+      const isRecurringCycle =
+        data.origin === "subscription_recurring" ||
+        data.origin === "subscription_update" ||
+        data.custom_data?.isRenewal === true ||
+        data.customData?.isRenewal === true;
+
+      if (isRecurringCycle) {
+        // Renewal payment resets credits directly to monthly quota (e.g. 20 for Starter)
+        await refreshSubscriptionAllowance(
+          orgId,
+          planTier,
+          `paddle_recurring_payment:${data.id || eventId}`,
+          data.id
+        );
+        return {
+          handled: true,
+          provider: "paddle",
+          eventType,
+          organizationId: orgId,
+          planTier,
+          creditsResetTo: allowance,
+        };
+      } else {
+        await grantCredits(orgId, allowance, `paddle_transaction:${data.id || eventId}`, data.id);
+        return {
+          handled: true,
+          provider: "paddle",
+          eventType,
+          organizationId: orgId,
+          planTier,
+          creditsGranted: allowance,
+        };
+      }
     }
   }
 
@@ -381,31 +405,50 @@ export async function processPaddleWebhook(
   ) {
     if (orgId) {
       const allowance = TIER_ALLOWANCES[planTier];
-      await prisma.subscription.upsert({
-        where: { organizationId: orgId },
-        update: {
+      const isCycleRenewal =
+        data.origin === "subscription_recurring" ||
+        data.custom_data?.isRenewal === true ||
+        data.customData?.isRenewal === true;
+
+      if (isCycleRenewal || eventType === EventName.SubscriptionCreated || eventType === "subscription.created") {
+        await refreshSubscriptionAllowance(
+          orgId,
           planTier,
-          status: data.status === "active" ? "active" : "past_due",
-          stripeCustomerId: data.customer_id || data.customerId || `paddle_cust_${orgId.slice(-8)}`,
-          stripeSubscriptionId: data.id || `paddle_sub_${Date.now()}`,
-          creditsMonthlyAllowance: allowance,
-          currentPeriodStart: new Date(data.current_billing_period?.starts_at || Date.now()),
-          currentPeriodEnd: new Date(data.current_billing_period?.ends_at || Date.now() + 30 * 86400 * 1000),
-          cancelAtPeriodEnd: data.scheduled_change?.action === "cancel",
-        },
-        create: {
-          organizationId: orgId,
-          planTier,
-          status: "active",
-          stripeCustomerId: data.customer_id || data.customerId || `paddle_cust_${orgId.slice(-8)}`,
-          stripeSubscriptionId: data.id || `paddle_sub_${Date.now()}`,
-          creditsMonthlyAllowance: allowance,
-          creditsRemaining: allowance,
-          currentPeriodStart: new Date(data.current_billing_period?.starts_at || Date.now()),
-          currentPeriodEnd: new Date(data.current_billing_period?.ends_at || Date.now() + 30 * 86400 * 1000),
-          cancelAtPeriodEnd: false,
-        },
-      });
+          `paddle_${eventType}:${data.id || eventId}`,
+          data.id
+        );
+      }
+
+      try {
+        await prisma.subscription.upsert({
+          where: { organizationId: orgId },
+          update: {
+            planTier,
+            status: data.status === "active" ? "active" : "past_due",
+            stripeCustomerId: data.customer_id || data.customerId || `paddle_cust_${orgId.slice(-8)}`,
+            stripeSubscriptionId: data.id || `paddle_sub_${Date.now()}`,
+            creditsMonthlyAllowance: allowance,
+            creditsRemaining: allowance,
+            currentPeriodStart: new Date(data.current_billing_period?.starts_at || Date.now()),
+            currentPeriodEnd: new Date(data.current_billing_period?.ends_at || Date.now() + 30 * 86400 * 1000),
+            cancelAtPeriodEnd: data.scheduled_change?.action === "cancel",
+          },
+          create: {
+            organizationId: orgId,
+            planTier,
+            status: "active",
+            stripeCustomerId: data.customer_id || data.customerId || `paddle_cust_${orgId.slice(-8)}`,
+            stripeSubscriptionId: data.id || `paddle_sub_${Date.now()}`,
+            creditsMonthlyAllowance: allowance,
+            creditsRemaining: allowance,
+            currentPeriodStart: new Date(data.current_billing_period?.starts_at || Date.now()),
+            currentPeriodEnd: new Date(data.current_billing_period?.ends_at || Date.now() + 30 * 86400 * 1000),
+            cancelAtPeriodEnd: false,
+          },
+        });
+      } catch {
+        // Handled cleanly in dev fallback
+      }
 
       return {
         handled: true,
@@ -413,6 +456,7 @@ export async function processPaddleWebhook(
         eventType,
         organizationId: orgId,
         planTier,
+        creditsResetTo: allowance,
       };
     }
   }

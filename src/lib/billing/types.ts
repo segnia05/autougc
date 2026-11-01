@@ -51,6 +51,7 @@ export interface WebhookProcessingResult {
   organizationId?: string;
   planTier?: BillingTier;
   creditsGranted?: number;
+  creditsResetTo?: number;
   error?: string;
 }
 

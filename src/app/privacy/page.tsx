@@ -77,7 +77,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className="list-disc pl-5 space-y-1 text-[#717E6C]">
               <li><strong>Clerk Inc.</strong> — Identity verification, multi-tenant session authentication, and MFA.</li>
-              <li><strong>Polar.sh / Paddle.com</strong> — PCI-DSS Level 1 compliant Merchant of Record (MoR) billing platforms and worldwide sales tax/VAT remittance.</li>
+              <li><strong>Polar.sh / Paddle.com / Stripe Inc.</strong> — PCI-DSS Level 1 compliant Merchant of Record (MoR) billing platforms and worldwide sales tax/VAT remittance.</li>
               <li><strong>Neon Inc.</strong> — Serverless multi-region PostgreSQL primary relational database.</li>
               <li><strong>Google LLC</strong> — Gemini AI infrastructure for automated script and video creative synthesis.</li>
             </ul>
