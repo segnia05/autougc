@@ -27,6 +27,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/v1/scripts/generate",
   "/api/v1/videos/render/status(.*)",
   "/api/v1/campaigns/approve(.*)",
+  "/api/v1/billing/plans",
   "/api/v1/webhooks(.*)",
   "/api/health(.*)",
   "/api/metrics(.*)",
