@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { NormalizedPlan } from "@/lib/billing/types";
 import {
   ArrowRight,
   CheckCircle2,
@@ -38,6 +39,37 @@ export default function Home() {
   const [urlValidationError, setUrlValidationError] = useState<string | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [activeTab, setActiveTab] = useState<"All" | "Pending" | "Approved" | "Declined">("All");
+  const [dynamicPlans, setDynamicPlans] = useState<NormalizedPlan[]>([]);
+  const [providerName, setProviderName] = useState<string>("polar");
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/v1/billing/plans")
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data.success && Array.isArray(data.plans) && data.plans.length > 0) {
+          setDynamicPlans(data.plans);
+          if (data.provider) {
+            setProviderName(data.provider);
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to load dynamic plans on homepage:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const getPlan = (tier: "starter" | "growth" | "scale") => {
+    return dynamicPlans.find((p) => p.planTier === tier);
+  };
+
+  const starterPlan = getPlan("starter");
+  const growthPlan = getPlan("growth");
+  const scalePlan = getPlan("scale");
 
   const sampleUrls = [
     { label: "AI Humanizer SaaS", url: "https://humanizeai.io", brand: "HumanizeAI" },
@@ -127,7 +159,7 @@ export default function Home() {
     },
     {
       q: "What is the Multi-Account Satellite Army feature?",
-      a: "Instead of posting once a day on a single official brand account, our Growth ($89/mo) and Scale ($199/mo) plans allow you to link up to 15 accounts (1 official brand account + 4 to 14 niche burner satellite channels). AutoUGC automatically distributes unique creative permutations across all accounts on a 30-day drip, maximizing organic algorithmic reach while preventing duplicate content penalties.",
+      a: `Instead of posting once a day on a single official brand account, our ${growthPlan?.name || "Growth"} (${growthPlan?.formattedPrice || "$89"}/mo) and ${scalePlan?.name || "Scale"} (${scalePlan?.formattedPrice || "$199"}/mo) plans allow you to link up to 15 accounts (1 official brand account + 4 to 14 niche burner satellite channels). AutoUGC automatically distributes unique creative permutations across all accounts on a 30-day drip, maximizing organic algorithmic reach while preventing duplicate content penalties.`,
     },
     {
       q: "Can I use the generated videos for paid TikTok and Meta ads?",
@@ -143,7 +175,7 @@ export default function Home() {
     },
     {
       q: "How does pricing and the volume floor work?",
-      a: "You pay one predictable monthly allotment: Starter ($49/mo for 20 videos), Growth ($89/mo for 60 videos), or Scale ($199/mo for 180 videos). There are no hidden per-video markups, no retainers, and no agency coordination fees. You get predictable creative volume delivered automatically.",
+      a: `You pay one predictable monthly allotment: ${starterPlan?.name || "Starter"} (${starterPlan?.formattedPrice || "$49"}/mo for ${starterPlan?.creditsMonthlyAllowance ?? 20} videos), ${growthPlan?.name || "Growth"} (${growthPlan?.formattedPrice || "$89"}/mo for ${growthPlan?.creditsMonthlyAllowance ?? 60} videos), or ${scalePlan?.name || "Scale"} (${scalePlan?.formattedPrice || "$199"}/mo for ${scalePlan?.creditsMonthlyAllowance ?? 150} videos). There are no hidden per-video markups, no retainers, and no agency coordination fees. You get predictable creative volume delivered automatically.`,
     },
   ];
 
@@ -792,6 +824,12 @@ export default function Home() {
             <h2 className="text-3xl sm:text-5xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
               Predictable volume. Zero agency retainers.
             </h2>
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-[#1F3824]/5 text-[#1F3824] border border-[#1F3824]/10">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                Live prices synced directly with {providerName === "paddle" ? "Paddle" : "Polar"}
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -799,19 +837,23 @@ export default function Home() {
             <div className="rounded-3xl bg-white p-8 border border-[#CBD5C4]/60 shadow-sm flex flex-col justify-between">
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-[#717E6C] mb-2">
-                  Starter Pipeline
+                  {starterPlan?.name || "Starter"} Pipeline
                 </div>
                 <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-bold font-sans text-[#1B231B]">$49</span>
-                  <span className="text-xs text-[#717E6C]">/ month</span>
+                  <span className="text-4xl font-bold font-sans text-[#1B231B]">
+                    {starterPlan?.formattedPrice || "$49"}
+                  </span>
+                  <span className="text-xs text-[#717E6C]">
+                    / {starterPlan?.billingInterval || "month"}
+                  </span>
                 </div>
                 <p className="text-xs text-[#4A544A] mb-6">
-                  Perfect for indie hackers and early stage SaaS launching their first creator ad tests.
+                  {starterPlan?.description || "Perfect for indie hackers and early stage SaaS launching their first creator ad tests."}
                 </p>
                 <div className="space-y-3 text-xs text-[#1B231B] font-medium mb-8">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>20 high-retention 1080p videos / mo</span>
+                    <span>{starterPlan?.creditsMonthlyAllowance ?? 20} high-retention 1080p videos / mo</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
@@ -828,7 +870,7 @@ export default function Home() {
                 href="/pricing"
                 className="w-full py-3 rounded-full border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white text-center text-xs font-semibold tracking-wider uppercase transition-colors"
               >
-                Choose Starter
+                Choose {starterPlan?.name || "Starter"}
               </Link>
             </div>
 
@@ -840,19 +882,23 @@ export default function Home() {
 
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-[#1F3824] mb-2">
-                  Growth Autopilot
+                  {growthPlan?.name || "Growth"} Autopilot
                 </div>
                 <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-bold font-sans text-[#1B231B]">$89</span>
-                  <span className="text-xs text-[#717E6C]">/ month</span>
+                  <span className="text-4xl font-bold font-sans text-[#1B231B]">
+                    {growthPlan?.formattedPrice || "$89"}
+                  </span>
+                  <span className="text-xs text-[#717E6C]">
+                    / {growthPlan?.billingInterval || "month"}
+                  </span>
                 </div>
                 <p className="text-xs text-[#4A544A] mb-6">
-                  For scaling DTC, e-commerce, and SaaS brands ready to deploy multi-account reach.
+                  {growthPlan?.description || "For scaling DTC, e-commerce, and SaaS brands ready to deploy multi-account reach."}
                 </p>
                 <div className="space-y-3 text-xs text-[#1B231B] font-medium mb-8">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>60 high-retention 1080p videos / mo</span>
+                    <span>{growthPlan?.creditsMonthlyAllowance ?? 60} high-retention 1080p videos / mo</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
@@ -873,7 +919,7 @@ export default function Home() {
                 href="/pricing"
                 className="w-full py-3 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-center text-xs font-semibold tracking-wider uppercase transition-colors shadow-sm"
               >
-                Choose Growth
+                Choose {growthPlan?.name || "Growth"}
               </Link>
             </div>
 
@@ -881,19 +927,23 @@ export default function Home() {
             <div className="rounded-3xl bg-white p-8 border border-[#CBD5C4]/60 shadow-sm flex flex-col justify-between">
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-[#717E6C] mb-2">
-                  Scale Dominance
+                  {scalePlan?.name || "Scale"} Dominance
                 </div>
                 <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-bold font-sans text-[#1B231B]">$199</span>
-                  <span className="text-xs text-[#717E6C]">/ month</span>
+                  <span className="text-4xl font-bold font-sans text-[#1B231B]">
+                    {scalePlan?.formattedPrice || "$199"}
+                  </span>
+                  <span className="text-xs text-[#717E6C]">
+                    / {scalePlan?.billingInterval || "month"}
+                  </span>
                 </div>
                 <p className="text-xs text-[#4A544A] mb-6">
-                  For enterprise brands and media houses requiring continuous creative volume.
+                  {scalePlan?.description || "For enterprise brands and media houses requiring continuous creative volume."}
                 </p>
                 <div className="space-y-3 text-xs text-[#1B231B] font-medium mb-8">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
-                    <span>180 high-retention 1080p videos / mo</span>
+                    <span>{scalePlan?.creditsMonthlyAllowance ?? 150} high-retention 1080p videos / mo</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-[#1F3824]" />
@@ -910,7 +960,7 @@ export default function Home() {
                 href="/pricing"
                 className="w-full py-3 rounded-full border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white text-center text-xs font-semibold tracking-wider uppercase transition-colors"
               >
-                Choose Scale
+                Choose {scalePlan?.name || "Scale"}
               </Link>
             </div>
           </div>
