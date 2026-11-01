@@ -276,6 +276,10 @@ export async function createPaddleCheckoutSession(
 export async function createPaddleCustomerPortalSession(
   params: CustomerPortalParams
 ): Promise<CustomerPortalResult> {
+  const status = getPaddleConfigurationStatus();
+  if (!status.isConfigured) {
+    throw new Error(`Paddle is not configured. Missing: ${status.missing.join(", ")}`);
+  }
   const apiKey = process.env.PADDLE_API_KEY;
   const isMock = !apiKey || apiKey.startsWith("pdl_nt_sandbox_test") || apiKey.startsWith("pdl_mock");
 

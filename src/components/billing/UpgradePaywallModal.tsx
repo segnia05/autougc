@@ -11,6 +11,7 @@ import {
   Users,
   ArrowRight,
   Layers,
+  AlertTriangle,
 } from "lucide-react";
 import { NormalizedPlan } from "@/lib/billing/types";
 
@@ -42,6 +43,8 @@ export function UpgradePaywallModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [dynamicPlans, setDynamicPlans] = useState<NormalizedPlan[]>([]);
   const [providerName, setProviderName] = useState<string>("polar");
+  const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
+  const [missingKeys, setMissingKeys] = useState<string[]>([]);
 
   // Dynamically fetch live prices, names, and billing periods from Polar/Paddle API
   useEffect(() => {
@@ -49,15 +52,25 @@ export function UpgradePaywallModal({
     fetch("/api/v1/billing/plans")
       .then((res) => res.json())
       .then((data) => {
-        if (isMounted && data.success && Array.isArray(data.plans) && data.plans.length > 0) {
+        if (!isMounted) return;
+        if (data.provider) {
+          setProviderName(data.provider);
+        }
+        if (data.configured === false || !data.success || !Array.isArray(data.plans) || data.plans.length === 0) {
+          setIsConfigured(false);
+          setMissingKeys(data.missingKeys || []);
+          setDynamicPlans([]);
+        } else {
+          setIsConfigured(true);
           setDynamicPlans(data.plans);
-          if (data.provider) {
-            setProviderName(data.provider);
-          }
+          setMissingKeys([]);
         }
       })
       .catch((err) => {
-        console.warn("Failed to load dynamic plans, using clean defaults:", err);
+        if (!isMounted) return;
+        console.warn("Failed to load dynamic plans:", err);
+        setIsConfigured(false);
+        setDynamicPlans([]);
       });
 
     return () => {
@@ -229,110 +242,141 @@ export function UpgradePaywallModal({
           </div>
         )}
 
-        {/* 3-Tier Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {plans.map((plan) => {
-            const isCurrent = currentPlanTier === plan.id;
-            const isSelected = selectedPlan === plan.id;
-            const isLoading = loadingPlan === plan.id;
-
-            return (
-              <div
-                key={plan.id}
-                onClick={() => setSelectedPlan(plan.id)}
-                className={`relative flex flex-col justify-between p-6 rounded-2xl border transition-all cursor-pointer ${
-                  plan.highlight
-                    ? "bg-zinc-900/90 border-amber-500/70 shadow-lg shadow-amber-500/10"
-                    : isSelected
-                    ? "bg-zinc-900 border-zinc-600"
-                    : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700"
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-white">{plan.name}</span>
-                    {isCurrent && (
-                      <Badge variant="outline" className="text-[10px] border-zinc-700 text-zinc-400">
-                        Current Plan
-                      </Badge>
-                    )}
-                  </div>
-
-                  <div>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-                        {plan.price}
-                      </span>
-                      <span className="text-zinc-500 text-xs">{plan.billingPeriod}</span>
-                    </div>
-                    <p className="text-xs text-amber-400/90 font-medium mt-1">
-                      {plan.credits}
-                    </p>
-                  </div>
-
-                  {/* Highlights Pill */}
-                  <div className="py-2.5 px-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1 text-xs">
-                    <div className="flex items-center gap-2 text-zinc-300">
-                      <Layers className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                      <span>{plan.accounts}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-zinc-300">
-                      <Users className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                      <span>{plan.seats}</span>
-                    </div>
-                  </div>
-
-                  {/* Features List */}
-                  <ul className="space-y-2 pt-2 text-xs text-zinc-300">
-                    {plan.features.slice(0, 5).map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                        <span className="leading-tight">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+        {/* 3-Tier Grid or Missing Credentials Alert */}
+        {!isConfigured || dynamicPlans.length === 0 ? (
+          <div className="rounded-2xl bg-amber-950/20 border-2 border-amber-500/40 p-6 sm:p-8 text-center max-w-xl mx-auto space-y-4">
+            <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-amber-950/60 text-amber-400 border border-amber-500/30">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-bold text-white">Need Product ID and API Key</h3>
+            <p className="text-xs text-zinc-300 leading-relaxed max-w-md mx-auto">
+              AutoUGC strictly prohibits static pricing. Plan names, tier pricing, and monthly video quotas must be dynamically fetched from <strong className="text-white capitalize">{providerName}</strong> using your product IDs and API key.
+            </p>
+            {missingKeys.length > 0 && (
+              <div className="bg-black/60 rounded-xl p-4 border border-zinc-800 text-left max-w-md mx-auto">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-2 flex items-center justify-between">
+                  <span>Missing Environment Variables</span>
+                  <span className="text-amber-400 font-semibold">Action Required</span>
                 </div>
-
-                <div className="pt-6 mt-6 border-t border-zinc-800/60">
-                  <button
-                    disabled={isCurrent || isLoading}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSelectPlan(plan.id);
-                    }}
-                    className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
-                      isCurrent
-                        ? "bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700/50"
-                        : plan.highlight
-                        ? "bg-amber-500 text-black hover:bg-amber-400 shadow-md shadow-amber-500/20 active:scale-95"
-                        : "bg-white text-black hover:bg-zinc-200 active:scale-95"
-                    }`}
-                  >
-                    {isLoading ? (
-                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    ) : isCurrent ? (
-                      "Active Plan"
-                    ) : (
-                      <>
-                        <span>Upgrade to {plan.name}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </>
-                    )}
-                  </button>
-                </div>
+                <ul className="space-y-1.5 font-mono text-xs text-amber-400">
+                  {missingKeys.map((key) => (
+                    <li key={key} className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0" />
+                      <code>{key}</code>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            );
-          })}
-        </div>
+            )}
+            <p className="text-[11px] text-zinc-500">
+              Configure these keys in your <code className="text-zinc-300 bg-zinc-900 px-1.5 py-0.5 rounded">.env.local</code> file to activate live pricing and checkout.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {plans.map((plan) => {
+              const isCurrent = currentPlanTier === plan.id;
+              const isSelected = selectedPlan === plan.id;
+              const isLoading = loadingPlan === plan.id;
+
+              return (
+                <div
+                  key={plan.id}
+                  onClick={() => setSelectedPlan(plan.id)}
+                  className={`relative flex flex-col justify-between p-6 rounded-2xl border transition-all cursor-pointer ${
+                    plan.highlight
+                      ? "bg-zinc-900/90 border-amber-500/70 shadow-lg shadow-amber-500/10"
+                      : isSelected
+                      ? "bg-zinc-900 border-zinc-600"
+                      : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700"
+                  }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        Most Popular
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-bold text-white">{plan.name}</span>
+                      {isCurrent && (
+                        <Badge variant="outline" className="text-[10px] border-zinc-700 text-zinc-400">
+                          Current Plan
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                          {plan.price}
+                        </span>
+                        <span className="text-zinc-500 text-xs">{plan.billingPeriod}</span>
+                      </div>
+                      <p className="text-xs text-amber-400/90 font-medium mt-1">
+                        {plan.credits}
+                      </p>
+                    </div>
+
+                    {/* Highlights Pill */}
+                    <div className="py-2.5 px-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1 text-xs">
+                      <div className="flex items-center gap-2 text-zinc-300">
+                        <Layers className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                        <span>{plan.accounts}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-zinc-300">
+                        <Users className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                        <span>{plan.seats}</span>
+                      </div>
+                    </div>
+
+                    {/* Features List */}
+                    <ul className="space-y-2 pt-2 text-xs text-zinc-300">
+                      {plan.features.slice(0, 5).map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                          <span className="leading-tight">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="pt-6 mt-6 border-t border-zinc-800/60">
+                    <button
+                      disabled={isCurrent || isLoading}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelectPlan(plan.id);
+                      }}
+                      className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                        isCurrent
+                          ? "bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700/50"
+                          : plan.highlight
+                          ? "bg-amber-500 text-black hover:bg-amber-400 shadow-md shadow-amber-500/20 active:scale-95"
+                          : "bg-white text-black hover:bg-zinc-200 active:scale-95"
+                      }`}
+                    >
+                      {isLoading ? (
+                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      ) : isCurrent ? (
+                        "Active Plan"
+                      ) : (
+                        <>
+                          <span>Upgrade to {plan.name}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Footer Guarantee */}
         <div className="pt-4 border-t border-zinc-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">

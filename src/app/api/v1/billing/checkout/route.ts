@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthContext } from "@/lib/auth/getAuthContext";
 import { prisma } from "@/db/client";
-import { createActiveCheckoutSession, getActivePaymentProviderName } from "@/lib/billing/paymentProvider";
+import {
+  createActiveCheckoutSession,
+  getActivePaymentProviderName,
+  getActiveConfigurationStatus,
+} from "@/lib/billing/paymentProvider";
 import { BillingTier } from "@/lib/billing/types";
 
 const CheckoutRequestSchema = z.object({
@@ -35,14 +39,27 @@ export async function POST(request: NextRequest) {
     const origin = request.nextUrl.origin;
     const provider = getActivePaymentProviderName();
 
+    // Verify provider credentials and product IDs
+    const configStatus = getActiveConfigurationStatus();
+    if (!configStatus.isConfigured) {
+      return NextResponse.json(
+        {
+          error: "Need product id and api key",
+          message: `Payment provider (${configStatus.provider.toUpperCase()}) is not configured. Missing environment variables: ${configStatus.missing.join(", ")}`,
+          missingKeys: configStatus.missing,
+        },
+        { status: 400 }
+      );
+    }
+
     // Check if live MoR credentials are configured
     const isPolar = provider === "polar";
     const polarKey = process.env.POLAR_ACCESS_TOKEN || "";
     const paddleKey = process.env.PADDLE_API_KEY || "";
 
     const isMock = isPolar
-      ? !polarKey || polarKey.startsWith("polar_at_mock") || polarKey.startsWith("polar_at_sandbox_test")
-      : !paddleKey || paddleKey.startsWith("pdl_nt_sandbox_test") || paddleKey.startsWith("pdl_mock");
+      ? polarKey.startsWith("polar_at_mock") || polarKey.startsWith("polar_at_sandbox_test")
+      : paddleKey.startsWith("pdl_nt_sandbox_test") || paddleKey.startsWith("pdl_mock");
 
     const allowances: Record<BillingTier, number> = {
       starter: 20,

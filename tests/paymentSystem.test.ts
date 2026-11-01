@@ -83,6 +83,34 @@ async function runTests() {
   assert(unconfiguredActive.isConfigured === false, "fetchActiveBillingPlans returns isConfigured=false when active provider lacks credentials");
   assert(unconfiguredActive.plans.length === 0, "fetchActiveBillingPlans returns empty plans array when unconfigured");
 
+  let polarCheckoutError = false;
+  try {
+    await createPolarCheckoutSession({
+      orgId: "org_unconfigured_test",
+      userId: "usr_test",
+      planTier: "starter",
+    });
+  } catch (err: any) {
+    if (err.message.includes("Polar is not configured")) {
+      polarCheckoutError = true;
+    }
+  }
+  assert(polarCheckoutError, "createPolarCheckoutSession throws when unconfigured (no fake checkout)");
+
+  let paddleCheckoutError = false;
+  try {
+    await createPaddleCheckoutSession({
+      orgId: "org_unconfigured_test",
+      userId: "usr_test",
+      planTier: "growth",
+    });
+  } catch (err: any) {
+    if (err.message.includes("Paddle is not configured")) {
+      paddleCheckoutError = true;
+    }
+  }
+  assert(paddleCheckoutError, "createPaddleCheckoutSession throws when unconfigured (no fake checkout)");
+
   // Now set sandbox credentials for full end-to-end integration testing
   process.env.POLAR_ACCESS_TOKEN = "polar_at_sandbox_test_token_12345";
   process.env.POLAR_PRODUCT_STARTER_ID = "prod_polar_starter_123";

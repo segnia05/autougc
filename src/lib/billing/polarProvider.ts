@@ -262,6 +262,10 @@ export async function createPolarCheckoutSession(
 export async function createPolarCustomerPortalSession(
   params: CustomerPortalParams
 ): Promise<CustomerPortalResult> {
+  const status = getPolarConfigurationStatus();
+  if (!status.isConfigured) {
+    throw new Error(`Polar is not configured. Missing: ${status.missing.join(", ")}`);
+  }
   const token = process.env.POLAR_ACCESS_TOKEN;
   const isMock = !token || token.startsWith("polar_at_mock") || token.startsWith("polar_at_sandbox_test");
 
