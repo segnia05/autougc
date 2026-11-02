@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 
-export type OnboardingStep = "you" | "brand" | "radar" | "first_ads";
+export type OnboardingStep = "you" | "brand";
 
 interface OnboardingHeaderProps {
   currentStep: OnboardingStep;
@@ -14,8 +14,6 @@ interface OnboardingHeaderProps {
 const STEPS: { key: OnboardingStep; label: string }[] = [
   { key: "you", label: "YOU" },
   { key: "brand", label: "YOUR BRAND" },
-  { key: "radar", label: "YOUR ADS" },
-  { key: "first_ads", label: "FIRST ADS" },
 ];
 
 export default function OnboardingHeader({

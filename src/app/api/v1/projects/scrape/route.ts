@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { scrapeUrl } from "@/lib/scraper/extractor";
+import { analyzeBrandIntelligence } from "@/lib/ai/brandAnalyzer";
 import { db } from "@/db/client";
 import { checkRateLimit, getClientIdentifier, createRateLimitResponse } from "@/lib/security/rateLimit";
 import { validateCsrfOrigin } from "@/lib/security/csrf";
@@ -56,6 +57,16 @@ export async function POST(request: NextRequest) {
 
     // Execute scraping engine
     const scrapedData = await scrapeUrl(url);
+
+    // Synthesize deep market positioning & competitor intelligence via Gemini 2.5 Flash
+    const intelligence = await analyzeBrandIntelligence({
+      brandName: scrapedData.brandName,
+      url,
+      pageTitle: scrapedData.pageTitle,
+      summary: scrapedData.summary,
+      headings: scrapedData.headings,
+      bodySnippet: scrapedData.bodySnippet,
+    });
 
     // If an organizationId is provided and valid, persist project in PostgreSQL
     let persistedProjectId: string | undefined;
@@ -129,13 +140,19 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         projectId: persistedProjectId || `preview_${Math.random().toString(36).substring(2, 10)}`,
-        brandName: scrapedData.brandName,
+        brandName: intelligence.brandName || scrapedData.brandName,
         pageTitle: scrapedData.pageTitle,
         summary: scrapedData.summary,
         headings: scrapedData.headings,
         brandColors: scrapedData.brandColors,
         assets: scrapedData.assets,
         screenshotUrl: scrapedData.screenshotUrl,
+        targetAudience: intelligence.targetAudience,
+        valueProposition: intelligence.coreUsp || scrapedData.summary,
+        whatItDoes: intelligence.whatItDoes,
+        primaryGoal: intelligence.primaryGoal,
+        category: intelligence.category,
+        competitors: intelligence.competitors,
       },
       meta: {
         timestamp: new Date().toISOString(),

@@ -20,6 +20,7 @@ export interface ScrapedProductData {
   };
   assets: ScrapedAssetItem[];
   screenshotUrl?: string;
+  bodySnippet?: string;
 }
 
 /**
@@ -89,6 +90,16 @@ export async function scrapeUrl(targetUrl: string): Promise<ScrapedProductData> 
     }
   });
 
+  // Extract Descriptive Paragraph Snippets (For AI positioning & audience analysis)
+  const paragraphSnippets: string[] = [];
+  $("p").each((_, el) => {
+    const text = $(el).text().replace(/\s+/g, " ").trim();
+    if (text.length > 25 && text.length < 350 && !paragraphSnippets.includes(text)) {
+      paragraphSnippets.push(text);
+    }
+  });
+  const bodySnippet = paragraphSnippets.slice(0, 8).join("\n");
+
   // 6. Extract High-Res Product Images & Logos
   const assets: ScrapedAssetItem[] = [];
 
@@ -153,6 +164,7 @@ export async function scrapeUrl(targetUrl: string): Promise<ScrapedProductData> 
     brandColors,
     assets,
     screenshotUrl,
+    bodySnippet,
   };
 }
 

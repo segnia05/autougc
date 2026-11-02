@@ -189,6 +189,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/contact" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
+                  Contact Founding Team
+                </Link>
+              </li>
+              <li>
                 <Link href="/pricing" className="hover:text-[#1F3824] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm">
                   Pricing Plans
                 </Link>

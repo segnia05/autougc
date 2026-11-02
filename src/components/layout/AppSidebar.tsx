@@ -29,8 +29,8 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Campaigns", href: "/campaigns", icon: Layers },
   { label: "Studio", href: "/studio", icon: Sparkles, isSpecial: true },
   { label: "Brand", href: "/brand", icon: Fingerprint },
-  { label: "Radar", href: "/radar", icon: Radar },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
+  { label: "Contact Us", href: "/contact", icon: MessageSquare },
 ];
 
 interface AppSidebarProps {

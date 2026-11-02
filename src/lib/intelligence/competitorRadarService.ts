@@ -153,12 +153,13 @@ const NICHE_PRESETS: Record<string, NicheBenchmark> = {
 export function analyzeCompetitorLandscape(
   domainOrCategory: string,
   brandName?: string,
-  screenshotUrl?: string
+  screenshotUrl?: string,
+  discoveredCompetitors?: string[]
 ): NicheBenchmark {
   const normalized = domainOrCategory.toLowerCase();
   
   // Select matching niche or default to AI Productivity
-  let benchmark: NicheBenchmark = NICHE_PRESETS.ai_writing!;
+  let benchmark: NicheBenchmark = { ...NICHE_PRESETS.ai_writing! };
   if (
     normalized.includes("dev") ||
     normalized.includes("linear") ||
@@ -167,11 +168,30 @@ export function analyzeCompetitorLandscape(
     normalized.includes("api") ||
     normalized.includes("cloud")
   ) {
-    benchmark = NICHE_PRESETS.dev_tools!;
+    benchmark = { ...NICHE_PRESETS.dev_tools! };
   }
 
-  // Personalize first ads with brand screenshot if available
+  // If real-world competitors were extracted by Gemini, dynamically inject the top rival
+  const topRival = discoveredCompetitors?.[0] || benchmark.topCompetitorName;
+  if (topRival && topRival !== benchmark.topCompetitorName) {
+    benchmark = {
+      ...benchmark,
+      topCompetitorName: topRival,
+      longestRunningAd: {
+        ...benchmark.longestRunningAd,
+        brandName: topRival,
+      },
+    };
+  }
+
+  // Personalize first ads with brand screenshot and detected rival
   const personalizedFirstAds = benchmark.suggestedFirstAds.map((ad, idx) => {
+    if (idx === 0) {
+      return {
+        ...ad,
+        title: `Remix of ${topRival}'s top ad`,
+      };
+    }
     if (idx === 1 && screenshotUrl) {
       return {
         ...ad,

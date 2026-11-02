@@ -1,24 +1,74 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import AppShell from "@/components/layout/AppShell";
-import DashboardExecutiveHeader from "@/components/dashboard/DashboardExecutiveHeader";
-import NextActionHeroCard from "@/components/dashboard/NextActionHeroCard";
-import PaceGaugeCard from "@/components/dashboard/PaceGaugeCard";
-import DockedCopilotBar from "@/components/dashboard/DockedCopilotBar";
+import BrandProfileHeader from "@/components/dashboard/BrandProfileHeader";
+import PrePublishApprovalQueue from "@/components/dashboard/PrePublishApprovalQueue";
+import ConnectedAccountsSection, {
+  ConnectedSocialAccount,
+} from "@/components/dashboard/ConnectedAccountsSection";
+import InteractiveMonthlyCalendar, {
+  ScheduledCalendarPost,
+} from "@/components/dashboard/InteractiveMonthlyCalendar";
+import SchedulePostModal from "@/components/dashboard/SchedulePostModal";
+import { UpgradePaywallModal, PaywallTriggerReason } from "@/components/billing/UpgradePaywallModal";
 import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const router = useRouter();
 
-  // Dynamic state populated exclusively from real user data
+  // SaaS Workspace Profile State (Loaded directly from DB / Gemini Extraction)
   const [isLoading, setIsLoading] = useState(true);
-  const [founderName, setFounderName] = useState("");
+  const [founderName, setFounderName] = useState("Founder");
   const [brandName, setBrandName] = useState("");
-  const [brandGoal, setBrandGoal] = useState("");
+  const [targetUrl, setTargetUrl] = useState("");
+  const [targetAudience, setTargetAudience] = useState("");
+  const [competitors, setCompetitors] = useState<string[]>([]);
+  const [whatItDoes, setWhatItDoes] = useState("");
   const [credits, setCredits] = useState(50);
+  const [planTier, setPlanTier] = useState("starter");
   const [screenshotUrl, setScreenshotUrl] = useState("");
 
+  // Social Channels & Scheduled Posts State
+  const [accounts, setAccounts] = useState<ConnectedSocialAccount[]>([]);
+  const [posts, setPosts] = useState<ScheduledCalendarPost[]>([]);
+
+  // Modals State
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [upgradeTriggerReason, setUpgradeTriggerReason] = useState<PaywallTriggerReason>("general");
+
+  // Fetch Connected Accounts
+  const fetchAccounts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/v1/social/accounts");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.accounts)) {
+          setAccounts(data.accounts);
+        }
+      }
+    } catch (err) {
+      console.warn("Failed fetching connected accounts", err);
+    }
+  }, []);
+
+  // Fetch Scheduled Calendar Posts
+  const fetchScheduledPosts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/v1/social/schedule");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.posts)) {
+          setPosts(data.posts);
+        }
+      }
+    } catch (err) {
+      console.warn("Failed fetching scheduled posts", err);
+    }
+  }, []);
+
+  // Initial Load Workspace Profile
   useEffect(() => {
     async function loadUserWorkspace() {
       try {
@@ -28,10 +78,18 @@ export default function DashboardPage() {
           if (json.onboarded && json.brandName) {
             setBrandName(json.brandName);
             setFounderName(json.founderName || "Founder");
-            setBrandGoal(json.goal || `Scale paid creator ads for ${json.brandName}`);
+            setTargetUrl(json.targetUrl || "");
+            setTargetAudience(json.targetAudience || "");
+            setCompetitors(Array.isArray(json.competitors) ? json.competitors : []);
+            setWhatItDoes(json.whatItDoes || json.summary || "");
             setScreenshotUrl(json.screenshotUrl || "");
             setCredits(json.credits ?? 50);
+            setPlanTier(json.planTier || "starter");
             setIsLoading(false);
+
+            // Fetch accounts and scheduled calendar posts in parallel
+            fetchAccounts();
+            fetchScheduledPosts();
             return;
           }
         }
@@ -40,22 +98,22 @@ export default function DashboardPage() {
         if (typeof window !== "undefined") {
           const storedBrand = localStorage.getItem("autougc_brand_name");
           const storedName = localStorage.getItem("autougc_founder_name");
-          const storedGoal = localStorage.getItem("autougc_brand_goal");
           const storedCredits = localStorage.getItem("autougc_credits");
           const storedShot = localStorage.getItem("autougc_screenshot_url");
 
           if (storedBrand) {
             setBrandName(storedBrand);
             setFounderName(storedName || "Founder");
-            setBrandGoal(storedGoal || `Scale paid creator ads for ${storedBrand}`);
             setScreenshotUrl(storedShot || "");
             if (storedCredits) setCredits(parseInt(storedCredits, 10));
             setIsLoading(false);
+            fetchAccounts();
+            fetchScheduledPosts();
             return;
           }
         }
 
-        // If user has no brand profile, strictly block dashboard and route to onboarding
+        // If user has no brand profile, route to onboarding
         router.replace("/onboarding");
       } catch {
         router.replace("/onboarding");
@@ -63,22 +121,23 @@ export default function DashboardPage() {
     }
 
     loadUserWorkspace();
-  }, [router]);
+  }, [router, fetchAccounts, fetchScheduledPosts]);
 
-  const handleCopilotSubmit = (prompt: string, intent: string) => {
-    // When the user submits a copilot prompt, route to Studio with preloaded prompt
-    if (typeof window !== "undefined") {
-      localStorage.setItem("autougc_copilot_prompt", prompt);
-      localStorage.setItem("autougc_copilot_intent", intent);
+  // Handle Upgrade Modal Trigger
+  const handleTriggerUpgrade = (reason: string) => {
+    if (reason.toLowerCase().includes("account") || reason.toLowerCase().includes("limit")) {
+      setUpgradeTriggerReason("account_limit");
+    } else if (reason.toLowerCase().includes("credit")) {
+      setUpgradeTriggerReason("credits_exhausted");
+    } else {
+      setUpgradeTriggerReason("general");
     }
-    router.push("/studio");
+    setIsUpgradeModalOpen(true);
   };
 
-  const adThumbnails = [
-    screenshotUrl || "/images/creator-sarah.jpg",
-    "/images/creator-alex.jpg",
-    "/images/creator-sarah.jpg",
-  ];
+  // Tier Account Limits: Starter: 1, Growth: 5, Scale: 15
+  const maxAccountsAllowed =
+    planTier === "scale" ? 15 : planTier === "growth" ? 5 : 1;
 
   if (isLoading) {
     return (
@@ -90,7 +149,9 @@ export default function DashboardPage() {
               <path d="M10 20L20 9H16L8 20H10Z" fill="#D95D39" />
             </svg>
           </div>
-          <span className="text-xs text-[#8E8B85] font-medium">Loading command center...</span>
+          <span className="text-xs text-[#8E8B85] font-medium font-mono">
+            Loading your SaaS command center...
+          </span>
         </div>
       </div>
     );
@@ -98,50 +159,81 @@ export default function DashboardPage() {
 
   return (
     <AppShell brandName={brandName}>
-      <main id="main-content" tabIndex={-1} className="space-y-6 focus:outline-none">
-        {/* Executive Header & Goal Strip (Screenshot 3 Match) */}
-        <DashboardExecutiveHeader
-          founderName={founderName}
+      <main id="main-content" tabIndex={-1} className="space-y-8 focus:outline-none pb-12">
+        {/* 1. SaaS Profile Header & Quick Studio Launch */}
+        <BrandProfileHeader
           brandName={brandName}
-          goal={brandGoal}
+          targetUrl={targetUrl}
+          screenshotUrl={screenshotUrl}
+          targetAudience={targetAudience}
+          competitors={competitors}
+          whatItDoes={whatItDoes}
           credits={credits}
-          trialEndDays={7}
-          onAskCopilot={() => router.push("/studio")}
+          planTier={planTier}
+          founderName={founderName}
+          onOpenStudio={() => router.push("/studio")}
+          onSchedulePost={() => setIsScheduleModalOpen(true)}
+          onUpgrade={() => {
+            setUpgradeTriggerReason("credits_exhausted");
+            setIsUpgradeModalOpen(true);
+          }}
         />
 
-        {/* 2-Column Core Action & Momentum Grid (Screenshot 3 Match) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column (span 6): The 1 Thing That Needs You */}
-          <div className="lg:col-span-6">
-            <NextActionHeroCard
-              completedCount={3}
-              totalCount={30}
-              campaignName="Starter campaign"
-              adThumbnails={adThumbnails}
-              onOpen={() => router.push("/campaigns")}
-            />
-          </div>
+        {/* 2. Pre-Publish 1-Hour Approval Queue (With 1-click approve & Studio link) */}
+        <PrePublishApprovalQueue
+          posts={posts}
+          onRefresh={() => {
+            fetchScheduledPosts();
+            fetchAccounts();
+          }}
+        />
 
-          {/* Right Column (span 6): Velocity & Pace Gauge */}
-          <div className="lg:col-span-6">
-            <PaceGaugeCard
-              currentDailyViews={0}
-              postsOut={0}
-              postsGoal={0}
-              adSpendWeek="None"
-              credits={credits}
-            />
-          </div>
-        </div>
+        {/* 3. Connected Social Accounts / Devices Section */}
+        <ConnectedAccountsSection
+          accounts={accounts}
+          maxAccountsAllowed={maxAccountsAllowed}
+          planTier={planTier}
+          onRefreshAccounts={fetchAccounts}
+          onTriggerUpgrade={handleTriggerUpgrade}
+        />
 
-        {/* Bottom Persistent Docked Copilot Command Bar (Screenshot 3 Match) */}
-        <div className="pt-6">
-          <DockedCopilotBar
-            brandName={brandName}
-            onSubmit={handleCopilotSubmit}
-          />
-        </div>
+        {/* 4. Real Interactive Monthly Calendar with Marked Scheduled Days */}
+        <InteractiveMonthlyCalendar
+          posts={posts}
+          brandName={brandName}
+          onRefreshPosts={fetchScheduledPosts}
+          onOpenScheduleModal={() => setIsScheduleModalOpen(true)}
+        />
       </main>
+
+      {/* Schedule Post Modal */}
+      <SchedulePostModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        accounts={accounts}
+        brandName={brandName}
+        onScheduled={() => {
+          fetchScheduledPosts();
+          fetchAccounts();
+        }}
+        onTriggerUpgrade={handleTriggerUpgrade}
+        onConnectAccountClick={() => {
+          // Handled via ConnectedAccountsSection connect modal
+        }}
+      />
+
+      {/* Upgrade Paywall Modal */}
+      <UpgradePaywallModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+        triggerReason={upgradeTriggerReason}
+        currentPlanTier={planTier}
+        onUpgradeSuccess={(newTier) => {
+          setPlanTier(newTier);
+          setIsUpgradeModalOpen(false);
+          fetchAccounts();
+        }}
+      />
     </AppShell>
   );
 }

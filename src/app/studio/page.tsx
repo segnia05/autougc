@@ -212,6 +212,41 @@ function StudioContent() {
     };
   }, [searchParams]);
 
+  // Load onboarded brand workspace details if not editing an existing scheduled post
+  useEffect(() => {
+    if (!searchParams.get("brand") && !scheduledPostId) {
+      let isCancelled = false;
+      fetch("/api/v1/workspace/active")
+        .then((res) => res.json())
+        .then((data) => {
+          if (!isCancelled && data.onboarded && data.brandName) {
+            setBrandName(data.brandName);
+            setHookText(`Why didn't anyone tell me about ${data.brandName} sooner?!`);
+            setBodyText(`If you use AI for writing or creating content, ${data.brandName} saves hours every day.`);
+            setCtaText(`Link in bio to try ${data.brandName} free!`);
+            if (data.screenshotUrl) {
+              setSelectedVisualUrl(data.screenshotUrl);
+            }
+          } else if (!isCancelled && typeof window !== "undefined") {
+            const storedBrand = localStorage.getItem("autougc_brand_name");
+            const storedShot = localStorage.getItem("autougc_screenshot_url");
+            if (storedBrand) {
+              setBrandName(storedBrand);
+              setHookText(`Why didn't anyone tell me about ${storedBrand} sooner?!`);
+              setBodyText(`If you use AI for writing, ${storedBrand} saves hours every day.`);
+              setCtaText(`Link in bio to try ${storedBrand} free!`);
+            }
+            if (storedShot) setSelectedVisualUrl(storedShot);
+          }
+        })
+        .catch(() => {});
+
+      return () => {
+        isCancelled = true;
+      };
+    }
+  }, [searchParams, scheduledPostId]);
+
   // Load scheduled post data when editing an upcoming post
   useEffect(() => {
     if (!scheduledPostId) return;

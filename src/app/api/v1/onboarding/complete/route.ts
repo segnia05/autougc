@@ -17,6 +17,9 @@ export async function POST(req: NextRequest) {
       usp,
       goal,
       screenshotUrl,
+      whatItDoes,
+      competitors,
+      category,
     } = body;
 
     if (!brandName || !url) {
@@ -74,6 +77,11 @@ export async function POST(req: NextRequest) {
         brandName: brandName,
         targetUrl: url,
         summary: usp || "Autonomous AI UGC Ads",
+        targetAudience: audience || null,
+        competitors: Array.isArray(competitors) ? competitors : [],
+        whatItDoes: whatItDoes || usp || null,
+        primaryGoal: goal || null,
+        screenshotUrl: screenshotUrl || null,
         assets: screenshotUrl
           ? {
               create: {
@@ -107,6 +115,9 @@ export async function POST(req: NextRequest) {
       founderName: founderName || "Founder",
       goal: goal || `Sell more ${brandName} plans to people who want ${usp}`,
       screenshotUrl: screenshotUrl || "",
+      targetAudience: audience || "",
+      competitors: Array.isArray(competitors) ? competitors : [],
+      whatItDoes: whatItDoes || usp || "",
       credits: organization.subscription?.creditsRemaining ?? 50,
       projectId: project.id,
       campaignId: project.campaigns[0]?.id,
@@ -121,6 +132,12 @@ export async function POST(req: NextRequest) {
     });
 
     response.cookies.set("autougc_brand_name", brandName, {
+      path: "/",
+      maxAge: 30 * 24 * 60 * 60,
+      sameSite: "lax",
+    });
+
+    response.cookies.set("autougc_org_id", organization.id, {
       path: "/",
       maxAge: 30 * 24 * 60 * 60,
       sameSite: "lax",

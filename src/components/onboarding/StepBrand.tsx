@@ -10,6 +10,7 @@ interface StepBrandProps {
   initialUsp: string;
   initialGoal?: string;
   screenshotUrl?: string;
+  isSubmitting?: boolean;
   onConfirm: (data: {
     brandName: string;
     audience: string;
@@ -25,6 +26,7 @@ export default function StepBrand({
   initialUsp,
   initialGoal,
   screenshotUrl,
+  isSubmitting = false,
   onConfirm,
   onBack,
 }: StepBrandProps) {
@@ -56,7 +58,7 @@ export default function StepBrand({
           Confirm your brand details
         </h1>
         <p className="text-xs text-[#52525B]">
-          We extracted your software UI and value proposition. Review and refine before we spy on competitor ads.
+          We extracted your software UI, target audience, and value proposition. Review and refine before launching your workspace.
         </p>
       </div>
 
@@ -171,10 +173,20 @@ export default function StepBrand({
 
           <button
             type="submit"
-            className="btn-fastlane-black py-2.5 px-6 text-xs font-semibold gap-2 shadow-sm"
+            disabled={isSubmitting}
+            className="btn-fastlane-black py-2.5 px-6 text-xs font-semibold gap-2 shadow-sm hover:scale-[1.01] transition-transform disabled:opacity-70 flex items-center"
           >
-            <span>Analyze Competitor Ads</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            {isSubmitting ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Launching Dashboard...</span>
+              </>
+            ) : (
+              <>
+                <span>Launch Dashboard & Create UGC Ads</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </>
+            )}
           </button>
         </div>
       </form>
