@@ -65,7 +65,8 @@ export default clerkMiddleware(async (auth, request) => {
   if (isProtectedBrowserRoute(request)) {
     const { userId } = await auth();
     const hasDevHeader = request.headers.get("x-user-id") || request.cookies.get("x-user-id")?.value;
-    if (!userId && !hasDevHeader) {
+    const hasOnboardedCookie = request.cookies.get("autougc_onboarded")?.value === "true";
+    if (!userId && !hasDevHeader && !hasOnboardedCookie) {
       const signInUrl = new URL("/sign-in", request.url);
       const targetPath = request.nextUrl.search
         ? `${request.nextUrl.pathname}${request.nextUrl.search}`
