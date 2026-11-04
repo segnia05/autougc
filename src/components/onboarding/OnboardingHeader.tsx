@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
 
 export type OnboardingStep = "you" | "brand";
 
@@ -18,7 +17,6 @@ const STEPS: { key: OnboardingStep; label: string }[] = [
 
 export default function OnboardingHeader({
   currentStep,
-  onStepChange,
 }: OnboardingHeaderProps) {
   const currentIdx = STEPS.findIndex((s) => s.key === currentStep);
 
@@ -38,9 +36,10 @@ export default function OnboardingHeader({
             <path d="M10 20L20 9H16L8 20H10Z" fill="currentColor" />
           </svg>
         </div>
+        <span className="text-xs font-bold tracking-tight text-[#18181B]">AutoUGC</span>
       </div>
 
-      {/* Center: Minimalist Dashed Stepper (Screenshot 5 Match) */}
+      {/* Center: Stepper */}
       <div className="flex items-center gap-8 md:gap-12">
         {STEPS.map((step, idx) => {
           const isActive = step.key === currentStep;
@@ -63,15 +62,15 @@ export default function OnboardingHeader({
                 {step.label}
               </span>
 
-              {/* Dashed / Solid Indicator Bar */}
+              {/* Indicator Bar */}
               <div className="flex items-center gap-1">
                 <span
-                  className={`h-0.5 w-6 rounded-full transition-all ${
+                  className={`h-0.5 rounded-full transition-all ${
                     isActive
                       ? "bg-[#D95D39] w-8"
                       : isDone
-                      ? "bg-[#18181B]"
-                      : "bg-[#E5E0D8]"
+                      ? "bg-[#18181B] w-6"
+                      : "bg-[#E5E0D8] w-6"
                   }`}
                 />
               </div>
@@ -98,4 +97,3 @@ export default function OnboardingHeader({
     </header>
   );
 }
-

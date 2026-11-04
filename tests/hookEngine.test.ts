@@ -59,3 +59,4 @@ test("Gemini Dedicated Viral Hook Engine", async (t) => {
     assert.ok(fallbackHooks[1]!.fullScript.includes("Turnitin") || fallbackHooks[1]!.fullScript.includes("HumanifyLab"));
   });
 });
+

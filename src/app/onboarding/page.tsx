@@ -33,7 +33,10 @@ function OnboardingContent() {
     screenshotUrl: "",
     category: "",
     competitors: [] as string[],
+    whatItDoes: "",
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialUrlFromQuery && !formData.url) {
@@ -41,7 +44,7 @@ function OnboardingContent() {
     }
   }, [initialUrlFromQuery, formData.url]);
 
-  // Step 1: YOU completed -> Trigger website scrape
+  // Step 1: YOU completed → Trigger website scrape + advance to brand
   const handleStepYouComplete = async (stepData: {
     url: string;
     founderName: string;
@@ -53,7 +56,6 @@ function OnboardingContent() {
     }));
 
     try {
-      // Call background scrape API
       const res = await fetch("/api/v1/projects/scrape", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,19 +73,20 @@ function OnboardingContent() {
         const shot = extracted.screenshotUrl || "";
         const competitors = Array.isArray(extracted.competitors) ? extracted.competitors : [];
         const category = extracted.category || "";
+        const whatItDoes = extracted.whatItDoes || val;
 
         setFormData((prev) => ({
           ...prev,
           brandName: brand.charAt(0).toUpperCase() + brand.slice(1),
           audience: aud,
           usp: val,
-          goal: goal,
+          goal,
           screenshotUrl: shot,
-          category: category,
-          competitors: competitors,
+          category,
+          competitors,
+          whatItDoes,
         }));
       } else {
-        // Fallback for unresolvable URLs
         const domainParts = new URL(stepData.url).hostname.replace("www.", "").split(".");
         const rawDomain = domainParts[0] || "product";
         const brand = rawDomain.charAt(0).toUpperCase() + rawDomain.slice(1);
@@ -93,10 +96,10 @@ function OnboardingContent() {
           audience: "Founders and growth operators looking to scale conversions",
           usp: "Autonomous AI UGC engine that launches high-converting video ads",
           goal: `Sell more ${brand} plans to high-intent buyers`,
+          whatItDoes: `${brand} helps founders automate marketing and growth.`,
         }));
       }
     } catch {
-      // Safe fallback
       const urlParts = stepData.url.replace(/^https?:\/\//i, "").split("/");
       const domainParts = (urlParts[0] || "product").split(".");
       const rawDomain = domainParts[0] || "product";
@@ -107,47 +110,43 @@ function OnboardingContent() {
         audience: "Founders and creators",
         usp: "High-converting UGC video ads",
         goal: `Sell more ${brand} plans`,
+        whatItDoes: `${brand} is a software product for founders and creators.`,
       }));
     }
 
     setCurrentStep("brand");
   };
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Step 2: YOUR BRAND completed -> Persist and launch directly into Dashboard
+  // Step 2: YOUR BRAND confirmed → Save to Database & Launch Dashboard
   const handleStepBrandComplete = async (brandData: {
     brandName: string;
     audience: string;
     usp: string;
     goal: string;
+    whatItDoes: string;
+    competitors: string[];
   }) => {
+    setIsSubmitting(true);
     const finalData = {
       ...formData,
       ...brandData,
     };
     setFormData(finalData);
-    await handleLaunchDashboard(finalData);
-  };
 
-  // Finalize & Launch into Dashboard
-  const handleLaunchDashboard = async (dataToSubmit?: typeof formData) => {
-    setIsSubmitting(true);
-    const payload = dataToSubmit || formData;
     try {
       const res = await fetch("/api/v1/onboarding/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(finalData),
       });
 
       if (res.ok) {
         const json = await res.json();
         if (typeof window !== "undefined") {
-          localStorage.setItem("autougc_founder_name", json.founderName || payload.founderName || "Founder");
-          localStorage.setItem("autougc_brand_name", json.brandName || payload.brandName);
-          localStorage.setItem("autougc_brand_goal", json.goal || payload.goal);
-          localStorage.setItem("autougc_screenshot_url", json.screenshotUrl || payload.screenshotUrl);
+          localStorage.setItem("autougc_founder_name", json.founderName || finalData.founderName || "Founder");
+          localStorage.setItem("autougc_brand_name", json.brandName || finalData.brandName);
+          localStorage.setItem("autougc_brand_goal", json.goal || finalData.goal);
+          localStorage.setItem("autougc_screenshot_url", json.screenshotUrl || finalData.screenshotUrl);
           localStorage.setItem("autougc_credits", String(json.credits || 50));
         }
       }
@@ -163,12 +162,11 @@ function OnboardingContent() {
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#18181B] fastlane-grid-bg antialiased">
       <OnboardingHeader
         currentStep={currentStep}
-        onStepChange={(step) => setCurrentStep(step)}
       />
 
       <main className="flex-1 flex flex-col justify-center px-4 py-8 max-w-7xl w-full mx-auto">
         {currentStep === "you" && (
-          <StepYou onComplete={handleStepYouComplete} />
+          <StepYou onComplete={handleStepYouComplete} initialUrl={initialUrlFromQuery} />
         )}
 
         {currentStep === "brand" && (
@@ -176,12 +174,23 @@ function OnboardingContent() {
             initialBrandName={formData.brandName}
             initialAudience={formData.audience}
             initialUsp={formData.usp}
+            initialWhatItDoes={formData.whatItDoes}
             initialGoal={formData.goal}
+            initialCompetitors={formData.competitors}
             screenshotUrl={formData.screenshotUrl}
             isSubmitting={isSubmitting}
             onConfirm={handleStepBrandComplete}
             onBack={() => setCurrentStep("you")}
           />
+        )}
+
+        {/* Full-screen submission overlay */}
+        {isSubmitting && (
+          <div className="fixed inset-0 bg-[#FAF8F5]/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4">
+            <div className="w-8 h-8 border-3 border-[#D95D39]/30 border-t-[#D95D39] rounded-full animate-spin" />
+            <p className="text-sm font-semibold text-[#18181B]">Setting up your SaaS command center…</p>
+            <p className="text-xs text-[#8E8B85]">Saving your brand profile &amp; generating your custom UGC creatives</p>
+          </div>
         )}
       </main>
     </div>

@@ -2,13 +2,15 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Check, Edit2, Target, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
+import { Check, Edit2, Target, Sparkles, ArrowRight, ArrowLeft, Swords, Plus, X, Globe } from "lucide-react";
 
 interface StepBrandProps {
   initialBrandName: string;
   initialAudience: string;
   initialUsp: string;
+  initialWhatItDoes?: string;
   initialGoal?: string;
+  initialCompetitors?: string[];
   screenshotUrl?: string;
   isSubmitting?: boolean;
   onConfirm: (data: {
@@ -16,6 +18,8 @@ interface StepBrandProps {
     audience: string;
     usp: string;
     goal: string;
+    whatItDoes: string;
+    competitors: string[];
   }) => void;
   onBack: () => void;
 }
@@ -24,22 +28,44 @@ export default function StepBrand({
   initialBrandName,
   initialAudience,
   initialUsp,
+  initialWhatItDoes,
   initialGoal,
+  initialCompetitors = [],
   screenshotUrl,
   isSubmitting = false,
   onConfirm,
   onBack,
 }: StepBrandProps) {
   const [brandName, setBrandName] = useState(initialBrandName || "Your Brand");
+  const [whatItDoes, setWhatItDoes] = useState(
+    initialWhatItDoes || initialUsp || "High-converting SaaS product"
+  );
   const [audience, setAudience] = useState(
     initialAudience || "High-intent customers and target buyers"
   );
   const [usp, setUsp] = useState(
-    initialUsp || "High-converting software platform"
+    initialUsp || "Automate high-converting UGC video ad generation"
   );
   const [goal, setGoal] = useState(
     initialGoal || `Sell more ${initialBrandName || "product"} plans to target customers`
   );
+  const [competitors, setCompetitors] = useState<string[]>(
+    initialCompetitors.length > 0 ? initialCompetitors : ["Competitor A", "Competitor B"]
+  );
+  const [newCompetitor, setNewCompetitor] = useState("");
+
+  const handleAddCompetitor = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCompetitor.trim()) return;
+    if (!competitors.includes(newCompetitor.trim())) {
+      setCompetitors([...competitors, newCompetitor.trim()]);
+    }
+    setNewCompetitor("");
+  };
+
+  const handleRemoveCompetitor = (name: string) => {
+    setCompetitors(competitors.filter((c) => c !== name));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,17 +74,23 @@ export default function StepBrand({
       audience: audience.trim(),
       usp: usp.trim(),
       goal: goal.trim(),
+      whatItDoes: whatItDoes.trim(),
+      competitors,
     });
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-8 animate-in fade-in slide-in-from-bottom-3 duration-200">
+    <div className="max-w-4xl mx-auto py-8 animate-in fade-in slide-in-from-bottom-3 duration-200">
       <div className="text-center space-y-2 mb-6">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FDF3EF] border border-[#F3CEBE] text-[10px] font-bold tracking-widest text-[#D95D39] uppercase mb-1">
+          <Sparkles className="w-3 h-3" />
+          <span>Gemini AI Brand Intelligence</span>
+        </div>
         <h1 className="text-2xl font-bold tracking-tight text-[#18181B]">
-          Confirm your brand details
+          Confirm your brand profile
         </h1>
-        <p className="text-xs text-[#52525B]">
-          We extracted your software UI, target audience, and value proposition. Review and refine before launching your workspace.
+        <p className="text-xs text-[#52525B] max-w-lg mx-auto">
+          We extracted your software UI, target buyers, core differentiator, and competitor landscape. Review and confirm to launch your command center.
         </p>
       </div>
 
@@ -76,7 +108,7 @@ export default function StepBrand({
                 value={brandName}
                 onChange={(e) => {
                   setBrandName(e.target.value);
-                  setGoal(`Sell more ${e.target.value} plans to people who want natural sounding text`);
+                  setGoal(`Sell more ${e.target.value} plans to ${audience}`);
                 }}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39] text-xs text-[#18181B] font-semibold"
               />
@@ -84,7 +116,20 @@ export default function StepBrand({
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-[#18181B]">
-                Target Audience
+                What It Does (1-Sentence Plain English)
+              </label>
+              <input
+                type="text"
+                value={whatItDoes}
+                onChange={(e) => setWhatItDoes(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39] text-xs text-[#18181B]"
+                placeholder="e.g. AI text humanizer that rewrites AI essays to bypass detection."
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[#18181B]">
+                Target Audience (End Buyers)
               </label>
               <textarea
                 rows={2}
@@ -106,6 +151,64 @@ export default function StepBrand({
               />
             </div>
 
+            {/* Competitors Detected by Gemini */}
+            <div className="space-y-2 pt-1">
+              <label className="text-xs font-semibold text-[#18181B] flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Swords className="w-3.5 h-3.5 text-[#D95D39]" />
+                  <span>Detected Competitors</span>
+                </span>
+                <span className="text-[10px] text-[#8E8B85]">Used for ad angle benchmarking</span>
+              </label>
+              <div className="flex flex-wrap gap-1.5 min-h-[32px] p-2 rounded-xl bg-[#FAF8F5] border border-[#E5E0D8]">
+                {competitors.map((comp) => (
+                  <span
+                    key={comp}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#E5E0D8] text-[11px] font-medium text-[#18181B] shadow-2xs"
+                  >
+                    <span>{comp}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveCompetitor(comp)}
+                      className="text-[#8E8B85] hover:text-[#D95D39] transition-colors ml-0.5"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Add another competitor..."
+                  value={newCompetitor}
+                  onChange={(e) => setNewCompetitor(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (newCompetitor.trim() && !competitors.includes(newCompetitor.trim())) {
+                        setCompetitors([...competitors, newCompetitor.trim()]);
+                        setNewCompetitor("");
+                      }
+                    }
+                  }}
+                  className="flex-1 px-3 py-1.5 rounded-lg border border-[#E5E0D8] bg-white text-xs text-[#18181B] focus:outline-none focus:ring-1 focus:ring-[#D95D39]"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newCompetitor.trim() && !competitors.includes(newCompetitor.trim())) {
+                      setCompetitors([...competitors, newCompetitor.trim()]);
+                      setNewCompetitor("");
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-black"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+
             <div className="space-y-1.5 pt-1">
               <label className="text-xs font-semibold text-[#D95D39] flex items-center gap-1.5">
                 <Target className="w-3.5 h-3.5" />
@@ -125,7 +228,7 @@ export default function StepBrand({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#8E8B85]">
-                  Extracted Software UI
+                  Extracted Software UI Proof
                 </span>
                 <span className="text-[10px] font-semibold text-[#D95D39] px-2 py-0.5 rounded-full bg-[#FDF3EF] border border-[#F3CEBE]">
                   Live Mockup
@@ -154,8 +257,9 @@ export default function StepBrand({
               )}
             </div>
 
-            <div className="pt-4 text-[11px] text-[#8E8B85] leading-relaxed">
-              This screenshot will automatically animate as a floating macOS window in your video ads, showing real software proof.
+            <div className="pt-4 text-[11px] text-[#8E8B85] leading-relaxed border-t border-[#EFECE6] mt-4">
+              <span className="font-semibold text-[#18181B]">How this is used: </span>
+              AutoUGC attaches this high-resolution software mockup dynamically as a floating window inside your 9:16 vertical ads, proving to TikTok and Reels viewers that your SaaS is real and active.
             </div>
           </div>
         </div>
@@ -193,4 +297,3 @@ export default function StepBrand({
     </div>
   );
 }
-

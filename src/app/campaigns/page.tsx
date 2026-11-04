@@ -161,16 +161,16 @@ export default function CampaignsPage() {
   return (
     <AppShell brandName={brandName}>
       <div className="max-w-7xl mx-auto space-y-8 select-none pb-16">
-        {/* Header Strip with AutoUGC Color Palette */}
-        <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 border-b border-[#CBD5C4]/70 pb-6">
+        {/* Header Strip with AutoUGC Warm Canvas & Terracotta Accent */}
+        <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 border-b border-[#E5E0D8] pb-6">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1B231B]">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#18181B]">
                 {brandName ? `${brandName} Creator Ad Vault` : "Creator Video Ad Vault"}
               </h1>
-              <Badge variant="emerald" size="sm">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#FDF3EF] border border-[#F3CEBE] text-[10px] font-bold text-[#D95D39] uppercase tracking-wider">
                 Remotion 1080x1920
-              </Badge>
+              </span>
             </div>
             <p className="text-xs text-[#52525B] max-w-2xl leading-relaxed">
               Every high-converting AI UGC video creative generated for your software. Preview rendered ads, make granular script and voice edits in Studio, or schedule them to your social accounts.
@@ -180,9 +180,9 @@ export default function CampaignsPage() {
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/studio"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-all hover:scale-[1.01]"
+              className="btn-fastlane-black text-xs px-5 py-2.5 font-semibold gap-2 shadow-sm hover:scale-[1.01] transition-transform inline-flex items-center"
             >
-              <Sparkles className="w-4 h-4 text-emerald-300" />
+              <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
               <span>Create New Ad in Studio</span>
             </Link>
           </div>
@@ -190,58 +190,58 @@ export default function CampaignsPage() {
 
         {/* 4 Metrics Pods */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#717E6C]">
+          <div className="fastlane-card bg-white p-4 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8E8B85]">
               Total Video Ads
             </span>
-            <div className="text-2xl font-bold text-[#1B231B]">
+            <div className="text-2xl font-bold text-[#18181B]">
               {videos.length}
             </div>
-            <span className="text-[10px] text-[#717E6C]">
+            <span className="text-[10px] text-[#8E8B85]">
               Engineered UGC creatives
             </span>
           </div>
 
-          <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F3824]">
+          <div className="fastlane-card bg-white p-4 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#D95D39]">
               Ready to Launch
             </span>
-            <div className="text-2xl font-bold text-[#1F3824]">
+            <div className="text-2xl font-bold text-[#D95D39]">
               {readyCount}
             </div>
-            <span className="text-[10px] text-[#717E6C]">
+            <span className="text-[10px] text-[#8E8B85]">
               Unscheduled video pool
             </span>
           </div>
 
-          <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#D95D39]">
+          <div className="fastlane-card bg-white p-4 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#18181B]">
               Active On Calendar
             </span>
-            <div className="text-2xl font-bold text-[#D95D39]">
+            <div className="text-2xl font-bold text-[#18181B]">
               {scheduledCount}
             </div>
-            <span className="text-[10px] text-[#717E6C]">
+            <span className="text-[10px] text-[#8E8B85]">
               Drip-scheduled posts
             </span>
           </div>
 
-          <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#717E6C]">
+          <div className="fastlane-card bg-white p-4 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8E8B85]">
               Video Credits
             </span>
-            <div className="flex items-center gap-1.5 text-2xl font-bold text-[#1B231B]">
+            <div className="flex items-center gap-1.5 text-2xl font-bold text-[#18181B]">
               <Zap className="w-5 h-5 text-[#D95D39] fill-[#D95D39]" />
               <span>{credits}</span>
             </div>
-            <span className="text-[10px] text-[#717E6C]">
+            <span className="text-[10px] text-[#8E8B85]">
               Ready for high-res render
             </span>
           </div>
         </div>
 
         {/* Filter Bar & Search */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#F6F7F2] p-2 rounded-2xl border border-[#CBD5C4]/80">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-2.5 rounded-2xl border border-[#E5E0D8]">
           {/* Status Tabs */}
           <div className="flex items-center gap-1 overflow-x-auto p-1">
             {[
@@ -256,13 +256,13 @@ export default function CampaignsPage() {
                 onClick={() => setStatusFilter(tab.id as any)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                   statusFilter === tab.id
-                    ? "bg-[#1F3824] text-white shadow-2xs"
-                    : "text-[#4A544A] hover:text-[#1B231B] hover:bg-white/60"
+                    ? "bg-[#18181B] text-white shadow-2xs"
+                    : "text-[#52525B] hover:text-[#18181B] hover:bg-[#FAF8F5]"
                 }`}
               >
                 <span>{tab.label}</span>
                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                  statusFilter === tab.id ? "bg-white/20 text-white" : "bg-[#CBD5C4]/50 text-[#4A544A]"
+                  statusFilter === tab.id ? "bg-white/20 text-white" : "bg-[#FAF8F5] text-[#8E8B85]"
                 }`}>
                   {tab.count}
                 </span>
@@ -272,35 +272,35 @@ export default function CampaignsPage() {
 
           {/* Search Input */}
           <div className="relative sm:w-64">
-            <Search className="w-3.5 h-3.5 text-[#717E6C] absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-[#8E8B85] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Filter by hook or angle..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white border border-[#CBD5C4] text-xs text-[#1B231B] placeholder:text-[#717E6C] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824]"
+              className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#FAF8F5]/50 border border-[#E5E0D8] text-xs text-[#18181B] placeholder:text-[#8E8B85] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39]"
             />
           </div>
         </div>
 
         {/* Video Ad Grid */}
         {isLoading ? (
-          <div className="p-16 rounded-3xl bg-white border border-[#CBD5C4] text-center space-y-3">
-            <div className="w-8 h-8 rounded-lg bg-[#1F3824] flex items-center justify-center text-white mx-auto animate-spin">
+          <div className="p-16 rounded-3xl bg-white border border-[#E5E0D8] text-center space-y-3">
+            <div className="w-8 h-8 rounded-lg bg-[#18181B] flex items-center justify-center text-white mx-auto animate-spin">
               <Film className="w-4 h-4" />
             </div>
-            <p className="text-xs text-[#717E6C]">Loading your creator video library...</p>
+            <p className="text-xs text-[#8E8B85]">Loading your creator video library...</p>
           </div>
         ) : filteredVideos.length === 0 ? (
-          <div className="p-16 rounded-3xl bg-white border border-dashed border-[#CBD5C4] text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4] flex items-center justify-center text-[#1F3824] mx-auto">
+          <div className="p-16 rounded-3xl bg-white border border-dashed border-[#E5E0D8] text-center space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#FAF8F5] border border-[#E5E0D8] flex items-center justify-center text-[#D95D39] mx-auto">
               <Film className="w-6 h-6" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-sm font-bold text-[#1B231B]">
+              <h3 className="text-sm font-bold text-[#18181B]">
                 No creator videos found
               </h3>
-              <p className="text-xs text-[#717E6C] max-w-sm mx-auto">
+              <p className="text-xs text-[#8E8B85] max-w-sm mx-auto">
                 {searchQuery
                   ? "No videos match your search query. Try clearing the filter."
                   : "Launch Studio to generate your first high-converting AI UGC video ad."}
@@ -308,7 +308,7 @@ export default function CampaignsPage() {
             </div>
             <Link
               href="/studio"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1F3824] text-white text-xs font-semibold hover:bg-[#162B1B]"
+              className="btn-fastlane-black text-xs py-2 px-4 font-semibold inline-flex items-center gap-1.5"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Launch Studio</span>
@@ -322,7 +322,7 @@ export default function CampaignsPage() {
               return (
                 <div
                   key={video.id}
-                  className="bg-white border border-[#CBD5C4]/80 rounded-3xl overflow-hidden shadow-xs hover:border-[#1F3824]/60 transition-all flex flex-col justify-between group"
+                  className="fastlane-card bg-white overflow-hidden shadow-xs hover:border-[#D95D39]/60 transition-all flex flex-col justify-between group"
                 >
                   {/* Video Thumbnail & Play Overlay */}
                   <div>
@@ -352,18 +352,18 @@ export default function CampaignsPage() {
                         onClick={() => setPreviewingVideo(video)}
                         className="absolute inset-0 flex items-center justify-center group"
                       >
-                        <div className="w-12 h-12 rounded-full bg-white/90 text-[#1F3824] flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-white transition-all">
-                          <Play className="w-5 h-5 fill-[#1F3824] ml-0.5" />
+                        <div className="w-12 h-12 rounded-full bg-white/90 text-[#18181B] flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-white transition-all">
+                          <Play className="w-5 h-5 fill-[#18181B] ml-0.5" />
                         </div>
                       </button>
 
                       {/* Bottom Overlay Info */}
                       <div className="absolute bottom-3 left-3 right-3 space-y-1">
-                        <div className="inline-block px-2 py-0.5 rounded bg-[#1F3824]/90 backdrop-blur-xs text-[10px] font-bold text-white capitalize">
+                        <div className="inline-block px-2 py-0.5 rounded bg-[#D95D39] text-[10px] font-bold text-white capitalize">
                           {video.hookAngle.replace(/_/g, " ")}
                         </div>
                         <p className="text-xs font-bold text-white line-clamp-2 leading-snug drop-shadow-sm">
-                          "{video.hookText}"
+                          &ldquo;{video.hookText}&rdquo;
                         </p>
                       </div>
                     </div>
@@ -372,16 +372,16 @@ export default function CampaignsPage() {
                     <div className="p-4 space-y-3">
                       {/* Scheduled Status Badge */}
                       {video.scheduledSlot ? (
-                        <div className="p-2.5 rounded-xl bg-[#F6F7F2] border border-[#CBD5C4] flex items-center justify-between text-[11px]">
-                          <div className="flex items-center gap-1.5 text-[#1F3824] font-semibold truncate">
-                            <CalendarIcon className="w-3.5 h-3.5 shrink-0" />
+                        <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-[#E5E0D8] flex items-center justify-between text-[11px]">
+                          <div className="flex items-center gap-1.5 text-[#18181B] font-semibold truncate">
+                            <CalendarIcon className="w-3.5 h-3.5 shrink-0 text-[#D95D39]" />
                             <span className="truncate">
                               {video.scheduledSlot.accountHandle} ({video.scheduledSlot.platform.toUpperCase()})
                             </span>
                           </div>
-                          <Badge variant="emerald" size="sm">
+                          <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                             Scheduled
-                          </Badge>
+                          </span>
                         </div>
                       ) : (
                         <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-300 text-[11px] text-amber-950 font-medium flex items-center gap-1.5">
@@ -391,7 +391,7 @@ export default function CampaignsPage() {
                       )}
 
                       {/* Script Body Snippet */}
-                      <p className="text-[11px] text-[#4A544A] line-clamp-2 leading-relaxed">
+                      <p className="text-[11px] text-[#52525B] line-clamp-2 leading-relaxed">
                         {video.bodyText}
                       </p>
                     </div>
@@ -403,36 +403,36 @@ export default function CampaignsPage() {
                     <button
                       type="button"
                       onClick={() => handleOpenDropPackage(video)}
-                      className="w-full py-2.5 px-3 rounded-xl bg-[#E2E9DC] hover:bg-[#D4DFCC] border border-[#CBD5C4] text-[11px] font-bold text-[#1F3824] flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+                      className="w-full py-2.5 px-3 rounded-xl bg-[#FDF3EF] hover:bg-[#FBE8DF] border border-[#F3CEBE] text-[11px] font-bold text-[#D95D39] flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
                     >
-                      <Sparkles className="w-3.5 h-3.5 text-[#1F3824]" />
+                      <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
                       <span>Ready to Drop • Get Package</span>
                     </button>
 
                     <div className="grid grid-cols-2 gap-2">
                       <Link
                         href={`/studio?videoId=${video.id}`}
-                        className="py-2 px-3 rounded-xl bg-[#F6F7F2] hover:bg-white border border-[#CBD5C4] text-[11px] font-bold text-[#1B231B] text-center hover:border-[#1F3824] transition-colors flex items-center justify-center gap-1"
+                        className="py-2 px-3 rounded-xl bg-[#FAF8F5] hover:bg-white border border-[#E5E0D8] text-[11px] font-bold text-[#18181B] text-center hover:border-[#18181B] transition-colors flex items-center justify-center gap-1"
                       >
-                        <Sparkles className="w-3 h-3 text-[#1F3824]" />
+                        <Sparkles className="w-3 h-3 text-[#D95D39]" />
                         <span>Studio</span>
                       </Link>
 
                       <button
                         type="button"
                         onClick={() => handleOpenSchedule(video)}
-                        className="py-2 px-3 rounded-xl bg-[#1F3824] hover:bg-[#162B1B] text-white text-[11px] font-bold text-center transition-colors flex items-center justify-center gap-1"
+                        className="btn-fastlane-black text-[11px] py-2 px-3 font-bold text-center transition-colors flex items-center justify-center gap-1"
                       >
                         <CalendarIcon className="w-3 h-3" />
                         <span>Schedule</span>
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-[#717E6C] px-1 pt-1">
+                    <div className="flex items-center justify-between text-[11px] text-[#8E8B85] px-1 pt-1">
                       <button
                         type="button"
                         onClick={() => setPreviewingVideo(video)}
-                        className="hover:text-[#1B231B] hover:underline flex items-center gap-1"
+                        className="hover:text-[#18181B] hover:underline flex items-center gap-1"
                       >
                         <Play className="w-2.5 h-2.5" />
                         <span>Preview Full Ad</span>
@@ -441,7 +441,7 @@ export default function CampaignsPage() {
                       <a
                         href={video.videoUrl}
                         download={`autougc_${video.id}.mp4`}
-                        className="hover:text-[#1B231B] hover:underline flex items-center gap-1"
+                        className="hover:text-[#18181B] hover:underline flex items-center gap-1"
                       >
                         <Download className="w-2.5 h-2.5" />
                         <span>Download MP4</span>
@@ -463,7 +463,7 @@ export default function CampaignsPage() {
           title={`Creative Preview: ${previewingVideo.hookAngle.replace(/_/g, " ")}`}
         >
           <div className="space-y-4">
-            <div className="relative aspect-[9/16] max-h-[60vh] bg-black rounded-2xl overflow-hidden mx-auto border border-[#CBD5C4]">
+            <div className="relative aspect-[9/16] max-h-[60vh] bg-black rounded-2xl overflow-hidden mx-auto border border-[#E5E0D8]">
               <video
                 src={previewingVideo.videoUrl}
                 controls
@@ -473,27 +473,27 @@ export default function CampaignsPage() {
               />
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4] space-y-2 text-xs">
+            <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5E0D8] space-y-2 text-xs">
               <div>
-                <span className="font-bold text-[#1B231B]">Hook Angle: </span>
-                <span className="text-[#4A544A]">{previewingVideo.hookText}</span>
+                <span className="font-bold text-[#18181B]">Hook Angle: </span>
+                <span className="text-[#52525B]">{previewingVideo.hookText}</span>
               </div>
               <div>
-                <span className="font-bold text-[#1B231B]">Body: </span>
-                <span className="text-[#4A544A]">{previewingVideo.bodyText}</span>
+                <span className="font-bold text-[#18181B]">Body: </span>
+                <span className="text-[#52525B]">{previewingVideo.bodyText}</span>
               </div>
               <div>
-                <span className="font-bold text-[#1B231B]">Call To Action: </span>
-                <span className="text-[#1F3824] font-semibold">{previewingVideo.ctaText}</span>
+                <span className="font-bold text-[#18181B]">Call To Action: </span>
+                <span className="text-[#D95D39] font-semibold">{previewingVideo.ctaText}</span>
               </div>
             </div>
 
             <div className="flex items-center justify-between pt-2">
               <Link
                 href={`/studio?videoId=${previewingVideo.id}`}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-[#CBD5C4] text-xs font-semibold text-[#1B231B] hover:border-[#1F3824]"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-[#E5E0D8] text-xs font-semibold text-[#18181B] hover:border-[#18181B]"
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#1F3824]" />
+                <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
                 <span>Open in Studio Editor</span>
               </Link>
 
@@ -504,7 +504,7 @@ export default function CampaignsPage() {
                   setPreviewingVideo(null);
                   handleOpenSchedule(vid);
                 }}
-                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[#1F3824] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#162B1B]"
+                className="btn-fastlane-black text-xs py-2 px-5 font-bold uppercase tracking-wider inline-flex items-center gap-1.5"
               >
                 <CalendarIcon className="w-3.5 h-3.5" />
                 <span>Schedule This Video</span>
