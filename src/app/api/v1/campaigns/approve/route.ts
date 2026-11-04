@@ -145,20 +145,25 @@ function renderSuccessHtml(data: {
       box-shadow: 0 12px 36px rgba(27, 35, 27, 0.08);
       text-align: center;
     }
-    .badge {
-      display: inline-flex;
+    .confirmation-banner {
+      display: flex;
       align-items: center;
-      gap: 6px;
-      background: #F4F1EA;
-      color: #D95D39;
-      font-size: 11px;
+      justify-content: center;
+      gap: 8px;
+      background-color: #ECFDF5;
+      color: #065F46;
+      border: 1.5px solid #10B981;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 15px;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      border: 1px solid #E5E0D8;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+    }
+    .banner-check {
+      font-size: 16px;
+      font-weight: 900;
+      color: #059669;
     }
     h1 {
       font-size: 24px;
@@ -275,11 +280,12 @@ function renderSuccessHtml(data: {
 </head>
 <body>
   <div class="card">
-    <div class="badge">
-      <span>✓</span> Drop Concierge Package
+    <div class="confirmation-banner">
+      <span class="banner-check">✓</span>
+      <span class="banner-text">Approved &amp; Queued for Publish</span>
     </div>
     <h1>Ready to Drop on Socials</h1>
-    <p class="subtitle">Your 1080x1920 vertical UGC ad is generated and optimized for maximum watch time.</p>
+    <p class="subtitle">Your 1080x1920 vertical UGC ad is approved, queued for publish, and optimized for maximum watch time.</p>
 
     <div class="video-preview-wrap">
       <video src="${data.videoUrl}" controls playsinline preload="metadata"></video>

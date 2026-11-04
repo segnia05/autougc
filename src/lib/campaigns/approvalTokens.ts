@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { prisma } from "@/db/client";
 
-const APPROVAL_SECRET = process.env.APPROVAL_SECRET || "autougc_sec_approval_hmac_2026_dev_seed";
+const getApprovalSecret = () => process.env.APPROVAL_SECRET || "autougc_campaign_approval_secret_token_32chars";
 
 export interface GenerateTokenOptions {
   postId: string;
@@ -28,7 +28,7 @@ export async function generateApprovalToken({
 
   // Payload: postId:expiresTimestamp:orgId:nonce
   const payload = `${postId}:${expiresAt.getTime()}:${orgId}:${nonce}`;
-  const hmac = crypto.createHmac("sha256", APPROVAL_SECRET).update(payload).digest("hex");
+  const hmac = crypto.createHmac("sha256", getApprovalSecret()).update(payload).digest("hex");
   const tokenHash = `${Buffer.from(payload).toString("base64url")}.${hmac}`;
 
   // Persist record to Neon PostgreSQL
@@ -74,7 +74,7 @@ export async function verifyApprovalToken(tokenHash: string): Promise<Verificati
     }
 
     // Verify cryptographic signature
-    const expectedHmac = crypto.createHmac("sha256", APPROVAL_SECRET).update(payload).digest("hex");
+    const expectedHmac = crypto.createHmac("sha256", getApprovalSecret()).update(payload).digest("hex");
     if (signature !== expectedHmac) {
       return { valid: false, error: "INVALID_OR_CORRUPT_TOKEN" };
     }
