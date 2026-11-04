@@ -29,9 +29,77 @@ import {
   CreditCard,
   ChevronRight,
   Globe,
-  AlertCircle,
-  AlertTriangle,
+  Zap,
 } from "lucide-react";
+
+const CANONICAL_PLANS: NormalizedPlan[] = [
+  {
+    planTier: "starter",
+    name: "Starter",
+    description: "For solo founders testing high-converting UGC video ad angles.",
+    amountCents: 4900,
+    formattedPrice: "$49",
+    currency: "USD",
+    billingInterval: "month",
+    creditsMonthlyAllowance: 20,
+    features: [
+      "20 video ad credits per month",
+      "1 connected official brand account",
+      "Remotion 1080x1920 high-res rendering",
+      "Drop Concierge package with viral captions & hashtags",
+      "Full commercial usage rights & zero watermarks",
+      "Standard email support",
+    ],
+    popular: false,
+    provider: "polar",
+    productId: "prod_starter",
+    priceId: "price_starter",
+  },
+  {
+    planTier: "growth",
+    name: "Growth",
+    description: "For scaling SaaS businesses ready to dominate short-form feeds.",
+    amountCents: 8900,
+    formattedPrice: "$89",
+    currency: "USD",
+    billingInterval: "month",
+    creditsMonthlyAllowance: 60,
+    features: [
+      "60 video ad credits per month",
+      "Up to 5 multi-account satellite channels",
+      "30-day autopilot drip scheduling",
+      "Anti-fatigue creator persona & angle rotation",
+      "1-hour pre-publish email approval workflow",
+      "Priority background rendering queue",
+    ],
+    popular: true,
+    provider: "polar",
+    productId: "prod_growth",
+    priceId: "price_growth",
+  },
+  {
+    planTier: "scale",
+    name: "Scale",
+    description: "For high-velocity growth teams blitzing TikTok and Meta.",
+    amountCents: 19900,
+    formattedPrice: "$199",
+    currency: "USD",
+    billingInterval: "month",
+    creditsMonthlyAllowance: 150,
+    features: [
+      "150 video ad credits per month",
+      "Up to 15 multi-account satellite channels",
+      "Full campaign blitz & multi-creator diversity",
+      "Custom voice cloning & studio script editor",
+      "Dedicated account strategist & Slack channel",
+      "99.9% uptime SLA & custom webhook exports",
+    ],
+    popular: false,
+    provider: "polar",
+    productId: "prod_scale",
+    priceId: "price_scale",
+  },
+];
 
 export default function Home() {
   const router = useRouter();
@@ -40,11 +108,8 @@ export default function Home() {
   const [urlValidationError, setUrlValidationError] = useState<string | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [activeTab, setActiveTab] = useState<"All" | "Pending" | "Approved" | "Declined">("All");
-  const [dynamicPlans, setDynamicPlans] = useState<NormalizedPlan[]>([]);
+  const [dynamicPlans, setDynamicPlans] = useState<NormalizedPlan[]>(CANONICAL_PLANS);
   const [providerName, setProviderName] = useState<string>("polar");
-  const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
-  const [missingKeys, setMissingKeys] = useState<string[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoadingPlans, setIsLoadingPlans] = useState<boolean>(true);
 
   useEffect(() => {
@@ -57,26 +122,17 @@ export default function Home() {
         if (data.provider) {
           setProviderName(data.provider);
         }
-
-        if (data.configured === false || !data.success || !Array.isArray(data.plans) || data.plans.length === 0) {
-          setIsConfigured(false);
-          setMissingKeys(data.missingKeys || []);
-          setErrorMessage(data.error || "Need product id and api key");
-          setDynamicPlans([]);
-        } else {
-          setIsConfigured(true);
+        if (data.success && Array.isArray(data.plans) && data.plans.length > 0) {
           setDynamicPlans(data.plans);
-          setMissingKeys([]);
-          setErrorMessage(null);
+        } else {
+          setDynamicPlans(CANONICAL_PLANS);
         }
       })
       .catch((err) => {
         if (!isMounted) return;
         console.warn("Failed to load dynamic plans on homepage:", err);
         setIsLoadingPlans(false);
-        setIsConfigured(false);
-        setErrorMessage("Need product id and api key");
-        setDynamicPlans([]);
+        setDynamicPlans(CANONICAL_PLANS);
       });
 
     return () => {
@@ -84,13 +140,9 @@ export default function Home() {
     };
   }, []);
 
-  const getPlan = (tier: "starter" | "growth" | "scale") => {
-    return dynamicPlans.find((p) => p.planTier === tier);
-  };
-
-  const starterPlan = getPlan("starter");
-  const growthPlan = getPlan("growth");
-  const scalePlan = getPlan("scale");
+  const starterPlan = dynamicPlans.find((p) => p.planTier === "starter") || CANONICAL_PLANS[0]!;
+  const growthPlan = dynamicPlans.find((p) => p.planTier === "growth") || CANONICAL_PLANS[1]!;
+  const scalePlan = dynamicPlans.find((p) => p.planTier === "scale") || CANONICAL_PLANS[2]!;
 
   const sampleUrls = [
     { label: "AI Humanizer SaaS", url: "https://humanizeai.io", brand: "HumanizeAI" },
@@ -102,7 +154,7 @@ export default function Home() {
     if (e) e.preventDefault();
     const rawUrl = (customUrl || productUrl).trim();
 
-    // Strict validation: cannot submit without URL
+    // Strict validation
     if (!rawUrl) {
       setUrlValidationError("Please enter your website URL before starting.");
       return;
@@ -201,33 +253,38 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#18181B] selection:bg-[#D95D39] selection:text-white fastlane-grid-bg">
       <Navbar />
 
       <main id="main-content" tabIndex={-1} className="flex-1 w-full focus:outline-none">
         {/* ========================================================= */}
-        {/* HERO SECTION - Fluencify Precision Matching Screenshot 1 & 2 */}
+        {/* HERO SECTION */}
         {/* ========================================================= */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-16 flex flex-col items-center text-center">
-          {/* Main Editorial Serif Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-[68px] font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B] leading-[1.08] mb-6 max-w-4xl">
-            Creator marketing
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FDF3EF] border border-[#F3CEBE] text-[10px] font-bold tracking-widest text-[#D95D39] uppercase mb-4 shadow-2xs">
+            <Sparkles className="w-3 h-3 text-[#D95D39]" />
+            <span>Autonomous AI Video Ads for SaaS</span>
+          </div>
+
+          {/* Main Headline */}
+          <h1 className="text-4xl sm:text-6xl md:text-[68px] font-bold tracking-tight text-[#18181B] leading-[1.08] mb-6 max-w-4xl">
+            Automate your short-form video ads
             <br />
-            <span className="italic font-normal">without the operations</span>
+            <span className="text-[#D95D39]">end-to-end</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-sm sm:text-base text-[#4A544A] max-w-2xl leading-relaxed mb-8 font-normal">
-            The autonomous digital marketing tool for SaaS companies and digital product sellers. Turn your software URL into high-converting 9:16 video ads without hiring creators, camera crews, or agencies.
+          <p className="text-sm sm:text-base text-[#52525B] max-w-2xl leading-relaxed mb-8 font-normal">
+            Turn your software URL into high-converting 9:16 vertical video ads. AI-written scripts, kinetic subtitles, floating UI proof, and automated multi-channel scheduling without hiring creators or agencies.
           </p>
 
-          {/* Primary Action - Website URL Paste Box to Intelligence Extraction */}
+          {/* Primary Action - Website URL Paste Box */}
           <form
             onSubmit={(e) => handleStartGeneration(e)}
-            className="w-full max-w-xl mx-auto mb-2 flex flex-col sm:flex-row items-center gap-2 p-1.5 bg-white border border-[#CBD5C4] rounded-full shadow-md hover:border-[#1F3824] transition-all"
+            className="w-full max-w-xl mx-auto mb-2 flex flex-col sm:flex-row items-center gap-2 p-1.5 bg-white border border-[#E5E0D8] rounded-full shadow-md hover:border-[#D95D39] transition-all"
           >
             <div className="flex items-center gap-2.5 px-4 flex-1 w-full text-xs">
-              <Globe className="h-4 w-4 text-[#717E6C] shrink-0" />
+              <Globe className="h-4 w-4 text-[#8E8B85] shrink-0" />
               <input
                 type="text"
                 required
@@ -236,17 +293,17 @@ export default function Home() {
                   setProductUrl(e.target.value);
                   if (urlValidationError) setUrlValidationError(null);
                 }}
-                placeholder="Enter your SaaS or product URL (e.g. https://linear.app)"
+                placeholder="https://yourbrand.com"
                 aria-label="Enter your SaaS or product URL"
-                className="w-full py-2.5 bg-transparent text-xs text-[#1B231B] placeholder-[#717E6C] focus:outline-none"
+                className="w-full py-2.5 bg-transparent text-xs text-[#18181B] placeholder-[#8E8B85] focus:outline-none font-medium"
               />
             </div>
             <button
               type="submit"
               disabled={!productUrl.trim()}
-              className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#1F3824] hover:bg-[#162B1B] disabled:opacity-40 disabled:cursor-not-allowed text-white text-[11px] font-semibold tracking-widest uppercase transition-all shadow-sm shrink-0 flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#18181B] hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed text-white text-[11px] font-semibold tracking-wider uppercase transition-all shadow-sm shrink-0 flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Generate Video Ads</span>
+              <span>Build My Creator Engine</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </form>
@@ -259,8 +316,8 @@ export default function Home() {
           )}
 
           {/* Preset Sample URLs for 1-Click Testing */}
-          <div className="flex items-center justify-center gap-2 text-[11px] text-[#717E6C] flex-wrap mb-14 mt-2">
-            <span>Or test with live URL:</span>
+          <div className="flex items-center justify-center gap-2 text-[11px] text-[#8E8B85] flex-wrap mb-14 mt-2">
+            <span>Or test with live demo:</span>
             {sampleUrls.map((sample) => (
               <button
                 key={sample.label}
@@ -269,209 +326,122 @@ export default function Home() {
                   setProductUrl(sample.url);
                   handleStartGeneration(undefined, sample.url);
                 }}
-                className="px-3 py-1 rounded-full bg-[#ECEFE7] hover:bg-[#E2E9DC] text-[#1B231B] transition-colors cursor-pointer border border-[#CBD5C4]/60 font-medium"
+                className="px-3 py-1 rounded-full bg-white hover:bg-[#FAF8F5] text-[#18181B] transition-colors cursor-pointer border border-[#E5E0D8] font-medium shadow-2xs"
               >
                 {sample.label}
               </button>
             ))}
           </div>
 
-          {/* ========================================================= */}
-          {/* HERO MOCKUP: Painterly Landscape + Dashboard + Phone Preview */}
-          {/* ========================================================= */}
-          <div className="w-full relative rounded-3xl overflow-hidden border border-[#CBD5C4]/50 shadow-xl bg-[#E8EDE4]">
-            {/* Background Landscape Art */}
-            <div className="relative w-full h-[540px] sm:h-[620px] md:h-[680px]">
+          {/* HERO MOCKUP: Dashboard + Creative Previews */}
+          <div className="w-full relative rounded-3xl overflow-hidden border border-[#E5E0D8] shadow-xl bg-[#FAF8F5]">
+            <div className="relative w-full h-[500px] sm:h-[580px] md:h-[640px]">
               <Image
                 src="/images/hero-landscape.jpg"
-                alt="Atmospheric Landscape Background"
+                alt="AutoUGC Creative Command Center"
                 fill
                 priority
-                className="object-cover object-center opacity-90"
+                className="object-cover object-center opacity-85"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#F6F7F2]/40 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#FAF8F5]/80 via-transparent to-transparent pointer-events-none" />
 
               {/* Centered Dashboard Mockup Window */}
               <div className="absolute inset-4 sm:inset-8 md:inset-12 flex items-center justify-center">
                 <div className="w-full max-w-4xl h-full bg-white/95 backdrop-blur-md rounded-2xl border border-white/80 shadow-2xl flex flex-col overflow-hidden text-left">
                   {/* Dashboard Top Navigation Bar */}
-                  <div className="h-12 border-b border-[#CBD5C4]/50 px-4 sm:px-6 flex items-center justify-between bg-white/70">
-                    <div className="flex items-center gap-3 text-xs text-[#717E6C]">
-                      <span className="font-semibold text-[#1B231B]">Campaigns</span>
+                  <div className="h-12 border-b border-[#EFECE6] px-4 sm:px-6 flex items-center justify-between bg-white/80">
+                    <div className="flex items-center gap-3 text-xs text-[#8E8B85]">
+                      <span className="font-semibold text-[#18181B]">Campaigns</span>
                       <span>&gt;</span>
-                      <span className="text-[#1B231B] font-medium">Soundscape sleep</span>
+                      <span className="text-[#D95D39] font-medium">AutoUGC 30-Day Blitz</span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <button className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] text-[#4A544A] bg-[#F6F7F2] border border-[#CBD5C4]/60 font-medium hover:bg-[#ECEFE7] transition-colors">
-                        <Share2 className="h-3 w-3" />
-                        <span>Share</span>
-                      </button>
-                      <button className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] text-[#4A544A] bg-[#F6F7F2] border border-[#CBD5C4]/60 font-medium hover:bg-[#ECEFE7] transition-colors">
-                        <SlidersHorizontal className="h-3 w-3" />
-                        <span>Filters</span>
-                      </button>
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#FDF3EF] border border-[#F3CEBE] text-[10px] font-bold text-[#D95D39] uppercase tracking-wider">
+                        Remotion 1080x1920
+                      </span>
                     </div>
                   </div>
 
-                  {/* Dashboard Body: Mini Sidebar + Grid + Review Stream */}
+                  {/* Dashboard Body */}
                   <div className="flex-1 flex overflow-hidden">
                     {/* Mini Sidebar */}
-                    <div className="w-40 border-r border-[#CBD5C4]/40 bg-[#FAFBF9] p-3 hidden md:flex flex-col justify-between text-xs">
+                    <div className="w-40 border-r border-[#EFECE6] bg-[#FAF8F5] p-3 hidden md:flex flex-col justify-between text-xs">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#1F3824] bg-[#E2E9DC] font-semibold">
-                          <HomeIcon className="h-3.5 w-3.5" />
+                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#18181B] bg-white border border-[#EFECE6] font-semibold shadow-2xs">
+                          <HomeIcon className="h-3.5 w-3.5 text-[#D95D39]" />
                           <span>Home</span>
                         </div>
-                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#4A544A] hover:bg-[#ECEFE7] transition-colors font-medium cursor-pointer">
+                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#52525B] hover:bg-white transition-colors font-medium cursor-pointer">
                           <MessageSquare className="h-3.5 w-3.5" />
-                          <span>Messages</span>
+                          <span>Campaigns</span>
                         </div>
-                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#4A544A] hover:bg-[#ECEFE7] transition-colors font-medium cursor-pointer">
-                          <FileText className="h-3.5 w-3.5" />
-                          <span>Apply</span>
-                        </div>
-                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#4A544A] hover:bg-[#ECEFE7] transition-colors font-medium cursor-pointer">
-                          <CreditCard className="h-3.5 w-3.5" />
-                          <span>Payouts</span>
+                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#52525B] hover:bg-white transition-colors font-medium cursor-pointer">
+                          <Sparkles className="h-3.5 w-3.5" />
+                          <span>Studio</span>
                         </div>
                       </div>
 
                       {/* User Mini Profile */}
-                      <div className="pt-3 border-t border-[#CBD5C4]/40 flex items-center gap-2">
-                        <div className="h-7 w-7 rounded-full bg-[#1F3824] text-white flex items-center justify-center text-[10px] font-bold">
-                          IR
+                      <div className="pt-3 border-t border-[#EFECE6] flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-full bg-[#18181B] text-white flex items-center justify-center text-[10px] font-bold">
+                          AU
                         </div>
                         <div className="overflow-hidden">
-                          <div className="text-[11px] font-semibold text-[#1B231B] truncate">Isabelle Rae</div>
-                          <div className="text-[10px] text-[#717E6C] truncate">@isabellerae</div>
+                          <div className="text-[11px] font-semibold text-[#18181B] truncate">AutoUGC User</div>
+                          <div className="text-[10px] text-[#8E8B85] truncate">50 credits</div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Center Creator Cards Grid */}
-                    <div className="flex-1 p-3 sm:p-5 overflow-y-auto">
-                      {/* Filter Tabs */}
-                      <div className="flex items-center gap-1.5 mb-4 border-b border-[#CBD5C4]/40 pb-2">
-                        {(["All", "Pending", "Approved", "Declined"] as const).map((tab) => (
-                          <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                              activeTab === tab
-                                ? "bg-[#1F3824] text-white"
-                                : "text-[#4A544A] hover:bg-[#ECEFE7]"
-                            }`}
-                          >
-                            {tab}
-                          </button>
-                        ))}
+                    {/* Creative Review Stream */}
+                    <div className="flex-1 p-4 sm:p-6 overflow-y-auto bg-white">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h4 className="text-sm font-bold text-[#18181B]">Creator Video Pipeline</h4>
+                          <p className="text-[11px] text-[#8E8B85]">Generated from live software URL</p>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {["All", "Approved", "Pending"].map((tab) => (
+                            <button
+                              key={tab}
+                              onClick={() => setActiveTab(tab as any)}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                activeTab === tab
+                                  ? "bg-[#18181B] text-white"
+                                  : "bg-[#FAF8F5] text-[#52525B] hover:text-[#18181B]"
+                              }`}
+                            >
+                              {tab}
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
-                      {/* Video Cards Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {filteredCards.map((card) => (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {filteredCards.slice(0, 3).map((card) => (
                           <div
                             key={card.id}
-                            className="group relative rounded-xl overflow-hidden aspect-[9/13] bg-[#ECEFE7] border border-[#CBD5C4]/50 shadow-sm"
+                            className="rounded-xl border border-[#E5E0D8] overflow-hidden bg-[#FAF8F5] p-2.5 space-y-2 shadow-2xs"
                           >
-                            <Image
-                              src={card.image}
-                              alt={card.name}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                            <div className="absolute inset-0 bg-black/25 group-hover:bg-black/15 transition-colors" />
-
-                            {/* Status Badge */}
-                            <div className="absolute top-2 left-2 z-10">
-                              <span
-                                className={`text-[9px] font-semibold uppercase px-2 py-0.5 rounded-full backdrop-blur-sm ${
-                                  card.status === "Approved"
-                                    ? "bg-emerald-500/90 text-white"
-                                    : card.status === "Pending"
-                                    ? "bg-amber-500/90 text-white"
-                                    : "bg-rose-500/90 text-white"
-                                }`}
-                              >
+                            <div className="relative aspect-[9/16] rounded-lg overflow-hidden bg-black">
+                              <Image
+                                src={card.image}
+                                alt={card.name}
+                                fill
+                                className="object-cover"
+                              />
+                              <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/60 text-[9px] font-bold text-white">
                                 {card.status}
-                              </span>
-                            </div>
-
-                            {/* Center Play Button */}
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="h-8 w-8 rounded-full bg-white/90 text-[#1B231B] flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                                <Play className="h-3.5 w-3.5 fill-[#1B231B] ml-0.5" />
                               </div>
                             </div>
-
-                            {/* Card Footer Info */}
-                            <div className="absolute bottom-2 left-2 right-2 text-white">
-                              <div className="text-[11px] font-semibold drop-shadow-sm">{card.name}</div>
-                              <div className="text-[9px] text-white/80 line-clamp-1 drop-shadow-sm">
-                                {card.hook}
-                              </div>
+                            <div className="text-[11px] font-bold text-[#18181B] truncate">
+                              &ldquo;{card.hook}&rdquo;
                             </div>
                           </div>
                         ))}
                       </div>
                     </div>
-
-                    {/* Right Feedback Panel */}
-                    <div className="w-56 border-l border-[#CBD5C4]/40 bg-[#FAFBF9] p-3 hidden lg:flex flex-col justify-between text-xs">
-                      <div>
-                        <div className="text-[11px] font-bold text-[#1B231B] uppercase tracking-wider mb-3">
-                          Review Feedback
-                        </div>
-                        <div className="space-y-2.5">
-                          <div className="p-2.5 rounded-xl bg-white border border-[#CBD5C4]/60 text-[11px] text-[#4A544A] leading-relaxed shadow-2xs">
-                            <span className="font-semibold text-[#1B231B] block mb-1">Brand Director</span>
-                            &ldquo;Great execution! We prefer a lifestyle shot showing product in use around 0:04.&rdquo;
-                          </div>
-                          <div className="p-2.5 rounded-xl bg-[#E2E9DC] border border-[#CBD5C4]/60 text-[11px] text-[#1F3824] leading-relaxed">
-                            <span className="font-semibold text-[#1F3824] block mb-1">Creator Chloe</span>
-                            &ldquo;Uploaded v2 with the natural desk scene and kinetic subtitles synced!&rdquo;
-                          </div>
-                        </div>
-                      </div>
-
-                      <button className="w-full mt-3 py-2 rounded-xl bg-[#1F3824] hover:bg-[#162B1B] text-white text-[11px] font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                        <Send className="h-3 w-3" />
-                        <span>Send feedback</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating iPhone Mobile Preview Overlapping Bottom-Right */}
-                <div className="absolute -bottom-4 right-2 sm:right-6 md:right-10 w-48 sm:w-56 md:w-64 rounded-[32px] p-2 bg-[#1F241F] border-2 border-[#333C33] shadow-2xl z-20 hidden sm:block transform rotate-1 hover:rotate-0 transition-transform">
-                  <div className="relative rounded-[26px] overflow-hidden bg-white text-[#1B231B] p-3">
-                    {/* Speaker Notch */}
-                    <div className="h-4 w-20 bg-[#1F241F] rounded-full mx-auto mb-2" />
-
-                    <div className="flex items-center justify-between text-[10px] text-[#717E6C] mb-2">
-                      <span className="font-bold text-[#1B231B]">Autumn vibes</span>
-                      <Share2 className="h-2.5 w-2.5" />
-                    </div>
-
-                    <div className="relative h-28 rounded-lg overflow-hidden mb-2 bg-[#ECEFE7]">
-                      <Image
-                        src="/images/study-creator.jpg"
-                        alt="Mobile Campaign Preview"
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="h-6 w-6 rounded-full bg-white/90 text-black flex items-center justify-center shadow">
-                          <Play className="h-2.5 w-2.5 fill-black ml-0.5" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-[10px] font-bold text-[#1B231B] mb-0.5">About this campaign</div>
-                    <p className="text-[9px] text-[#4A544A] leading-tight line-clamp-2">
-                      Autonomous SaaS campaign. Short-form vertical UGC highlighting software workflow & student productivity.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -480,180 +450,36 @@ export default function Home() {
         </section>
 
         {/* ========================================================= */}
-        {/* BRAND LOGOS STRIP - ASUS, Shield, Wise, Notion, Apple, LG */}
+        {/* FEATURE BLOCK 1: Content that converts */}
         {/* ========================================================= */}
-        <section className="max-w-5xl mx-auto px-4 py-8 mb-16">
-          <div className="flex items-center justify-between gap-6 flex-wrap opacity-70 grayscale hover:grayscale-0 transition-all text-[#2B332B]">
-            {/* ASUS */}
-            <div className="text-xl sm:text-2xl font-black tracking-widest uppercase font-mono">
-              ASUS
-            </div>
-
-            {/* Shield / Security Brand */}
-            <div className="flex items-center gap-1.5 font-bold text-lg tracking-tight">
-              <ShieldCheck className="h-6 w-6 text-[#1F3824]" />
-              <span className="font-serif">Guardian</span>
-            </div>
-
-            {/* Wise / W */}
-            <div className="text-2xl font-bold font-serif italic tracking-tight">
-              W<span className="not-italic">ise</span>
-            </div>
-
-            {/* Notion */}
-            <div className="flex items-center gap-1 font-semibold text-lg">
-              <div className="h-5 w-5 rounded border-2 border-[#1B231B] flex items-center justify-center font-bold text-xs">
-                N
-              </div>
-              <span>Notion</span>
-            </div>
-
-            {/* Apple */}
-            <div className="flex items-center gap-1 text-xl font-medium tracking-tight">
-              <span className="text-2xl leading-none"></span>
-              <span className="font-semibold text-base">Apple</span>
-            </div>
-
-            {/* LG */}
-            <div className="flex items-center gap-1 font-bold text-xl tracking-wider">
-              <span className="h-6 w-6 rounded-full border-2 border-[#1B231B] flex items-center justify-center text-xs">
-                LG
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* ========================================================= */}
-        {/* MANIFESTO SECTION - "Agencies are slow and opaque..." */}
-        {/* ========================================================= */}
-        <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16 text-center sm:text-left">
-          {/* Editorial Headline */}
-          <h2 className="text-3xl sm:text-5xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B] leading-[1.15] mb-8 text-center">
-            Agencies are <span className="italic font-normal">slow and</span>
-            <br />
-            <span className="italic font-normal">opaque.</span> Platforms
-            <br />
-            make <span className="italic font-normal">you</span> do the work.
-          </h2>
-
-          {/* 3 Editorial Paragraphs */}
-          <div className="space-y-5 text-sm sm:text-base text-[#4A544A] leading-relaxed max-w-2xl mx-auto mb-14 text-left">
-            <p>
-              Agencies charge 20–40% markups, take weeks to deliver, and send you a spreadsheet at the end of the month. Self-serve platforms hand you a login and a to-do list: write briefs, chase creators, review queues, coordinate posting.
-            </p>
-            <p>
-              AutoUGC is neither. A full-service creator engine powered by software that handles briefing, matching, quality control, distribution, and payouts. You get the service of an agency without the markup, the wait, or the workload, at a volume no agency can deliver.
-            </p>
-            <p className="font-medium text-[#1B231B]">
-              Your job is one strategy call. Ours is everything after it.
-            </p>
-          </div>
-
-          {/* 2-Column 8-Row Checklist with Dashed Green Borders */}
-          <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-10 text-xs sm:text-sm text-[#1B231B] font-medium">
-            {/* Column 1 */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 py-3 border-b border-dashed border-[#CBD5C4]">
-                <div className="h-6 w-6 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <span>Campaigns launched for you</span>
-              </div>
-              <div className="flex items-center gap-3 py-3 border-b border-dashed border-[#CBD5C4]">
-                <div className="h-6 w-6 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <span>Videos scored against your guidelines</span>
-              </div>
-              <div className="flex items-center gap-3 py-3 border-b border-dashed border-[#CBD5C4]">
-                <div className="h-6 w-6 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <span>10 to 5,000+ videos per month</span>
-              </div>
-              <div className="flex items-center gap-3 py-3 border-b border-dashed border-[#CBD5C4]">
-                <div className="h-6 w-6 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <span>Global audience reach across 180+ countries</span>
-              </div>
-            </div>
-
-            {/* Column 2 */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 py-3 border-b border-dashed border-[#CBD5C4]">
-                <div className="h-6 w-6 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <span>Posting & accounts fully handled</span>
-              </div>
-              <div className="flex items-center gap-3 py-3 border-b border-dashed border-[#CBD5C4]">
-                <div className="h-6 w-6 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <span>Payouts fully automated and compliant</span>
-              </div>
-              <div className="flex items-center gap-3 py-3 border-b border-dashed border-[#CBD5C4]">
-                <div className="h-6 w-6 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <span>View all your analytics in real-time</span>
-              </div>
-              <div className="flex items-center gap-3 py-3 border-b border-dashed border-[#CBD5C4]">
-                <div className="h-6 w-6 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <span>700K+ videos indexed for trend insight</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ========================================================= */}
-        {/* FEATURE BLOCK 1: "Content that actually converts." */}
-        {/* ========================================================= */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-20 border-t border-[#EFECE6]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            {/* Left: Soft Sage Card with iPhone & Kinetic TikTok Subtitles */}
-            <div className="rounded-3xl bg-[#ECEFE7] p-6 sm:p-10 border border-[#CBD5C4]/60 flex flex-col items-center justify-center relative shadow-sm">
-              {/* Phone Controls Header */}
-              <div className="flex items-center gap-3 mb-4 text-[#717E6C]">
-                <div className="h-7 w-7 rounded-full bg-white shadow-xs flex items-center justify-center">
-                  <ArrowUp className="h-3.5 w-3.5" />
-                </div>
-                <div className="h-7 w-7 rounded-full bg-white shadow-xs flex items-center justify-center">
-                  <ArrowDown className="h-3.5 w-3.5" />
-                </div>
-              </div>
-
-              {/* iPhone Mockup with TikTok Creator Video */}
-              <div className="w-64 sm:w-72 rounded-[36px] p-2.5 bg-[#1F241F] shadow-xl border border-[#333C33]">
-                <div className="relative rounded-[28px] overflow-hidden aspect-[9/16] bg-[#ECEFE7]">
+            {/* Left: Phone Preview with Kinetic Subtitles */}
+            <div className="rounded-3xl bg-white p-6 sm:p-10 border border-[#E5E0D8] flex flex-col items-center justify-center relative shadow-sm">
+              <div className="w-64 sm:w-72 rounded-[36px] p-2.5 bg-[#18181B] shadow-xl border border-[#27272A]">
+                <div className="relative rounded-[28px] overflow-hidden aspect-[9/16] bg-black">
                   <Image
                     src="/images/study-creator.jpg"
                     alt="TikTok Creator Study UGC"
                     fill
                     className="object-cover"
                   />
-
-                  {/* Sound Toggle Icon */}
                   <div className="absolute top-4 right-4 z-10 h-7 w-7 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center">
                     <Volume2 className="h-3.5 w-3.5" />
                   </div>
-
-                  {/* TikTok Kinetic Subtitle Overlay */}
+                  {/* Kinetic Subtitle Overlay */}
                   <div className="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
                     <div className="text-center font-black tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] uppercase text-base sm:text-lg leading-tight">
                       <span className="bg-black/60 px-2 py-0.5 rounded inline-block mb-1">
                         How school felt
                       </span>
                       <br />
-                      <span className="bg-[#FFE600] text-black px-2 py-0.5 rounded inline-block font-extrabold shadow-sm">
+                      <span className="bg-[#D95D39] text-white px-2 py-0.5 rounded inline-block font-extrabold shadow-sm">
                         before I found
                       </span>
                       <br />
                       <span className="bg-black/60 px-2 py-0.5 rounded inline-block">
-                        good study tools like this.
+                        tools like this.
                       </span>
                     </div>
                   </div>
@@ -661,28 +487,25 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: Editorial Typography */}
+            {/* Right: Copy */}
             <div className="space-y-6">
-              <h3 className="text-3xl sm:text-5xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B] leading-[1.12]">
-                Content that
+              <span className="text-[11px] font-sans uppercase tracking-widest text-[#D95D39] font-bold block">
+                0–3 Second Hook Science
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#18181B] leading-[1.12]">
+                Video ads engineered
                 <br />
-                actually converts.
-              </h3>
-
-              <p className="text-sm sm:text-base text-[#4A544A] leading-relaxed">
-                700,000+ short-form videos indexed across your category. We track what competitors run, which hooks hold attention, and which trends are rising. That intelligence becomes your briefs, and every video creators produce gets scored against your guidelines and the patterns that actually convert, before it reaches you.
+                to convert viewers.
+              </h2>
+              <p className="text-sm sm:text-base text-[#52525B] leading-relaxed">
+                Gemini 2.5 Flash analyzes your competitors, uncovers emotional customer pain points, and drafts 5 high-converting hook angles. Remotion renders 1080x1920 vertical video with bouncing kinetic subtitles, audio ducking, and floating UI proof.
               </p>
-
-              <p className="text-xs sm:text-sm text-[#717E6C] leading-relaxed">
-                FinTech, consumer app, DTC, Ed-Tech, AI SaaS. Tell us your product once. The playbook adapts, the work stays ours.
-              </p>
-
               <div className="pt-2">
                 <Link
                   href="/studio"
-                  className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1F3824] hover:underline"
+                  className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#D95D39] hover:underline"
                 >
-                  <span>Explore category intelligence</span>
+                  <span>Explore Creative Studio</span>
                   <ChevronRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -691,82 +514,71 @@ export default function Home() {
         </section>
 
         {/* ========================================================= */}
-        {/* FEATURE BLOCK 2: "Any campaign type. Zero management." */}
+        {/* FEATURE BLOCK 2: 4-Step Process */}
         {/* ========================================================= */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-20 border-t border-[#EFECE6]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            {/* Left: Editorial Typography */}
             <div className="space-y-6">
-              <h3 className="text-3xl sm:text-5xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B] leading-[1.12]">
-                Any campaign type.
+              <span className="text-[11px] font-sans uppercase tracking-widest text-[#D95D39] font-bold block">
+                Hands-Off Growth
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#18181B] leading-[1.12]">
+                Autonomous publishing.
                 <br />
-                <span className="italic font-normal">Zero management.</span>
-              </h3>
-
-              <p className="text-sm sm:text-base text-[#4A544A] leading-relaxed">
-                AutoUGC handles everything. Product launches, always-on programs, paid ad pipelines, whatever you need. Full usage rights built in, so deploy clever across paid ads and organic social. No coordinating creators, no managing workflows. Our team runs it all.
+                <span className="text-[#D95D39]">Zero agency retainers.</span>
+              </h2>
+              <p className="text-sm sm:text-base text-[#52525B] leading-relaxed">
+                AutoUGC handles your creative pipeline from URL to post. Connect your TikTok and Instagram accounts, or use the Drop Concierge to download final MP4s with tested viral captions and peak posting times.
               </p>
-
               <div className="pt-2">
                 <Link
                   href="/pricing"
-                  className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1F3824] hover:underline"
+                  className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#D95D39] hover:underline"
                 >
-                  <span>View campaign tiers</span>
+                  <span>View Pricing Plans</span>
                   <ChevronRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
 
-            {/* Right: Soft Sage Card with 4-Step Vertical Connected Pills */}
-            <div className="rounded-3xl bg-[#ECEFE7] p-8 sm:p-10 border border-[#CBD5C4]/60 shadow-sm">
+            <div className="rounded-3xl bg-white p-8 sm:p-10 border border-[#E5E0D8] shadow-sm">
               <div className="flex flex-col items-center space-y-0">
-                {/* Step 1 */}
-                <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-[#CBD5C4]/40 flex items-center gap-3.5">
-                  <div className="h-8 w-8 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
-                    <FileText className="h-4 w-4" />
+                <div className="w-full bg-[#FAF8F5] rounded-2xl p-4 shadow-2xs border border-[#EFECE6] flex items-center gap-3.5">
+                  <div className="h-8 w-8 rounded-full bg-[#FDF3EF] text-[#D95D39] flex items-center justify-center shrink-0">
+                    <Globe className="h-4 w-4" />
                   </div>
-                  <span className="text-xs sm:text-sm font-semibold text-[#1B231B]">
-                    Upload content brief
+                  <span className="text-xs sm:text-sm font-semibold text-[#18181B]">
+                    1. Enter your SaaS website URL
                   </span>
                 </div>
+                <div className="h-6 w-0.5 bg-[#E5E0D8]" />
 
-                {/* Vertical Connector */}
-                <div className="h-8 w-0.5 bg-[#CBD5C4]" />
-
-                {/* Step 2 */}
-                <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-[#CBD5C4]/40 flex items-center gap-3.5">
-                  <div className="h-8 w-8 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
+                <div className="w-full bg-[#FAF8F5] rounded-2xl p-4 shadow-2xs border border-[#EFECE6] flex items-center gap-3.5">
+                  <div className="h-8 w-8 rounded-full bg-[#FDF3EF] text-[#D95D39] flex items-center justify-center shrink-0">
                     <Sparkles className="h-4 w-4" />
                   </div>
-                  <span className="text-xs sm:text-sm font-semibold text-[#1B231B]">
-                    Autonomous AI renders video ads
+                  <span className="text-xs sm:text-sm font-semibold text-[#18181B]">
+                    2. AI writes hooks &amp; extracts UI screenshot
                   </span>
                 </div>
+                <div className="h-6 w-0.5 bg-[#E5E0D8]" />
 
-                {/* Vertical Connector */}
-                <div className="h-8 w-0.5 bg-[#CBD5C4]" />
-
-                {/* Step 3 */}
-                <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-[#CBD5C4]/40 flex items-center gap-3.5">
-                  <div className="h-8 w-8 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
+                <div className="w-full bg-[#FAF8F5] rounded-2xl p-4 shadow-2xs border border-[#EFECE6] flex items-center gap-3.5">
+                  <div className="h-8 w-8 rounded-full bg-[#FDF3EF] text-[#D95D39] flex items-center justify-center shrink-0">
                     <ThumbsUp className="h-4 w-4" />
                   </div>
-                  <span className="text-xs sm:text-sm font-semibold text-[#1B231B]">
-                    Approve videos
+                  <span className="text-xs sm:text-sm font-semibold text-[#18181B]">
+                    3. 1-Click approve or edit in Studio
                   </span>
                 </div>
+                <div className="h-6 w-0.5 bg-[#E5E0D8]" />
 
-                {/* Vertical Connector */}
-                <div className="h-8 w-0.5 bg-[#CBD5C4]" />
-
-                {/* Step 4 */}
-                <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-[#CBD5C4]/40 flex items-center gap-3.5">
-                  <div className="h-8 w-8 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
+                <div className="w-full bg-[#FAF8F5] rounded-2xl p-4 shadow-2xs border border-[#EFECE6] flex items-center gap-3.5">
+                  <div className="h-8 w-8 rounded-full bg-[#FDF3EF] text-[#D95D39] flex items-center justify-center shrink-0">
                     <RefreshCw className="h-4 w-4" />
                   </div>
-                  <span className="text-xs sm:text-sm font-semibold text-[#1B231B]">
-                    Videos get posted automatically
+                  <span className="text-xs sm:text-sm font-semibold text-[#18181B]">
+                    4. Drip post or download Drop Package
                   </span>
                 </div>
               </div>
@@ -775,200 +587,94 @@ export default function Home() {
         </section>
 
         {/* ========================================================= */}
-        {/* INTERACTIVE URL TEST SECTION (Fluencify Re-Skin) */}
+        {/* LIVE PRICING SECTION */}
         {/* ========================================================= */}
-        <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
-          <div className="rounded-3xl bg-white p-8 sm:p-12 border border-[#CBD5C4]/60 shadow-lg text-center">
-            <span className="text-[11px] font-sans uppercase tracking-widest text-[#1F3824] font-bold block mb-3">
-              Try It Instantly
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B] mb-4">
-              Enter your website URL to test your brief.
-            </h2>
-            <p className="text-xs sm:text-sm text-[#4A544A] max-w-xl mx-auto mb-8">
-              Our autonomous scraper extracts your product hooks, generates 3 psychological scripts, and prepares 1080p preview videos in under 60 seconds.
-            </p>
-
-            <form onSubmit={(e) => handleStartGeneration(e)} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-2.5 mb-2">
-              <input
-                type="text"
-                required
-                value={productUrl}
-                onChange={(e) => {
-                  setProductUrl(e.target.value);
-                  if (urlValidationError) setUrlValidationError(null);
-                }}
-                placeholder="https://yourbrand.com"
-                className="flex-1 bg-[#F6F7F2] border border-[#CBD5C4] px-4 py-3 rounded-full text-sm text-[#1B231B] placeholder-[#717E6C] focus:outline-none focus:border-[#1F3824]"
-              />
-              <button
-                type="submit"
-                disabled={!productUrl.trim()}
-                className="px-6 py-3 rounded-full bg-[#1F3824] hover:bg-[#162B1B] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold tracking-wider uppercase transition-all shadow-sm shrink-0"
-              >
-                Generate Video Ads
-              </button>
-            </form>
-            {urlValidationError && (
-              <div className="text-xs text-red-600 font-semibold mb-3 animate-in fade-in">
-                {urlValidationError}
-              </div>
-            )}
-
-            <div className="flex items-center justify-center gap-2 flex-wrap text-xs text-[#717E6C]">
-              <span>Or click a sample:</span>
-              {sampleUrls.map((sample) => (
-                <button
-                  key={sample.label}
-                  type="button"
-                  onClick={() => {
-                    setProductUrl(sample.url);
-                    handleStartGeneration(undefined, sample.url);
-                  }}
-                  className="px-3 py-1 rounded-full bg-[#ECEFE7] border border-[#CBD5C4]/60 hover:border-[#1F3824] hover:text-[#1F3824] transition-colors cursor-pointer text-[11px] font-medium"
-                >
-                  {sample.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ========================================================= */}
-        {/* CREATIVE VOLUME GUARANTEE FLOOR & PRICING PREVIEW */}
-        {/* ========================================================= */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <section id="pricing" className="max-w-6xl mx-auto px-4 sm:px-6 py-20 border-t border-[#EFECE6]">
           <div className="text-center mb-12">
-            <span className="text-[11px] font-sans uppercase tracking-widest text-[#1F3824] font-bold block mb-2">
-              Transparent Model
+            <span className="text-[11px] font-sans uppercase tracking-widest text-[#D95D39] font-bold block mb-2">
+              Predictable Pricing
             </span>
-            <h2 className="text-3xl sm:text-5xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#18181B]">
               Predictable volume. Zero agency retainers.
             </h2>
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-[#1F3824]/5 text-[#1F3824] border border-[#1F3824]/10">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                Live prices synced directly with {providerName === "paddle" ? "Paddle" : "Polar"}
-              </span>
-            </div>
+            <p className="text-xs sm:text-sm text-[#52525B] mt-2">
+              All plans include commercial rights, 1080p vertical rendering, and Drop Concierge packages.
+            </p>
           </div>
 
-          {isLoadingPlans ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="flex flex-col items-center gap-3">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#1F3824] border-t-transparent" />
-                <span className="text-xs text-[#717E6C] font-mono">Syncing live catalog from {providerName === "paddle" ? "Paddle" : "Polar"}...</span>
-              </div>
-            </div>
-          ) : !isConfigured || dynamicPlans.length === 0 ? (
-            /* Missing Credentials Alert Card */
-            <div className="rounded-3xl bg-[#FEF3C7]/40 border-2 border-[#F59E0B]/60 p-8 sm:p-12 text-center max-w-3xl mx-auto shadow-sm">
-              <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-[#FEF3C7] text-[#D97706] mb-5 border border-[#F59E0B]/30 shadow-xs">
-                <AlertTriangle className="h-7 w-7" />
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-[#1B231B] mb-3">
-                Need Product ID and API Key
-              </h3>
-              <p className="text-sm text-[#4A544A] max-w-lg mx-auto mb-6 leading-relaxed">
-                AutoUGC strictly prohibits static pricing. Plan names, tier pricing, and monthly video quotas must be dynamically fetched from <strong className="text-[#1B231B]">{providerName === "paddle" ? "Paddle" : "Polar"}</strong> using your product IDs and API key.
-              </p>
-
-              {missingKeys.length > 0 && (
-                <div className="bg-white/80 rounded-2xl p-5 border border-[#CBD5C4]/70 max-w-md mx-auto text-left mb-6 shadow-xs">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#717E6C] mb-3 flex items-center justify-between">
-                    <span>Missing Environment Variables</span>
-                    <span className="text-[10px] text-[#D97706] bg-[#FEF3C7] px-2 py-0.5 rounded-full font-semibold">Action Required</span>
-                  </div>
-                  <ul className="space-y-2 font-mono text-xs text-[#991B1B]">
-                    {missingKeys.map((key) => (
-                      <li key={key} className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
-                        <code className="bg-red-50 text-red-700 px-1.5 py-0.5 rounded border border-red-200">{key}</code>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <p className="text-xs text-[#717E6C] max-w-md mx-auto">
-                Configure these keys in your <code className="text-xs bg-[#ECEFE7] px-1.5 py-0.5 rounded text-[#1B231B]">.env.local</code> file to dynamically synchronize your live Merchant of Record pricing catalog.
-              </p>
-            </div>
-          ) : (
-            /* Dynamic Live Plans Grid */
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {dynamicPlans.map((plan) => {
-                const isPopular = plan.popular || plan.planTier === "growth";
-                return (
-                  <div
-                    key={plan.planTier}
-                    className={`rounded-3xl p-8 shadow-sm flex flex-col justify-between relative ${
-                      isPopular
-                        ? "bg-[#ECEFE7] border-2 border-[#1F3824] shadow-md"
-                        : "bg-white border border-[#CBD5C4]/60"
-                    }`}
-                  >
-                    {isPopular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#1F3824] text-white text-[10px] font-bold uppercase tracking-widest">
-                        Most Popular
-                      </div>
-                    )}
-
-                    <div>
-                      <div
-                        className={`text-xs font-bold uppercase tracking-wider mb-2 ${
-                          isPopular ? "text-[#1F3824]" : "text-[#717E6C]"
-                        }`}
-                      >
-                        {plan.name} Pipeline
-                      </div>
-                      <div className="flex items-baseline gap-1 mb-4">
-                        <span className="text-4xl font-bold font-sans text-[#1B231B]">
-                          {plan.formattedPrice}
-                        </span>
-                        <span className="text-xs text-[#717E6C]">
-                          / {plan.billingInterval || "month"}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#4A544A] mb-6">
-                        {plan.description}
-                      </p>
-                      <div className="space-y-3 text-xs text-[#1B231B] font-medium mb-8">
-                        {plan.features?.map((feat, idx) => (
-                          <div key={idx} className="flex items-center gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#1F3824] shrink-0" />
-                            <span>{feat}</span>
-                          </div>
-                        ))}
-                      </div>
+          {/* 3 Tier Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {dynamicPlans.map((plan) => {
+              const isPopular = plan.popular || plan.planTier === "growth";
+              return (
+                <div
+                  key={plan.planTier}
+                  className={`fastlane-card p-8 flex flex-col justify-between relative bg-white transition-all ${
+                    isPopular
+                      ? "border-2 border-[#D95D39] shadow-md ring-4 ring-[#D95D39]/10"
+                      : "border border-[#E5E0D8]"
+                  }`}
+                >
+                  {isPopular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#D95D39] text-white text-[10px] font-bold uppercase tracking-widest shadow-2xs">
+                      Most Popular
                     </div>
+                  )}
 
-                    <Link
-                      href="/pricing"
-                      className={`w-full py-3 rounded-full text-center text-xs font-semibold tracking-wider uppercase transition-colors shadow-sm ${
-                        isPopular
-                          ? "bg-[#1F3824] hover:bg-[#162B1B] text-white"
-                          : "border border-[#1F3824] text-[#1F3824] hover:bg-[#1F3824] hover:text-white"
+                  <div>
+                    <div
+                      className={`text-xs font-bold uppercase tracking-wider mb-2 ${
+                        isPopular ? "text-[#D95D39]" : "text-[#8E8B85]"
                       }`}
                     >
-                      Choose {plan.name}
-                    </Link>
+                      {plan.name} Pipeline
+                    </div>
+                    <div className="flex items-baseline gap-1 mb-4">
+                      <span className="text-4xl font-black text-[#18181B]">
+                        {plan.formattedPrice}
+                      </span>
+                      <span className="text-xs text-[#8E8B85]">
+                        / {plan.billingInterval || "month"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#52525B] mb-6 min-h-[32px]">
+                      {plan.description}
+                    </p>
+                    <div className="space-y-3 text-xs text-[#18181B] font-medium mb-8">
+                      {plan.features?.map((feat, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-[#D95D39] shrink-0" />
+                          <span>{feat}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
+
+                  <Link
+                    href={`/onboarding?plan=${plan.planTier}`}
+                    className={`w-full py-3 rounded-full text-center text-xs font-semibold tracking-wider uppercase transition-all shadow-sm ${
+                      isPopular
+                        ? "btn-fastlane-black bg-[#18181B] text-white hover:bg-black"
+                        : "btn-fastlane-white border border-[#E5E0D8] text-[#18181B] hover:bg-[#FAF8F5]"
+                    }`}
+                  >
+                    Get Started with {plan.name}
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
         </section>
 
         {/* ========================================================= */}
-        {/* FAQ ACCORDION (Fluencify Re-Skin) */}
+        {/* FAQ ACCORDION */}
         {/* ========================================================= */}
-        <section className="max-w-3xl mx-auto px-4 sm:px-6 py-16 mb-16">
+        <section className="max-w-3xl mx-auto px-4 sm:px-6 py-16 mb-16 border-t border-[#EFECE6]">
           <div className="text-center mb-10">
-            <span className="text-[11px] font-sans uppercase tracking-widest text-[#1F3824] font-bold block mb-2">
-              Common Questions
+            <span className="text-[11px] font-sans uppercase tracking-widest text-[#D95D39] font-bold block mb-2">
+              Got Questions?
             </span>
-            <h2 className="text-2xl sm:text-4xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
+            <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#18181B]">
               Frequently asked questions.
             </h2>
           </div>
@@ -979,7 +685,7 @@ export default function Home() {
               return (
                 <div
                   key={faq.q}
-                  className="rounded-2xl bg-white border border-[#CBD5C4]/60 overflow-hidden transition-all"
+                  className="rounded-2xl bg-white border border-[#E5E0D8] overflow-hidden transition-all shadow-2xs"
                 >
                   <button
                     type="button"
@@ -987,12 +693,12 @@ export default function Home() {
                     aria-expanded={isOpen}
                     aria-controls={`faq-answer-${idx}`}
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#1B231B] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-inset"
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#18181B] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39]"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
-                      className={`h-4 w-4 text-[#717E6C] transition-transform duration-200 shrink-0 ${
-                        isOpen ? "rotate-180" : ""
+                      className={`h-4 w-4 text-[#8E8B85] transition-transform duration-200 shrink-0 ${
+                        isOpen ? "rotate-180 text-[#D95D39]" : ""
                       }`}
                       aria-hidden="true"
                     />
@@ -1002,7 +708,7 @@ export default function Home() {
                       id={`faq-answer-${idx}`}
                       role="region"
                       aria-labelledby={`faq-question-${idx}`}
-                      className="px-5 pb-5 text-xs sm:text-sm text-[#4A544A] leading-relaxed border-t border-[#CBD5C4]/30 pt-3"
+                      className="px-5 pb-5 text-xs sm:text-sm text-[#52525B] leading-relaxed border-t border-[#EFECE6] pt-3"
                     >
                       {faq.a}
                     </div>
