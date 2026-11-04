@@ -95,15 +95,10 @@ export default function DropConciergeModal({
 
   // "Mark as Published" button: Updates DB status & logs into /analytics
   const handleMarkAsPosted = async () => {
-    if (!dropData.postId) return;
+    const targetPostId = dropData.postId || dropData.videoId;
+    if (!targetPostId) return;
     setIsMarkingPublished(true);
     try {
-      const targetPostId = dropData.postId || dropData.videoId;
-      if (!targetPostId) {
-        setIsMarkingPublished(false);
-        return;
-      }
-
       const res = await fetch("/api/v1/campaigns/approve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -364,7 +359,7 @@ export default function DropConciergeModal({
                   <BarChart3 className="w-3.5 h-3.5 text-emerald-600" />
                   <span>View in Analytics</span>
                 </Link>
-              ) : dropData.postId ? (
+              ) : (dropData.postId || dropData.videoId) ? (
                 <button
                   type="button"
                   disabled={isMarkingPublished}

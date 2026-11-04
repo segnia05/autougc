@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
               createdAt: v.createdAt.toISOString(),
               scheduledSlot: v.scheduledPosts[0]
                 ? {
+                    id: v.scheduledPosts[0].id,
                     scheduledFor: v.scheduledPosts[0].scheduledFor.toISOString(),
                     localScheduledTime: v.scheduledPosts[0].localScheduledTime,
                     accountHandle: v.scheduledPosts[0].socialAccount.accountHandle,
@@ -214,6 +215,7 @@ export async function GET(request: NextRequest) {
           createdAt: v.createdAt.toISOString(),
           scheduledSlot: v.scheduledPosts[0]
             ? {
+                id: v.scheduledPosts[0].id,
                 scheduledFor: v.scheduledPosts[0].scheduledFor.toISOString(),
                 localScheduledTime: v.scheduledPosts[0].localScheduledTime,
                 accountHandle: v.scheduledPosts[0].socialAccount.accountHandle,

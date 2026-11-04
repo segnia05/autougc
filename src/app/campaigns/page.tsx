@@ -46,6 +46,7 @@ interface CreatorVideo {
   aspectRatio: string;
   createdAt: string;
   scheduledSlot?: {
+    id?: string;
     scheduledFor: string;
     localScheduledTime?: string | null;
     accountHandle: string;
@@ -75,6 +76,7 @@ export default function CampaignsPage() {
   const handleOpenDropPackage = (video: CreatorVideo) => {
     setSelectedDropPackage({
       videoId: video.id,
+      postId: video.scheduledSlot?.id,
       videoUrl: video.videoUrl,
       thumbnailUrl: video.thumbnailUrl,
       brandName: video.brandName,
