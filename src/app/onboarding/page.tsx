@@ -206,11 +206,11 @@ function OnboardingContent() {
 
         {/* Full-screen submission overlay */}
         {isSubmitting && (
-          <div className="fixed inset-0 bg-[#FAF8F5]/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4 text-center px-4 animate-in fade-in duration-200">
+          <div className="fixed inset-0 bg-[#FAF8F5]/90 backdrop-blur-md z-50 flex flex-col items-center justify-center gap-4 text-center px-4 animate-in fade-in duration-200">
             <div className="w-10 h-10 border-3 border-[#D95D39]/30 border-t-[#D95D39] rounded-full animate-spin" />
             <div className="space-y-1">
-              <p className="text-sm font-semibold text-[#18181B]">Setting up your SaaS command center…</p>
-              <p className="text-xs text-[#8E8B85]">Saving your brand profile &amp; generating your custom UGC creatives</p>
+              <p className="text-base font-bold text-[#18181B]">Setting up your SaaS command center...</p>
+              <p className="text-xs text-[#52525B]">Saving your brand profile &amp; generating your custom UGC creatives</p>
             </div>
           </div>
         )}

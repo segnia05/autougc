@@ -24,6 +24,7 @@ const isPublicRoute = createRouteMatcher([
   "/renders(.*)",
   "/images(.*)",
   "/api/v1/projects/scrape",
+  "/api/v1/onboarding(.*)",
   "/api/v1/audio/synthesize",
   "/api/v1/scripts/generate",
   "/api/v1/videos/render/status(.*)",

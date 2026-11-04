@@ -33,15 +33,18 @@ export async function POST(req: NextRequest) {
     const userId = authCtx?.userId || "usr_onboarded_founder";
     const orgId = authCtx?.orgId || `org_${brandName.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 16)}`;
 
-    // Update or create user record
-    if (authCtx?.userId) {
-      await prisma.user.update({
-        where: { id: authCtx.userId },
-        data: {
-          fullName: founderName || undefined,
-        },
-      }).catch((err) => logger.warn("Failed updating user fullName in onboarding", { error: String(err) }));
-    }
+    // Ensure User exists before referencing createdByUserId
+    const user = await prisma.user.upsert({
+      where: { id: userId },
+      update: {
+        fullName: founderName || undefined,
+      },
+      create: {
+        id: userId,
+        email: authCtx?.email || "founder@autougc.com",
+        fullName: founderName || "Founder",
+      },
+    });
 
     // Ensure Organization exists
     const organization = await prisma.organization.upsert({
@@ -68,11 +71,27 @@ export async function POST(req: NextRequest) {
       include: { subscription: true },
     });
 
+    // Ensure Organization Membership
+    await prisma.organizationMember.upsert({
+      where: {
+        organizationId_userId: {
+          organizationId: organization.id,
+          userId: user.id,
+        },
+      },
+      update: {},
+      create: {
+        organizationId: organization.id,
+        userId: user.id,
+        role: "owner",
+      },
+    }).catch(() => {});
+
     // Create or update Project
     const project = await prisma.project.create({
       data: {
         organizationId: organization.id,
-        createdByUserId: authCtx?.userId || userId,
+        createdByUserId: user.id,
         name: brandName,
         brandName: brandName,
         targetUrl: url,
