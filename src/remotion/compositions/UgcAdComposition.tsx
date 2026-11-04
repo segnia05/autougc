@@ -45,9 +45,10 @@ export const UgcAdComposition: React.FC<UgcAdCompositionProps> = (props) => {
         />
       )}
 
-      {/* Track 3: Middle Product Demo / Proof Mockup Overlay */}
+      {/* Track 3: Middle Product Demo / Proof Mockup Overlay (Floating UI Mockup) */}
       <ProductDemoOverlay
         productImageUrl={mergedProps.productImageUrl}
+        screenshotUrl={mergedProps.screenshotUrl}
         brandName={mergedProps.brandName}
         totalDurationSeconds={totalDurationSeconds}
       />

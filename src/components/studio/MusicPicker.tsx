@@ -40,6 +40,13 @@ export const BACKGROUND_TRACKS: BackgroundTrack[] = [
     energy: "Low",
   },
   {
+    id: "cinematic_drive",
+    name: "Cinematic Synthwave",
+    genre: "Future Retro",
+    bpm: 110,
+    energy: "High",
+  },
+  {
     id: "none",
     name: "None (Voiceover Only)",
     genre: "Pure Dialog",

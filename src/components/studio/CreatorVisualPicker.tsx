@@ -25,7 +25,7 @@ export const CREATOR_PERSONAS: CreatorPersona[] = [
     videoUrl: "/videos/creator-sarah.mp4",
     voiceId: "sarah_dtc_founder",
     vibe: "Authentic, energetic smartphone vlog walk-and-talk in 9:16",
-    tags: ["Real Video", "High Energy", "Female"],
+    tags: ["Real Video", "High Energy", "DTC"],
     characterType: "real_creator",
   },
   {
@@ -36,51 +36,88 @@ export const CREATOR_PERSONAS: CreatorPersona[] = [
     videoUrl: "/videos/creator-alex.mp4",
     voiceId: "alex_casual_dtc",
     vibe: "Podcast desk setup with mic & laptop, talking directly to camera",
-    tags: ["Real Video", "Authoritative", "Male"],
+    tags: ["Real Video", "Authoritative", "Tech Founder"],
     characterType: "real_creator",
   },
   {
-    id: "workspace",
-    name: "Clean Tech Workspace",
-    role: "Architectural B-Roll",
-    imageUrl: "/images/hero-landscape.jpg",
+    id: "emma",
+    name: "Emma Chen",
+    role: "Growth Marketer & Reviewer",
+    imageUrl: "/images/creator-emma.jpg",
+    videoUrl: "/videos/creator-emma.mp4",
+    voiceId: "sarah_dtc_founder",
+    vibe: "Fast-paced TikTok review breakdown with expressive gestures",
+    tags: ["Real Video", "Growth", "Viral Review"],
+    characterType: "real_creator",
+  },
+  {
+    id: "marcus",
+    name: "Marcus Brody",
+    role: "Enterprise B2B Strategist",
+    imageUrl: "/images/creator-male.jpg",
+    videoUrl: "/videos/batch-34486.mp4",
+    voiceId: "marcus_deep_authority",
+    vibe: "Executive high-trust breakdown from modern boardroom",
+    tags: ["Real Video", "Corporate", "B2B"],
+    characterType: "real_creator",
+  },
+  {
+    id: "david",
+    name: "David Kim",
+    role: "SaaS Engineer & DevTools",
+    imageUrl: "/images/creator-glasses.jpg",
+    videoUrl: "/videos/batch-42863.mp4",
+    voiceId: "alex_casual_dtc",
+    vibe: "Dual-monitor developer workstation, candid code breakdown",
+    tags: ["Real Video", "Developer", "SaaS"],
+    characterType: "real_creator",
+  },
+  {
+    id: "chloe",
+    name: "Chloe Dupont",
+    role: "Creative Director & E-Com",
+    imageUrl: "/images/study-creator.jpg",
+    videoUrl: "/videos/creator-sample.mp4",
+    voiceId: "sarah_dtc_founder",
+    vibe: "Sunlit Scandinavian studio aesthetic, design-forward demo",
+    tags: ["Real Video", "Aesthetic", "E-Commerce"],
+    characterType: "real_creator",
+  },
+  {
+    id: "jordan",
+    name: "Jordan Reed",
+    role: "Productivity Hacker",
+    imageUrl: "/images/creator-alex.jpg",
     videoUrl: "/videos/creator-workspace.mp4",
     voiceId: "marcus_deep_authority",
-    vibe: "Ultra-clean workspace setup with code reflection",
-    tags: ["Real Video", "Ambient", "Workspace"],
+    vibe: "Coffee shop deep-work sprint, sharing secret productivity tools",
+    tags: ["Real Video", "Productivity", "Bootstrapped"],
     characterType: "real_creator",
   },
   {
-    id: "marcus_ai",
-    name: "Marcus Thorne (AI)",
-    role: "Digital Enterprise Presenter",
-    imageUrl: "/images/creator-alex.jpg",
-    videoUrl: "/videos/creator-alex.mp4",
-    voiceId: "marcus_deep_authority",
-    vibe: "Executive tone, synthetic corporate presenter",
-    tags: ["AI Avatar", "Corporate", "Male"],
-    characterType: "ai_avatar",
-  },
-  {
-    id: "elena_ai",
-    name: "Elena Rostova (AI)",
-    role: "Global Fintech Creator",
+    id: "maya",
+    name: "Maya Patel",
+    role: "AI Tool Specialist",
     imageUrl: "/images/creator-sarah.jpg",
-    videoUrl: "/videos/creator-sarah.mp4",
+    videoUrl: "/videos/batch-42864.mp4",
     voiceId: "sarah_dtc_founder",
-    vibe: "Polished studio lighting, AI lip-sync persona",
-    tags: ["AI Avatar", "Fintech", "Female"],
-    characterType: "ai_avatar",
+    vibe: "Front-facing selfie reaction testing AI tools and generators",
+    tags: ["Real Video", "AI Tools", "Trending"],
+    characterType: "real_creator",
   },
 ];
 
 interface CreatorVisualPickerProps {
   selectedImageUrl: string;
+  selectedPersonaId?: string;
+  selectedVideoUrl?: string;
   onSelectPersona: (persona: CreatorPersona) => void;
 }
 
 export function CreatorVisualPicker({
   selectedImageUrl,
+  selectedPersonaId,
+  selectedVideoUrl,
   onSelectPersona,
 }: CreatorVisualPickerProps) {
   const [filter, setFilter] = useState<"all" | "real_creator" | "ai_avatar">("all");
@@ -141,12 +178,16 @@ export function CreatorVisualPicker({
       </div>
 
       <p className="text-xs text-[#52525B] leading-relaxed">
-        Choose between <strong>Real-Person Creators</strong> (real humans moving, holding phones, and reacting) or <strong>AI Avatars</strong> (digital synthetic presenters).
+        Choose between <strong>8 Creator Models</strong> with dedicated voice engines, body language, and authentic smartphone video delivery.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Select Creator Persona">
         {filteredPersonas.map((persona) => {
-          const isSelected = selectedImageUrl === persona.imageUrl;
+          const isSelected = selectedPersonaId
+            ? selectedPersonaId === persona.id
+            : selectedVideoUrl
+            ? selectedVideoUrl === persona.videoUrl
+            : selectedImageUrl === persona.imageUrl;
           const isReal = persona.characterType === "real_creator";
 
           return (

@@ -92,7 +92,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
         <div className="flex items-center justify-between text-xs">
           <label htmlFor="script-hook-input" className="font-bold text-[#D95D39] uppercase tracking-wider text-[11px] flex items-center gap-1">
             <Zap className="h-3 w-3" aria-hidden="true" />
-            Hook (0:00 - 0:03)
+            Hook (0–3s scroll stop)
           </label>
           <span className="text-[11px] text-[#8E8B85]">First 3-second thumb stopper</span>
         </div>
@@ -101,7 +101,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
           value={hookText}
           onChange={(e) => onHookChange(e.target.value)}
           rows={2}
-          aria-label="Hook (0:00 - 0:03) First 3-second thumb stopper"
+          aria-label="Hook (0–3s scroll stop) First 3-second thumb stopper"
           className="w-full p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#E5E0D8] text-sm text-[#18181B] focus:border-[#D95D39] focus:bg-white focus:ring-1 focus:ring-[#D95D39]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] outline-none resize-none transition-all leading-snug font-medium"
           placeholder="Stop doing X in 2026..."
         />
@@ -111,7 +111,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between text-xs">
           <label htmlFor="script-body-input" className="font-bold text-[#52525B] uppercase tracking-wider text-[11px]">
-            Body (0:03 - 0:11)
+            Body (problem & mechanism)
           </label>
           <span className="text-[11px] text-[#8E8B85]">Problem, Demo & Solution</span>
         </div>
@@ -120,7 +120,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
           value={bodyText}
           onChange={(e) => onBodyChange(e.target.value)}
           rows={3}
-          aria-label="Body (0:03 - 0:11) Problem, Demo and Solution"
+          aria-label="Body (problem & mechanism) Problem, Demo and Solution"
           className="w-full p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#E5E0D8] text-sm text-[#18181B] focus:border-[#D95D39] focus:bg-white focus:ring-1 focus:ring-[#D95D39]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] outline-none resize-none transition-all leading-snug font-medium"
           placeholder="Here is why current solutions fail and how our tool automates it..."
         />
@@ -130,7 +130,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between text-xs">
           <label htmlFor="script-cta-input" className="font-bold text-[#52525B] uppercase tracking-wider text-[11px]">
-            Call to Action (0:11 - 0:15)
+            CTA (Call to Action)
           </label>
           <span className="text-[11px] text-[#8E8B85]">Offer & Conversion Trigger</span>
         </div>
@@ -139,7 +139,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
           value={ctaText}
           onChange={(e) => onCtaChange(e.target.value)}
           rows={2}
-          aria-label="Call to Action (0:11 - 0:15) Offer and Conversion Trigger"
+          aria-label="CTA (Call to Action) Offer and Conversion Trigger"
           className="w-full p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#E5E0D8] text-sm text-[#18181B] focus:border-[#D95D39] focus:bg-white focus:ring-1 focus:ring-[#D95D39]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] outline-none resize-none transition-all leading-snug font-medium"
           placeholder="Click the link below and try it today..."
         />

@@ -26,20 +26,38 @@ export async function generateViralScripts(
       const ai = new GoogleGenAI({ apiKey });
       const prompt = buildScriptPrompt(input);
 
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: prompt }],
+      let response;
+      try {
+        response = await ai.models.generateContent({
+          model: "gemini-3.8-flash",
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: prompt }],
+            },
+          ],
+          config: {
+            systemInstruction: VIRAL_UGC_SYSTEM_PROMPT,
+            responseMimeType: "application/json",
+            temperature: 0.7,
           },
-        ],
-        config: {
-          systemInstruction: VIRAL_UGC_SYSTEM_PROMPT,
-          responseMimeType: "application/json",
-          temperature: 0.7,
-        },
-      });
+        });
+      } catch (e) {
+        response = await ai.models.generateContent({
+          model: "gemini-3.5-flash",
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: prompt }],
+            },
+          ],
+          config: {
+            systemInstruction: VIRAL_UGC_SYSTEM_PROMPT,
+            responseMimeType: "application/json",
+            temperature: 0.7,
+          },
+        });
+      }
 
       const responseText = response.text;
       if (responseText) {

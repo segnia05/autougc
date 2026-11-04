@@ -148,3 +148,4 @@ describe("Step 7: The Drop Concierge Self-Posting Fallback", () => {
     assert.ok(foundPost.views > 0, "Published post must have logged analytics views");
   });
 });
+

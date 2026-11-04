@@ -32,6 +32,7 @@ import {
   Music,
   ShieldCheck,
   Zap,
+  Video,
 } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
@@ -51,7 +52,7 @@ export default function StudioPage() {
   );
 }
 
-type StudioTab = "script" | "creator" | "subtitles" | "audio";
+type StudioTab = "script" | "creator" | "template" | "audio" | "subtitles";
 
 function StudioContent() {
   const router = useRouter();
@@ -78,7 +79,6 @@ function StudioContent() {
   >([]);
 
   const handleGenerateAiScripts = async () => {
-    if (!aiPrompt.trim() && !brandName.trim()) return;
     setIsGeneratingAiScripts(true);
     try {
       const res = await fetch("/api/v1/scripts/generate", {
@@ -86,8 +86,8 @@ function StudioContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           brandName: brandName || "My Brand",
-          pageTitle: aiPrompt || `${brandName} Ad`,
-          summary: aiPrompt || `High-converting viral video ad for ${brandName}`,
+          pageTitle: aiPrompt.trim() || `${brandName} Viral Ad`,
+          summary: aiPrompt.trim() || `High-converting viral video ad for ${brandName}`,
           headings: ["Key Features", "Core Problem", "Direct Call to Action"],
         }),
       });
@@ -113,8 +113,16 @@ function StudioContent() {
   const [bodyText, setBodyText] = useState(() => searchParams.get("body") || "AutoUGC auto-matches natural daylight so your eyes feel rested even after 10-hour deep work sprints.");
   const [ctaText, setCtaText] = useState(() => searchParams.get("cta") || "Click the link below and get $30 off your setup today.");
   const [brandColor, setBrandColor] = useState("#D95D39");
+  const [selectedPersonaId, setSelectedPersonaId] = useState<string>("sarah");
   const [selectedVoiceId, setSelectedVoiceId] = useState("sarah_dtc_founder");
   const [selectedTrackId, setSelectedTrackId] = useState("lofi_focus");
+  const [screenshotUrl, setScreenshotUrl] = useState<string>(
+    () =>
+      searchParams.get("screenshotUrl") ||
+      searchParams.get("productImage") ||
+      (typeof window !== "undefined" ? localStorage.getItem("autougc_screenshot_url") : null) ||
+      "/uploads/screenshots/screen_698d91231895.png"
+  );
   const [selectedVisualUrl, setSelectedVisualUrl] = useState(
     () => searchParams.get("productImage") || searchParams.get("screenshotUrl") || searchParams.get("image") || (typeof window !== "undefined" ? localStorage.getItem("autougc_screenshot_url") : null) || "/images/creator-sarah.jpg"
   );
@@ -140,6 +148,7 @@ function StudioContent() {
     ctaText: searchParams.get("cta") || "Click the link below and get $30 off your setup today.",
     brandColor: "#D95D39",
     productImageUrl: searchParams.get("productImage") || searchParams.get("screenshotUrl") || searchParams.get("image") || (typeof window !== "undefined" ? localStorage.getItem("autougc_screenshot_url") : null) || "/images/creator-sarah.jpg",
+    screenshotUrl: searchParams.get("screenshotUrl") || (typeof window !== "undefined" ? localStorage.getItem("autougc_screenshot_url") : null) || "/uploads/screenshots/screen_698d91231895.png",
     videoUrl: searchParams.get("video") || "/videos/creator-sarah.mp4",
     hookStickerType: "tiktok_question",
     showHookSticker: true,
@@ -225,7 +234,7 @@ function StudioContent() {
             setBodyText(`If you use AI for writing or creating content, ${data.brandName} saves hours every day.`);
             setCtaText(`Link in bio to try ${data.brandName} free!`);
             if (data.screenshotUrl) {
-              setSelectedVisualUrl(data.screenshotUrl);
+              setScreenshotUrl(data.screenshotUrl);
             }
           } else if (!isCancelled && typeof window !== "undefined") {
             const storedBrand = localStorage.getItem("autougc_brand_name");
@@ -236,7 +245,7 @@ function StudioContent() {
               setBodyText(`If you use AI for writing, ${storedBrand} saves hours every day.`);
               setCtaText(`Link in bio to try ${storedBrand} free!`);
             }
-            if (storedShot) setSelectedVisualUrl(storedShot);
+            if (storedShot) setScreenshotUrl(storedShot);
           }
         })
         .catch(() => {});
@@ -350,6 +359,7 @@ function StudioContent() {
           ctaText,
           brandColor,
           productImageUrl: selectedVisualUrl,
+          screenshotUrl,
           videoUrl: selectedVideoUrl,
           words: res.words,
           subtitleStyle,
@@ -375,6 +385,7 @@ function StudioContent() {
     selectedVoiceId,
     subtitleStyle,
     selectedVisualUrl,
+    screenshotUrl,
     selectedVideoUrl,
     selectedTemplate,
     hookStickerType,
@@ -383,6 +394,7 @@ function StudioContent() {
   ]);
 
   const handleSelectPersona = (persona: CreatorPersona) => {
+    setSelectedPersonaId(persona.id);
     setSelectedVisualUrl(persona.imageUrl);
     setSelectedVideoUrl(persona.videoUrl);
     setSelectedVoiceId(persona.voiceId);
@@ -416,6 +428,7 @@ function StudioContent() {
           voiceId: selectedVoiceId,
           aspectRatio: "9:16",
           productImageUrl: selectedVisualUrl,
+          screenshotUrl,
           videoUrl: selectedVideoUrl || (selectedVisualUrl.endsWith(".mp4") ? selectedVisualUrl : "/videos/creator-sarah.mp4"),
           hookStickerType,
           showHookSticker,
@@ -650,8 +663,8 @@ function StudioContent() {
             leftIcon={<Sparkles className="h-3.5 w-3.5 text-white" />}
             className="text-xs px-2.5 sm:px-3 font-semibold shadow-xs"
           >
-            <span className="hidden sm:inline">Generate Video (1 Credit)</span>
-            <span className="sm:hidden">Generate Video</span>
+            <span className="hidden sm:inline">Export High-Res Video (1 Credit)</span>
+            <span className="sm:hidden">Export High-Res</span>
           </Button>
         </div>
       </header>
@@ -754,10 +767,11 @@ function StudioContent() {
           {/* Segmented Inspector Tab Bar */}
           <div role="tablist" aria-label="Studio creative tools" className="bg-white border border-[#E5E0D8] rounded-2xl p-1.5 shadow-2xs flex items-center justify-between gap-1">
             {[
-              { id: "script", label: "Script & Hooks", icon: FileText },
-              { id: "creator", label: "Creator & Style", icon: Layers },
-              { id: "subtitles", label: "Subtitles", icon: Type },
+              { id: "script", label: "Script Editor", icon: FileText },
+              { id: "creator", label: "Creator Picker", icon: Layers },
+              { id: "template", label: "Template Picker", icon: Video },
               { id: "audio", label: "Audio & Music", icon: Music },
+              { id: "subtitles", label: "Subtitles", icon: Type },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -770,7 +784,7 @@ function StudioContent() {
                   aria-selected={isActive}
                   aria-controls={`studio-panel-${tab.id}`}
                   onClick={() => setActiveTab(tab.id as StudioTab)}
-                  className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] focus-visible:ring-offset-2 ${
+                  className={`flex-1 py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] focus-visible:ring-offset-2 ${
                     isActive
                       ? "bg-[#18181B] text-white shadow-xs"
                       : "text-[#52525B] hover:bg-[#FAF8F5] hover:text-[#18181B]"
@@ -792,13 +806,13 @@ function StudioContent() {
               tabIndex={0}
               className="flex flex-col gap-4 focus:outline-none"
             >
-              {/* In-Studio Magic AI Script Assistant */}
+              {/* In-Studio AI Hook Generator (Gemini 2.5 Flash) */}
               <div className="bg-[#18181B] rounded-2xl p-4 text-white shadow-2xs flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-[#D95D39] animate-pulse" />
                     <span className="text-xs font-bold uppercase tracking-wider text-white">
-                      Magic AI Script Generator
+                      AI Hook Generator
                     </span>
                   </div>
                   <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-[#E5E0D8] font-mono">
@@ -806,14 +820,14 @@ function StudioContent() {
                   </span>
                 </div>
                 <p className="text-[11px] text-white/80 leading-relaxed">
-                  Generate high-converting scripts: Describe your product or offer. Gemini will write 3 viral hooks tailored to your brand.
+                  Generate high-converting scripts: Describe your product or offer. Gemini will return 3 viral hook angles (Negative Hook, Secret Hack, Problem Agitation) tailored to your brand.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
-                    placeholder="e.g. Ergonomic desk lamp with zero screen glare"
+                    placeholder={`e.g. ${brandName} automates high-converting short-form video ads`}
                     className="flex-1 bg-white/10 border border-white/20 rounded-xl px-3.5 py-2 text-xs text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#D95D39] focus:bg-white/15"
                   />
                   <Button
@@ -824,40 +838,64 @@ function StudioContent() {
                     leftIcon={<Zap className="h-3.5 w-3.5 text-white" />}
                     className="bg-[#D95D39] hover:bg-[#C24E2B] text-white font-bold text-xs shrink-0 cursor-pointer"
                   >
-                    Generate Scripts
+                    Generate New Viral Hooks
                   </Button>
                 </div>
 
-                {/* Display AI Generated Variations if available */}
+                {/* Display 3 Distinct Angles: Negative Hook, Secret Hack, Problem Agitation */}
                 {aiGeneratedScripts.length > 0 && (
                   <div className="flex flex-col gap-2 pt-2 border-t border-white/15">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#FCD4C7]">
-                      AI Generated Hooks (Click to Apply):
+                      AI Hook Angles (Click to Apply):
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      {aiGeneratedScripts.map((s, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => {
-                            setHookText(s.hook);
-                            setBodyText(s.body);
-                            setCtaText(s.cta);
-                          }}
-                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                            hookText === s.hook
-                              ? "bg-white/20 border-[#D95D39] shadow-xs"
-                              : "bg-white/5 border-white/10 hover:bg-white/10"
-                          }`}
-                        >
-                          <span className="text-[10px] font-mono font-bold text-[#D95D39] uppercase block">
-                            {s.angleType.replace("_", " ")}
-                          </span>
-                          <p className="text-[11px] text-white/90 line-clamp-2 mt-1 leading-snug">
-                            &ldquo;{s.hook}&rdquo;
-                          </p>
-                        </button>
-                      ))}
+                      {aiGeneratedScripts.map((s, idx) => {
+                        const angleLabel = s.angleType.includes("negative")
+                          ? "Negative Hook"
+                          : s.angleType.includes("secret") || s.angleType.includes("hack")
+                          ? "Secret Hack"
+                          : s.angleType.includes("agitation") || s.angleType.includes("problem")
+                          ? "Problem Agitation"
+                          : s.angleType.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+                        const isApplied = hookText === s.hook;
+
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              setHookText(s.hook);
+                              setBodyText(s.body);
+                              setCtaText(s.cta);
+                            }}
+                            className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+                              isApplied
+                                ? "bg-white/20 border-[#D95D39] shadow-xs ring-1 ring-[#D95D39]"
+                                : "bg-white/5 border-white/10 hover:bg-white/10"
+                            }`}
+                          >
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-[10px] font-mono font-bold text-[#D95D39] uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded">
+                                  {angleLabel}
+                                </span>
+                                {isApplied && (
+                                  <span className="text-[9px] font-bold text-emerald-400 flex items-center gap-0.5">
+                                    ✓ Active
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-white/95 line-clamp-3 leading-snug font-medium mt-1">
+                                &ldquo;{s.hook}&rdquo;
+                              </p>
+                            </div>
+                            <span className="text-[10px] text-white/60 hover:text-white underline">
+                              Apply to Script →
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -979,12 +1017,31 @@ function StudioContent() {
             </div>
           )}
 
-          {/* TAB 2: CREATOR & TEMPLATE ARCHETYPE */}
+          {/* TAB 2: CREATOR PICKER */}
           {activeTab === "creator" && (
             <div
               id="studio-panel-creator"
               role="tabpanel"
               aria-labelledby="studio-tab-creator"
+              tabIndex={0}
+              className="flex flex-col gap-4 focus:outline-none"
+            >
+              {/* Creator Persona Visual Picker (8 Models) */}
+              <CreatorVisualPicker
+                selectedImageUrl={selectedVisualUrl}
+                selectedPersonaId={selectedPersonaId}
+                selectedVideoUrl={selectedVideoUrl}
+                onSelectPersona={handleSelectPersona}
+              />
+            </div>
+          )}
+
+          {/* TAB 3: TEMPLATE PICKER */}
+          {activeTab === "template" && (
+            <div
+              id="studio-panel-template"
+              role="tabpanel"
+              aria-labelledby="studio-tab-template"
               tabIndex={0}
               className="flex flex-col gap-4 focus:outline-none"
             >
@@ -995,30 +1052,6 @@ function StudioContent() {
                   setSelectedTemplate(tmpl.id);
                   if (tmpl.defaultMusicTrack) setSelectedTrackId(tmpl.defaultMusicTrack);
                 }}
-              />
-
-              {/* Creator Persona Visual Picker */}
-              <CreatorVisualPicker
-                selectedImageUrl={selectedVisualUrl}
-                onSelectPersona={handleSelectPersona}
-              />
-            </div>
-          )}
-
-          {/* TAB 3: SUBTITLES & TYPOGRAPHY */}
-          {activeTab === "subtitles" && (
-            <div
-              id="studio-panel-subtitles"
-              role="tabpanel"
-              aria-labelledby="studio-tab-subtitles"
-              tabIndex={0}
-              className="flex flex-col gap-4 focus:outline-none"
-            >
-              <SubtitleStyler
-                subtitleStyle={subtitleStyle}
-                brandColor={brandColor}
-                onStyleChange={setSubtitleStyle}
-                onBrandColorChange={setBrandColor}
               />
             </div>
           )}
@@ -1038,10 +1071,28 @@ function StudioContent() {
                 onVoiceChange={setSelectedVoiceId}
               />
 
-              {/* Dynamic B-Roll Music Picker */}
+              {/* Dynamic B-Roll Music Picker (5 Royalty-Free Tracks + Ducking) */}
               <MusicPicker
                 selectedTrackId={selectedTrackId}
                 onTrackChange={setSelectedTrackId}
+              />
+            </div>
+          )}
+
+          {/* TAB 5: SUBTITLES & TYPOGRAPHY */}
+          {activeTab === "subtitles" && (
+            <div
+              id="studio-panel-subtitles"
+              role="tabpanel"
+              aria-labelledby="studio-tab-subtitles"
+              tabIndex={0}
+              className="flex flex-col gap-4 focus:outline-none"
+            >
+              <SubtitleStyler
+                subtitleStyle={subtitleStyle}
+                brandColor={brandColor}
+                onStyleChange={setSubtitleStyle}
+                onBrandColorChange={setBrandColor}
               />
             </div>
           )}
@@ -1124,7 +1175,7 @@ function StudioContent() {
                   onClick={handleStartExport}
                   leftIcon={<Sparkles className="h-4 w-4" />}
                 >
-                  Render & Download MP4
+                  Export High-Res Video
                 </Button>
               </div>
             </>

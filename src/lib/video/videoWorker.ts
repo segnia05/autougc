@@ -18,6 +18,7 @@ export interface VideoRenderJobData {
   voiceId: string;
   aspectRatio: string;
   productImageUrl?: string;
+  screenshotUrl?: string;
   videoUrl?: string;
   characterId?: string;
   hookStickerType?: "tiktok_question" | "tweet_card" | "pov_badge" | "bold_warning";
@@ -53,6 +54,7 @@ export function registerVideoRenderWorker(): void {
         voiceId,
         aspectRatio,
         productImageUrl,
+        screenshotUrl,
         videoUrl: initialVideoUrl,
         characterId,
         hookStickerType,
@@ -97,6 +99,7 @@ export function registerVideoRenderWorker(): void {
         ctaText,
         brandColor: "#D95D39",
         productImageUrl: productImageUrl || "/images/creator-sarah.jpg",
+        screenshotUrl,
         videoUrl: activeVideoUrl,
         hookStickerType: hookStickerType || "tiktok_question",
         showHookSticker: showHookSticker ?? true,
