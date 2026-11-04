@@ -217,12 +217,13 @@ export default function DashboardPage() {
           onTriggerUpgrade={handleTriggerUpgrade}
         />
 
-        {/* 4. Real Interactive Monthly Calendar with Marked Scheduled Days */}
+        {/* 4. Real Interactive Monthly Calendar with Marked Scheduled Days & Day Inspector */}
         <InteractiveMonthlyCalendar
           posts={posts}
           brandName={brandName}
           onRefreshPosts={fetchScheduledPosts}
           onOpenScheduleModal={() => setIsScheduleModalOpen(true)}
+          onOpenDropPackage={handleOpenDropPackageFromPost}
         />
       </div>
 
