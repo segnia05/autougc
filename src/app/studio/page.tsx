@@ -303,6 +303,37 @@ function StudioContent() {
     };
   }, [scheduledPostId]);
 
+  // Load video details when opened from Creator Ad Vault (/campaigns)
+  const vaultVideoId = searchParams.get("videoId");
+  useEffect(() => {
+    if (!vaultVideoId) return;
+
+    let ignore = false;
+    async function fetchVaultVideo() {
+      try {
+        const res = await fetch(`/api/v1/videos?id=${vaultVideoId}`);
+        const json = await res.json();
+        if (!ignore && json.success && json.video) {
+          const v = json.video;
+          if (v.brandName) setBrandName(v.brandName);
+          if (v.hookText) setHookText(v.hookText);
+          if (v.bodyText) setBodyText(v.bodyText);
+          if (v.ctaText) setCtaText(v.ctaText);
+          if (v.voiceId) setSelectedVoiceId(v.voiceId);
+          if (v.videoUrl) setSelectedVideoUrl(v.videoUrl);
+          if (v.thumbnailUrl) setSelectedVisualUrl(v.thumbnailUrl);
+        }
+      } catch (err) {
+        console.warn("Failed to load video details from vault:", err);
+      }
+    }
+
+    fetchVaultVideo();
+    return () => {
+      ignore = true;
+    };
+  }, [vaultVideoId]);
+
   const handleSaveAndApproveScheduledPost = async () => {
     if (!scheduledPostId) return;
     setIsSavingScheduledPost(true);

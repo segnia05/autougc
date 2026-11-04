@@ -15,6 +15,17 @@ import {
 } from "lucide-react";
 import { ConnectedSocialAccount } from "./ConnectedAccountsSection";
 
+export interface ScheduleSelectedVideo {
+  id: string;
+  hookAngle?: string;
+  hookText?: string;
+  bodyText?: string;
+  ctaText?: string;
+  caption?: string;
+  thumbnailUrl?: string;
+  durationSeconds?: number;
+}
+
 interface SchedulePostModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,6 +34,7 @@ interface SchedulePostModalProps {
   onScheduled: () => void;
   onTriggerUpgrade: (reason: string) => void;
   onConnectAccountClick: () => void;
+  selectedVideo?: ScheduleSelectedVideo | null;
 }
 
 export default function SchedulePostModal({
@@ -33,6 +45,7 @@ export default function SchedulePostModal({
   onScheduled,
   onTriggerUpgrade,
   onConnectAccountClick,
+  selectedVideo,
 }: SchedulePostModalProps) {
   // Tomorrow's date string YYYY-MM-DD
   const tomorrow = new Date();
@@ -45,13 +58,30 @@ export default function SchedulePostModal({
   const [scheduledDate, setScheduledDate] = useState(defaultDateStr);
   const [scheduledTime, setScheduledTime] = useState("18:30");
   const [hookAngle, setHookAngle] = useState("Problem-Agitation-Solution");
-  const [selectedVideoId, setSelectedVideoId] = useState("vid_ugc_showcase_1");
+  const [selectedVideoId, setSelectedVideoId] = useState(selectedVideo?.id || "vid_ugc_showcase_1");
   const [caption, setCaption] = useState(
-    `Why didn't anyone tell me about ${brandName} sooner?! If you write with AI, this is an absolute lifesaver. Link in bio! 🚀 #UGC #Productivity #AI #${brandName.replace(/\s+/g, "")}`
+    selectedVideo?.caption ||
+      `Why didn't anyone tell me about ${brandName} sooner?! If you write with AI, this is an absolute lifesaver. Link in bio! 🚀 #UGC #Productivity #AI #${brandName.replace(/\s+/g, "")}`
   );
   const [requireApproval, setRequireApproval] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (selectedVideo) {
+      setSelectedVideoId(selectedVideo.id);
+      if (selectedVideo.caption) {
+        setCaption(selectedVideo.caption);
+      } else if (selectedVideo.hookText) {
+        setCaption(
+          `${selectedVideo.hookText} ${selectedVideo.bodyText || ""} #${brandName.toLowerCase().replace(/[^a-z0-9]/g, "")} #ugc`
+        );
+      }
+      if (selectedVideo.hookAngle) {
+        setHookAngle(selectedVideo.hookAngle.replace(/_/g, " "));
+      }
+    }
+  }, [selectedVideo, brandName]);
 
   // Available creative templates
   const videoCreatives = [
@@ -77,6 +107,23 @@ export default function SchedulePostModal({
       thumbnailUrl: "/images/creator-glasses.jpg",
     },
   ];
+
+  const allCreatives = selectedVideo
+    ? [
+        {
+          id: selectedVideo.id,
+          title: selectedVideo.hookText
+            ? `"${selectedVideo.hookText.slice(0, 28)}..."`
+            : "Selected Video Ad",
+          creator: "Creator Video Creative",
+          duration: selectedVideo.durationSeconds
+            ? `0:${Math.floor(selectedVideo.durationSeconds).toString().padStart(2, "0")}`
+            : "0:25",
+          thumbnailUrl: selectedVideo.thumbnailUrl || "/images/creator-sarah.jpg",
+        },
+        ...videoCreatives.filter((c) => c.id !== selectedVideo.id),
+      ]
+    : videoCreatives;
 
   const handleScheduleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,7 +255,7 @@ export default function SchedulePostModal({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            {videoCreatives.map((vid) => {
+            {allCreatives.map((vid) => {
               const isSelected = selectedVideoId === vid.id;
               return (
                 <button

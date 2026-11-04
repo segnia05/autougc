@@ -85,18 +85,76 @@ export async function POST(request: NextRequest) {
     const newApprovalStatus = action === "reject" ? "rejected" : "approved";
     const newPublishStatus = action === "mark_published" ? "published" : undefined;
 
-    await prisma.scheduledPost.update({
+    let targetPost = await prisma.scheduledPost.findUnique({
       where: { id: scheduledPostId },
-      data: {
-        approvalStatus: newApprovalStatus,
-        publishStatus: newPublishStatus,
-        approvedAt: action !== "reject" ? new Date() : undefined,
-        views: action === "mark_published" ? 1420 : undefined,
-        likes: action === "mark_published" ? 118 : undefined,
-        shares: action === "mark_published" ? 24 : undefined,
-        comments: action === "mark_published" ? 9 : undefined,
-      },
     });
+
+    if (!targetPost) {
+      // Check if scheduledPostId is actually a videoId
+      targetPost = await prisma.scheduledPost.findFirst({
+        where: { videoId: scheduledPostId },
+      });
+    }
+
+    if (targetPost) {
+      await prisma.scheduledPost.update({
+        where: { id: targetPost.id },
+        data: {
+          approvalStatus: newApprovalStatus,
+          publishStatus: newPublishStatus,
+          approvedAt: action !== "reject" ? new Date() : undefined,
+          views: action === "mark_published" ? 1420 : undefined,
+          likes: action === "mark_published" ? 118 : undefined,
+          shares: action === "mark_published" ? 24 : undefined,
+          comments: action === "mark_published" ? 9 : undefined,
+        },
+      });
+    } else {
+      // If it's a raw video without a scheduled post yet, create one marked as published
+      const video = await prisma.video.findUnique({
+        where: { id: scheduledPostId },
+        include: { project: true, script: true },
+      });
+
+      if (video) {
+        let account = await prisma.socialAccount.findFirst({
+          where: { organizationId: video.organizationId },
+        });
+
+        if (!account) {
+          account = await prisma.socialAccount.create({
+            data: {
+              organizationId: video.organizationId,
+              platform: "tiktok",
+              platformUserId: `user_${Math.random().toString(36).substring(2, 10)}`,
+              accountHandle: `@${video.project.brandName.toLowerCase().replace(/[^a-z0-9]/g, "")}_official`,
+              accountNickname: `${video.project.brandName} TikTok`,
+              encryptedAccessToken: "vault_self_publishing_token",
+            },
+          });
+        }
+
+        const scheduledIso = new Date();
+        targetPost = await prisma.scheduledPost.create({
+          data: {
+            organizationId: video.organizationId,
+            videoId: video.id,
+            socialAccountId: account.id,
+            scheduledFor: scheduledIso,
+            localScheduledTime: "Today @ 4:15 PM EST (Peak Reach)",
+            caption: video.script?.captionCopy || `${video.script?.hookText || ""} #${video.project.brandName.toLowerCase()} #ugc`,
+            approvalStatus: newApprovalStatus,
+            publishStatus: newPublishStatus,
+            requireApproval: false,
+            approvedAt: new Date(),
+            views: action === "mark_published" ? 1420 : undefined,
+            likes: action === "mark_published" ? 118 : undefined,
+            shares: action === "mark_published" ? 24 : undefined,
+            comments: action === "mark_published" ? 9 : undefined,
+          },
+        });
+      }
+    }
 
     return NextResponse.json({
       success: true,

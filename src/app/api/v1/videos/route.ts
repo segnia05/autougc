@@ -20,6 +20,55 @@ export async function GET(request: NextRequest) {
     }
 
     try {
+      const requestedId = request.nextUrl.searchParams.get("id");
+      if (requestedId) {
+        const v = await prisma.video.findUnique({
+          where: { id: requestedId },
+          include: {
+            script: true,
+            project: true,
+            scheduledPosts: {
+              include: {
+                socialAccount: true,
+              },
+            },
+          },
+        });
+
+        if (v) {
+          return NextResponse.json({
+            success: true,
+            video: {
+              id: v.id,
+              brandName: v.project.brandName,
+              projectName: v.project.name,
+              hookAngle: v.script.angleType,
+              hookText: v.script.hookText,
+              bodyText: v.script.bodyText,
+              ctaText: v.script.ctaText,
+              caption: v.script.captionCopy,
+              hashtags: v.script.hashtags,
+              durationSeconds: Number(v.durationSeconds),
+              renderStatus: v.renderStatus,
+              videoUrl: v.videoUrl || "/videos/creator-sarah.mp4",
+              thumbnailUrl: v.thumbnailUrl || "/images/creator-sarah.jpg",
+              voiceId: v.voiceId,
+              aspectRatio: v.aspectRatio,
+              createdAt: v.createdAt.toISOString(),
+              scheduledSlot: v.scheduledPosts[0]
+                ? {
+                    scheduledFor: v.scheduledPosts[0].scheduledFor.toISOString(),
+                    localScheduledTime: v.scheduledPosts[0].localScheduledTime,
+                    accountHandle: v.scheduledPosts[0].socialAccount.accountHandle,
+                    platform: v.scheduledPosts[0].socialAccount.platform,
+                    publishStatus: v.scheduledPosts[0].publishStatus,
+                  }
+                : null,
+            },
+          });
+        }
+      }
+
       let dbVideos = await prisma.video.findMany({
         where: { organizationId: orgId },
         include: {

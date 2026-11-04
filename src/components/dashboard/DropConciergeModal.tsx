@@ -98,11 +98,17 @@ export default function DropConciergeModal({
     if (!dropData.postId) return;
     setIsMarkingPublished(true);
     try {
+      const targetPostId = dropData.postId || dropData.videoId;
+      if (!targetPostId) {
+        setIsMarkingPublished(false);
+        return;
+      }
+
       const res = await fetch("/api/v1/campaigns/approve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          scheduledPostId: dropData.postId,
+          scheduledPostId: targetPostId,
           action: "mark_published",
         }),
       });
@@ -111,7 +117,7 @@ export default function DropConciergeModal({
         setIsPublishedDone(true);
         showToast("✓ Marked as Published! Logged into /analytics");
         if (onMarkPublished) {
-          onMarkPublished(dropData.postId);
+          onMarkPublished(targetPostId);
         }
       }
     } catch (err) {

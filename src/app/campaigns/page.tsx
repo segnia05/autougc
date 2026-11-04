@@ -134,7 +134,7 @@ export default function CampaignsPage() {
   // Filtered video list
   const filteredVideos = videos.filter((vid) => {
     // Status filter
-    if (statusFilter === "ready" && vid.scheduledSlot) return false;
+    if (statusFilter === "ready" && vid.scheduledSlot && vid.scheduledSlot.publishStatus !== "ready") return false;
     if (statusFilter === "scheduled" && (!vid.scheduledSlot || vid.scheduledSlot.publishStatus === "published")) return false;
     if (statusFilter === "published" && vid.scheduledSlot?.publishStatus !== "published") return false;
 
@@ -150,8 +150,10 @@ export default function CampaignsPage() {
     return true;
   });
 
-  const scheduledCount = videos.filter((v) => v.scheduledSlot).length;
-  const readyCount = videos.filter((v) => !v.scheduledSlot).length;
+  const allCount = videos.length;
+  const readyCount = videos.filter((v) => !v.scheduledSlot || v.scheduledSlot.publishStatus === "ready").length;
+  const scheduledCount = videos.filter((v) => v.scheduledSlot && v.scheduledSlot.publishStatus !== "published").length;
+  const publishedCount = videos.filter((v) => v.scheduledSlot?.publishStatus === "published").length;
 
   const handleOpenSchedule = (video: CreatorVideo) => {
     setVideoToSchedule(video);
@@ -245,10 +247,10 @@ export default function CampaignsPage() {
           {/* Status Tabs */}
           <div className="flex items-center gap-1 overflow-x-auto p-1">
             {[
-              { id: "all", label: "All Videos", count: videos.length },
+              { id: "all", label: "All", count: allCount },
               { id: "ready", label: "Ready to Launch", count: readyCount },
               { id: "scheduled", label: "Scheduled", count: scheduledCount },
-              { id: "published", label: "Published Live", count: videos.filter((v) => v.scheduledSlot?.publishStatus === "published").length },
+              { id: "published", label: "Published Live", count: publishedCount },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -411,8 +413,8 @@ export default function CampaignsPage() {
 
                     <div className="grid grid-cols-2 gap-2">
                       <Link
-                        href={`/studio?videoId=${video.id}`}
-                        className="py-2 px-3 rounded-xl bg-[#FAF8F5] hover:bg-white border border-[#E5E0D8] text-[11px] font-bold text-[#18181B] text-center hover:border-[#18181B] transition-colors flex items-center justify-center gap-1"
+                        href={`/studio?videoId=${video.id}&brand=${encodeURIComponent(video.brandName)}&hook=${encodeURIComponent(video.hookText)}&body=${encodeURIComponent(video.bodyText)}&cta=${encodeURIComponent(video.ctaText)}&video=${encodeURIComponent(video.videoUrl)}&image=${encodeURIComponent(video.thumbnailUrl)}&voice=${encodeURIComponent(video.voiceId)}`}
+                        className="py-2 px-3 rounded-xl bg-[#FAF8F5] hover:bg-white border border-[#E5E0D8] text-[11px] font-bold text-[#18181B] text-center hover:border-[#18181B] transition-colors flex items-center justify-center gap-1 cursor-pointer"
                       >
                         <Sparkles className="w-3 h-3 text-[#D95D39]" />
                         <span>Studio</span>
@@ -488,14 +490,29 @@ export default function CampaignsPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <Link
-                href={`/studio?videoId=${previewingVideo.id}`}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-[#E5E0D8] text-xs font-semibold text-[#18181B] hover:border-[#18181B]"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
-                <span>Open in Studio Editor</span>
-              </Link>
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#E5E0D8]">
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/studio?videoId=${previewingVideo.id}&brand=${encodeURIComponent(previewingVideo.brandName)}&hook=${encodeURIComponent(previewingVideo.hookText)}&body=${encodeURIComponent(previewingVideo.bodyText)}&cta=${encodeURIComponent(previewingVideo.ctaText)}&video=${encodeURIComponent(previewingVideo.videoUrl)}&image=${encodeURIComponent(previewingVideo.thumbnailUrl)}&voice=${encodeURIComponent(previewingVideo.voiceId)}`}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-[#E5E0D8] text-xs font-semibold text-[#18181B] hover:border-[#18181B] cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
+                  <span>Open in Studio</span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const vid = previewingVideo;
+                    setPreviewingVideo(null);
+                    handleOpenDropPackage(vid);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#FDF3EF] border border-[#F3CEBE] text-xs font-semibold text-[#D95D39] hover:bg-[#FBE8DF] cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
+                  <span>Ready to Drop</span>
+                </button>
+              </div>
 
               <button
                 type="button"
@@ -504,10 +521,10 @@ export default function CampaignsPage() {
                   setPreviewingVideo(null);
                   handleOpenSchedule(vid);
                 }}
-                className="btn-fastlane-black text-xs py-2 px-5 font-bold uppercase tracking-wider inline-flex items-center gap-1.5"
+                className="btn-fastlane-black text-xs py-2 px-4 font-bold uppercase tracking-wider inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <CalendarIcon className="w-3.5 h-3.5" />
-                <span>Schedule This Video</span>
+                <span>Schedule Video</span>
               </button>
             </div>
           </div>
@@ -533,6 +550,7 @@ export default function CampaignsPage() {
         }}
         accounts={accounts}
         brandName={brandName}
+        selectedVideo={videoToSchedule}
         onScheduled={() => {
           fetchVideos();
         }}
