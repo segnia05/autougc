@@ -3,13 +3,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Badge } from "@/components/ui/Badge";
 import {
   Bell,
   CheckCircle2,
   Sparkles,
   Clock,
-  Play,
   ArrowRight,
   ShieldCheck,
   AlertCircle,
@@ -31,7 +29,9 @@ export default function PrePublishApprovalQueue({
 
   // Filter posts requiring pre-publish approval
   const awaitingPosts = posts.filter(
-    (p) => p.approvalStatus === "awaiting_approval" || (p.requireApproval && p.publishStatus === "pending" && p.approvalStatus !== "approved")
+    (p) =>
+      p.approvalStatus === "awaiting_approval" ||
+      (p.requireApproval && p.publishStatus === "pending" && p.approvalStatus !== "approved")
   );
 
   if (awaitingPosts.length === 0) return null;
@@ -58,24 +58,24 @@ export default function PrePublishApprovalQueue({
   };
 
   return (
-    <div className="bg-gradient-to-r from-amber-500/10 via-amber-50/60 to-white border border-amber-300 rounded-3xl p-6 sm:p-7 shadow-xs space-y-4">
+    <div className="bg-[#FDF3EF]/60 border border-[#F3CEBE] rounded-3xl p-6 sm:p-7 shadow-xs space-y-4">
       {/* Alert Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/70">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-[#F3CEBE]/80">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center text-white shrink-0 shadow-xs animate-bounce">
-            <Bell className="w-4 h-4" />
+          <div className="w-9 h-9 rounded-xl bg-[#D95D39] flex items-center justify-center text-white shrink-0 shadow-2xs">
+            <Bell className="w-4 h-4 animate-bounce" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-amber-950 font-[family-name:var(--font-serif)]">
-                {awaitingPosts.length} Post{awaitingPosts.length > 1 ? "s" : ""} Awaiting Pre-Publish Approval
+              <h2 className="text-sm font-bold text-[#18181B]">
+                {awaitingPosts.length} Post{awaitingPosts.length > 1 ? "s" : ""} Awaiting Pre-Publish Review
               </h2>
-              <Badge variant="amber" size="sm" pulse>
+              <span className="px-2 py-0.5 rounded-full bg-[#D95D39] text-white text-[9px] font-bold uppercase tracking-wider shadow-2xs">
                 1-Hour Gate Active
-              </Badge>
+              </span>
             </div>
-            <p className="text-[11px] text-amber-900/80">
-              We also sent an approval email with a 1-click token to your inbox. You can approve here or edit before launch.
+            <p className="text-[11px] text-[#52525B]">
+              Posts scheduled within the next hour appear here for 1-click review. Approve directly or download the Drop Package.
             </p>
           </div>
         </div>
@@ -88,11 +88,11 @@ export default function PrePublishApprovalQueue({
           return (
             <div
               key={post.id}
-              className="p-4 rounded-2xl bg-white border border-amber-200 shadow-xs flex flex-col justify-between gap-4"
+              className="p-4 rounded-2xl bg-white border border-[#E5E0D8] shadow-2xs flex flex-col justify-between gap-4"
             >
               <div className="flex items-start gap-3.5">
                 {/* Thumbnail */}
-                <div className="relative w-16 h-24 rounded-xl overflow-hidden bg-black shrink-0 border border-[#CBD5C4]">
+                <div className="relative w-16 h-24 rounded-xl overflow-hidden bg-black shrink-0 border border-[#E5E0D8]">
                   <Image
                     src={post.video?.thumbnailUrl || "/images/creator-sarah.jpg"}
                     alt="Pending Video Ad"
@@ -106,19 +106,19 @@ export default function PrePublishApprovalQueue({
                 {/* Details */}
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="font-bold text-[#1B231B] capitalize">
+                    <span className="font-bold text-[#18181B] capitalize truncate">
                       {post.socialAccount.platform} · {post.socialAccount.accountHandle}
                     </span>
-                    <span className="text-[#717E6C] font-semibold">
-                      {post.localScheduledTime || "4:00 PM EST"}
+                    <span className="text-[#D95D39] font-bold shrink-0 ml-2">
+                      {post.localScheduledTime || "In 45 mins"}
                     </span>
                   </div>
 
-                  <p className="text-xs text-[#2E382D] font-medium line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[#18181B] font-medium line-clamp-2 leading-relaxed">
                     {post.caption}
                   </p>
 
-                  <div className="flex items-center gap-2 text-[10px] text-[#717E6C]">
+                  <div className="flex items-center gap-2 text-[10px] text-[#8E8B85]">
                     <span>Voice: {post.video?.voiceId || "Sarah"}</span>
                     <span>•</span>
                     <span>Hook: {post.hookAngle?.replace("_", " ") || "Pattern Interrupt"}</span>
@@ -127,33 +127,33 @@ export default function PrePublishApprovalQueue({
               </div>
 
               {/* Actions: Get Drop Package, Edit in Studio, or 1-Click Approve */}
-              <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-[#CBD5C4]/40">
+              <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-[#EFECE6]">
                 {onOpenDropPackage && (
                   <button
                     type="button"
                     onClick={() => onOpenDropPackage(post)}
-                    className="px-3 py-1.5 rounded-xl border border-[#CBD5C4] hover:bg-[#E2E9DC] bg-[#FAF8F5] text-xs font-semibold text-[#1F3824] inline-flex items-center gap-1.5 transition-colors"
+                    className="btn-fastlane-white text-xs px-3 py-1.5 h-8 flex items-center gap-1.5 font-semibold cursor-pointer"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-[#1F3824]" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
                     <span>Drop Package</span>
                   </button>
                 )}
 
                 <Link
                   href={`/studio?scheduledPostId=${post.id}`}
-                  className="px-3 py-1.5 rounded-xl border border-[#CBD5C4] hover:border-[#1F3824] bg-white text-xs font-semibold text-[#1B231B] inline-flex items-center gap-1.5 transition-colors"
+                  className="btn-fastlane-white text-xs px-3 py-1.5 h-8 flex items-center gap-1.5 font-semibold"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-[#1F3824]" />
-                  <span>Studio</span>
+                  <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
+                  <span>Edit in Studio</span>
                 </Link>
 
                 <button
                   type="button"
                   disabled={isApproving}
                   onClick={() => handleApprove(post.id)}
-                  className="px-4 py-1.5 rounded-xl bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-xs transition-all disabled:opacity-60"
+                  className="btn-fastlane-black text-xs px-4 py-1.5 h-8 flex items-center gap-1.5 font-semibold shadow-xs disabled:opacity-60 cursor-pointer"
                 >
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   <span>{isApproving ? "Approving..." : "Approve Now"}</span>
                 </button>
               </div>
@@ -164,4 +164,3 @@ export default function PrePublishApprovalQueue({
     </div>
   );
 }
-

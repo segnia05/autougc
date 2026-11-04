@@ -52,7 +52,7 @@ export default function ConnectedAccountsSection({
   const handleOpenConnect = (targetPlatform: "tiktok" | "instagram") => {
     if (isAtCapacity) {
       onTriggerUpgrade(
-        `Your ${planTier.toUpperCase()} tier allows up to ${maxAccountsAllowed} account(s). Upgrade to Growth (5 accounts) or Scale (15 accounts) to connect more.`
+        `Your ${planTier.toUpperCase()} tier allows up to ${maxAccountsAllowed} account(s). Fleet capacity: 1 account on Starter, 5 on Growth, 15 on Scale. Upgrade to connect more accounts.`
       );
       return;
     }
@@ -119,20 +119,22 @@ export default function ConnectedAccountsSection({
   };
 
   return (
-    <div className="bg-white border border-[#CBD5C4]/80 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
-      {/* Header & Capacity */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-[#CBD5C4]/60">
+    <div className="bg-white border border-[#E5E0D8] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+      {/* Header & Fleet Capacity Indicator */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-[#EFECE6]">
         <div className="space-y-1">
           <div className="flex items-center gap-2.5">
-            <h2 className="text-base font-bold text-[#1B231B] font-[family-name:var(--font-serif)]">
-              Connected Social Media & Devices
+            <h2 className="text-base font-bold text-[#18181B]">
+              Connected Social Accounts
             </h2>
-            <Badge variant={isAtCapacity ? "amber" : "emerald"} size="sm">
+            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+              isAtCapacity ? "bg-[#FDF3EF] text-[#D95D39] border border-[#F3CEBE]" : "bg-[#FAF8F5] text-[#18181B] border border-[#E5E0D8]"
+            }`}>
               {accounts.length} / {maxAccountsAllowed} Active
-            </Badge>
+            </span>
           </div>
           <p className="text-xs text-[#52525B]">
-            Automated video distribution rotates across your official brand and satellite accounts.
+            Fleet capacity: <span className="font-semibold text-[#18181B]">1 account on Starter</span>, <span className="font-semibold text-[#18181B]">5 on Growth</span>, <span className="font-semibold text-[#18181B]">15 on Scale</span>.
           </p>
         </div>
 
@@ -141,7 +143,7 @@ export default function ConnectedAccountsSection({
           <button
             type="button"
             onClick={() => handleOpenConnect("tiktok")}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#18181B] hover:bg-black text-white text-xs font-semibold shadow-xs transition-colors"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#18181B] hover:bg-black text-white text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
           >
             <TikTokIcon className="w-3.5 h-3.5 text-white" />
             <span>Connect TikTok</span>
@@ -150,7 +152,7 @@ export default function ConnectedAccountsSection({
           <button
             type="button"
             onClick={() => handleOpenConnect("instagram")}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#E1306C] to-[#C13584] hover:opacity-95 text-white text-xs font-semibold shadow-xs transition-opacity"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#E1306C] to-[#C13584] hover:opacity-95 text-white text-xs font-semibold shadow-2xs transition-opacity cursor-pointer"
           >
             <InstagramIcon className="w-3.5 h-3.5 text-white" />
             <span>Connect Instagram</span>
@@ -158,32 +160,32 @@ export default function ConnectedAccountsSection({
         </div>
       </div>
 
-      {/* Accounts List / Grid */}
+      {/* Accounts List / Empty State */}
       {accounts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#CBD5C4] bg-[#FAF8F5]/50 p-8 text-center space-y-3">
-          <div className="w-10 h-10 rounded-full bg-[#E2E9DC] flex items-center justify-center text-[#1F3824] mx-auto">
+        <div className="rounded-2xl border border-dashed border-[#E5E0D8] bg-[#FAF8F5]/60 p-8 text-center space-y-3">
+          <div className="w-10 h-10 rounded-full bg-white border border-[#E5E0D8] flex items-center justify-center text-[#D95D39] mx-auto shadow-2xs">
             <Share2 className="w-5 h-5" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-[#1B231B]">
+            <h3 className="text-sm font-bold text-[#18181B]">
               No social accounts connected yet
             </h3>
             <p className="text-xs text-[#52525B] max-w-md mx-auto">
-              Connect your primary TikTok or Instagram account to enable 1-click scheduled autopilot publishing.
+              Connect your primary TikTok or Instagram account to enable automated scheduling. If accounts aren&apos;t connected, you can download Drop Concierge packages directly from your dashboard.
             </p>
           </div>
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
               type="button"
               onClick={() => handleOpenConnect("tiktok")}
-              className="px-4 py-2 rounded-xl bg-[#18181B] text-white text-xs font-semibold hover:bg-black"
+              className="btn-fastlane-black text-xs px-4 py-2"
             >
               Connect TikTok
             </button>
             <button
               type="button"
               onClick={() => handleOpenConnect("instagram")}
-              className="px-4 py-2 rounded-xl bg-[#E1306C] text-white text-xs font-semibold hover:opacity-90"
+              className="px-4 py-2 rounded-full bg-[#E1306C] text-white text-xs font-semibold hover:opacity-90 shadow-2xs cursor-pointer"
             >
               Connect Instagram
             </button>
@@ -196,7 +198,7 @@ export default function ConnectedAccountsSection({
             return (
               <div
                 key={acc.id}
-                className="p-4 rounded-2xl border border-[#CBD5C4] bg-[#F6F7F2]/60 hover:bg-white hover:border-[#1F3824] transition-all flex flex-col justify-between gap-3 group"
+                className="p-4 rounded-2xl border border-[#E5E0D8] bg-[#FAF8F5]/50 hover:bg-white hover:border-[#D95D39] transition-all flex flex-col justify-between gap-3 group shadow-2xs"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2.5">
@@ -208,10 +210,10 @@ export default function ConnectedAccountsSection({
                       {isTikTok ? <TikTokIcon className="w-4 h-4" /> : <InstagramIcon className="w-4 h-4" />}
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-[#1B231B] line-clamp-1">
+                      <div className="text-xs font-bold text-[#18181B] line-clamp-1">
                         {acc.accountHandle}
                       </div>
-                      <div className="text-[10px] text-[#717E6C] line-clamp-1">
+                      <div className="text-[10px] text-[#8E8B85] line-clamp-1">
                         {acc.accountNickname || (acc.isBurner ? "Burner Satellite" : "Official Brand")}
                       </div>
                     </div>
@@ -221,18 +223,18 @@ export default function ConnectedAccountsSection({
                     type="button"
                     onClick={() => handleDisconnect(acc.id)}
                     aria-label={`Disconnect ${acc.accountHandle}`}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-[#8E8B85] hover:text-rose-600 hover:bg-rose-50 transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-[#8E8B85] hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-[#CBD5C4]/40 text-[10px]">
+                <div className="flex items-center justify-between pt-2 border-t border-[#EFECE6] text-[10px]">
                   <div className="flex items-center gap-1 text-emerald-700 font-semibold">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Active & Syncing</span>
+                    <span>Active &amp; Syncing</span>
                   </div>
-                  <span className="text-[#717E6C]">
+                  <span className="text-[#8E8B85]">
                     Cadence: 2 / day
                   </span>
                 </div>
@@ -250,7 +252,7 @@ export default function ConnectedAccountsSection({
         maxWidth="md"
       >
         <form onSubmit={handleSaveAccount} className="space-y-4">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F6F7F2] border border-[#CBD5C4]">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#FAF8F5] border border-[#E5E0D8]">
             <div
               className={`w-8 h-8 rounded-lg flex items-center justify-center text-white ${
                 platform === "tiktok" ? "bg-black" : "bg-gradient-to-tr from-[#F58529] to-[#8134AF]"
@@ -259,17 +261,17 @@ export default function ConnectedAccountsSection({
               {platform === "tiktok" ? <TikTokIcon className="w-4 h-4" /> : <InstagramIcon className="w-4 h-4" />}
             </div>
             <div>
-              <div className="text-xs font-bold text-[#1B231B] capitalize">
+              <div className="text-xs font-bold text-[#18181B] capitalize">
                 {platform} Creator Channel
               </div>
-              <div className="text-[11px] text-[#717E6C]">
+              <div className="text-[11px] text-[#8E8B85]">
                 Used for scheduled autonomous video publishing
               </div>
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-[#1B231B] block mb-1">
+            <label className="text-xs font-semibold text-[#18181B] block mb-1">
               Account Handle
             </label>
             <input
@@ -278,12 +280,12 @@ export default function ConnectedAccountsSection({
               placeholder={platform === "tiktok" ? "@yourbrand_official" : "@yourbrand"}
               value={handle}
               onChange={(e) => setHandle(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824] text-xs text-[#1B231B]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39] text-xs text-[#18181B] font-medium"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-[#1B231B] block mb-1">
+            <label className="text-xs font-semibold text-[#18181B] block mb-1">
               Channel Nickname (Optional)
             </label>
             <input
@@ -291,7 +293,7 @@ export default function ConnectedAccountsSection({
               placeholder="e.g. Main Brand Channel or US Satellite #1"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824] text-xs text-[#1B231B]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39] text-xs text-[#18181B] font-medium"
             />
           </div>
 
@@ -301,7 +303,7 @@ export default function ConnectedAccountsSection({
               id="burnerCheck"
               checked={isBurner}
               onChange={(e) => setIsBurner(e.target.checked)}
-              className="h-4 w-4 rounded border-[#CBD5C4] accent-[#1F3824]"
+              className="h-4 w-4 rounded border-[#E5E0D8] accent-[#D95D39]"
             />
             <label htmlFor="burnerCheck" className="text-xs text-[#52525B] cursor-pointer">
               Mark as Burner / Satellite Account (Used for anti-shadowban creative rotation)
@@ -315,18 +317,18 @@ export default function ConnectedAccountsSection({
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#CBD5C4]/50">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#EFECE6]">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 rounded-xl border border-[#CBD5C4] text-xs font-semibold text-[#4A544A] hover:bg-[#ECEFE7]"
+              className="btn-fastlane-white text-xs px-4 py-2 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 rounded-xl bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold shadow-xs disabled:opacity-60"
+              className="btn-fastlane-black text-xs px-5 py-2 cursor-pointer disabled:opacity-60"
             >
               {isSubmitting ? "Connecting..." : "Save Account"}
             </button>
@@ -340,7 +342,7 @@ export default function ConnectedAccountsSection({
 function TikTokIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .57.04.84.12V9.32a6.34 6.34 0 0 0-.84-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V9.6a8.28 8.28 0 0 0 4.85 1.57V7.72a4.85 4.85 0 0 1-1.08-1.03z" />
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .57.04.84.12V9.32a6.34 6.34 0 0 0-.84-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V9.6a8.28 8.28 0 0 0 4.85 1.57V7.72a4.85 4.85 0 0 1-1.08-1.03z" />
     </svg>
   );
 }
@@ -354,4 +356,3 @@ function InstagramIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-

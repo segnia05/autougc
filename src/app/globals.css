@@ -80,12 +80,9 @@ body {
   letter-spacing: -0.012em;
 }
 
-/* Fastlane Signature Dot Grid Background */
+/* Fastlane Clean Canvas Background */
 .fastlane-grid-bg {
   background-color: var(--bg-canvas);
-  background-image: radial-gradient(var(--dot-color) 1.25px, transparent 1.25px);
-  background-size: var(--dot-spacing) var(--dot-spacing);
-  background-position: 0 0;
 }
 
 /* Fastlane Card Surface */
@@ -171,7 +168,7 @@ body {
 
 /* Universal Accessible Focus Rings (WCAG 2.4.7 Focus Visible) */
 :focus-visible {
-  outline: 2px solid var(--brand-primary, #1F3824);
+  outline: 2px solid var(--brand-primary, #D95D39);
   outline-offset: 2px;
 }
 
