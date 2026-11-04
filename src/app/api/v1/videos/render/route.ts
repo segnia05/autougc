@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
         hookText,
         bodyText,
         ctaText,
-        brandColor: "#1F3824",
+        brandColor: "#D95D39",
         productImageUrl: parsed.data.productImageUrl || "/images/creator-sarah.jpg",
         videoUrl: parsed.data.videoUrl || "/videos/creator-sarah.mp4",
         hookStickerType: parsed.data.hookStickerType || "tiktok_question",

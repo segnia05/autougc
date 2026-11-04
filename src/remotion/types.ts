@@ -38,7 +38,7 @@ export const DEFAULT_COMPOSITION_PROPS: UgcAdCompositionProps = {
   hookText: "Stop coding under harsh fluorescent lights in 2026.",
   bodyText: "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
   ctaText: "Click the link below and get $30 off your setup today.",
-  brandColor: "#1F3824",
+  brandColor: "#D95D39",
   productImageUrl: "/images/creator-glasses.jpg",
   hasWatermark: false,
   archetype: "organic_selfie",

@@ -93,10 +93,10 @@ export default function ContactPage() {
     <AppShell brandName={brandName}>
       <div className="max-w-6xl mx-auto space-y-8 select-none pb-12">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#CBD5C4]/70 pb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-6">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1B231B]">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#18181B]">
                 Contact Founding Team
               </h1>
               <Badge variant="emerald" size="sm">
@@ -108,8 +108,8 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4] text-[11px] font-semibold text-[#1F3824]">
-            <Clock className="w-3.5 h-3.5 text-[#1F3824]" />
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#FAF8F5] border border-[#E5E0D8] text-[11px] font-semibold text-[#18181B]">
+            <Clock className="w-3.5 h-3.5 text-[#D95D39]" />
             <span>Guaranteed reply within 2 hours</span>
           </div>
         </div>
@@ -117,31 +117,31 @@ export default function ContactPage() {
         {/* 2-Column Grid: Left Contact Form | Right Direct Channels & Concierge */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column (span 7): Contact Form */}
-          <div className="lg:col-span-7 bg-white border border-[#CBD5C4]/80 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="lg:col-span-7 bg-white border border-[#E5E0D8] rounded-3xl p-6 sm:p-8 shadow-2xs space-y-6">
             <div>
-              <h2 className="text-lg font-bold text-[#1B231B] tracking-tight">
+              <h2 className="text-lg font-bold text-[#18181B] tracking-tight">
                 Send Us a Direct Message
               </h2>
-              <p className="text-xs text-[#717E6C] mt-0.5">
+              <p className="text-xs text-[#8E8B85] mt-0.5">
                 Our founders and core engineers monitor this queue 7 days a week.
               </p>
             </div>
 
             {isSuccess ? (
-              <div className="p-8 rounded-2xl bg-[#E8F0E6] border border-[#CBD5C4] text-center space-y-3 animate-in fade-in duration-300">
-                <div className="w-12 h-12 rounded-full bg-[#1F3824] text-white flex items-center justify-center mx-auto shadow-sm">
+              <div className="p-8 rounded-2xl bg-[#FFF2ED] border border-[#FCD4C7] text-center space-y-3 animate-in fade-in duration-300">
+                <div className="w-12 h-12 rounded-full bg-[#D95D39] text-white flex items-center justify-center mx-auto shadow-sm">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-[#1B231B]">
+                <h3 className="text-base font-bold text-[#18181B]">
                   Message Received!
                 </h3>
-                <p className="text-xs text-[#4A544A] max-w-md mx-auto leading-relaxed">
+                <p className="text-xs text-[#52525B] max-w-md mx-auto leading-relaxed">
                   Thank you for reaching out. We have received your inquiry and a member of our founding team will email you back shortly.
                 </p>
                 <button
                   type="button"
                   onClick={() => setIsSuccess(false)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1F3824] text-white text-xs font-semibold hover:bg-[#162B1B] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors"
                 >
                   Send another message
                 </button>
@@ -174,8 +174,8 @@ export default function ContactPage() {
                         onClick={() => setCategory(cat.id as InquiryCategory)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
                           category === cat.id
-                            ? "bg-[#1F3824] text-white border-[#1F3824]"
-                            : "bg-[#F6F7F2] text-[#4A544A] border-[#CBD5C4] hover:border-[#1F3824]"
+                            ? "bg-[#18181B] text-white border-[#18181B]"
+                            : "bg-[#FAF8F5] text-[#52525B] border-[#E5E0D8] hover:border-[#D95D39]"
                         }`}
                       >
                         {cat.label}
@@ -196,7 +196,7 @@ export default function ContactPage() {
                       placeholder="e.g. Alex Vance"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39]"
                     />
                   </div>
 
@@ -210,7 +210,7 @@ export default function ContactPage() {
                       placeholder="alex@yourbrand.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39]"
                     />
                   </div>
                 </div>
@@ -226,7 +226,7 @@ export default function ContactPage() {
                     placeholder="Brief description of what you need..."
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39]"
                   />
                 </div>
 
@@ -236,7 +236,7 @@ export default function ContactPage() {
                     <label className="text-xs font-semibold text-[#18181B]">
                       Message
                     </label>
-                    <span className="text-[10px] text-[#717E6C]">
+                    <span className="text-[10px] text-[#8E8B85]">
                       {message.length} chars
                     </span>
                   </div>
@@ -246,7 +246,7 @@ export default function ContactPage() {
                     placeholder="Tell us what you're trying to achieve or how we can assist..."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824] resize-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39] resize-none"
                   />
                 </div>
 
@@ -254,7 +254,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting || !message.trim() || !email.trim()}
-                    className="w-full py-3 px-5 rounded-2xl bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-all hover:scale-[1.01] disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full py-3 px-5 rounded-2xl bg-[#18181B] hover:bg-[#27272A] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-all hover:scale-[1.01] disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -276,30 +276,30 @@ export default function ContactPage() {
           {/* Right Column (span 5): Direct Concierge & Channels */}
           <div className="lg:col-span-5 space-y-6">
             {/* Direct Email Card */}
-            <div className="bg-[#F6F7F2] border border-[#CBD5C4] rounded-3xl p-6 shadow-xs space-y-4">
+            <div className="bg-[#FAF8F5] border border-[#E5E0D8] rounded-3xl p-6 shadow-2xs space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#1F3824] flex items-center justify-center text-white shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-[#18181B] flex items-center justify-center text-white shrink-0">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#1B231B]">
+                  <h3 className="text-sm font-bold text-[#18181B]">
                     Email Us Directly
                   </h3>
-                  <p className="text-[11px] text-[#717E6C]">
+                  <p className="text-[11px] text-[#8E8B85]">
                     Direct inbox for all user and partner inquiries
                   </p>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white border border-[#CBD5C4] flex items-center justify-between gap-2">
-                <span className="text-xs font-mono font-semibold text-[#1B231B] select-all">
+              <div className="p-3.5 rounded-xl bg-white border border-[#E5E0D8] flex items-center justify-between gap-2">
+                <span className="text-xs font-mono font-semibold text-[#18181B] select-all">
                   support@autougc.com
                 </span>
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
                     onClick={handleCopyEmail}
-                    className="p-1.5 rounded-lg hover:bg-[#F6F7F2] text-[#4A544A] transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-[#FAF8F5] text-[#52525B] transition-colors"
                     title="Copy email"
                   >
                     {copiedEmail ? (
@@ -310,7 +310,7 @@ export default function ContactPage() {
                   </button>
                   <a
                     href="mailto:support@autougc.com"
-                    className="p-1.5 rounded-lg hover:bg-[#F6F7F2] text-[#1F3824] transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-[#FAF8F5] text-[#D95D39] transition-colors"
                     title="Open mail client"
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -318,17 +318,17 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <div className="pt-1 flex items-center gap-2 text-[11px] text-[#4A544A]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#1F3824]" />
+              <div className="pt-1 flex items-center gap-2 text-[11px] text-[#52525B]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#D95D39]" />
                 <span>Enterprise SLA available on Scale Tier</span>
               </div>
             </div>
 
             {/* Custom AI Creator Actor Requests */}
-            <div className="bg-white border border-[#CBD5C4]/80 rounded-3xl p-6 shadow-xs space-y-3">
+            <div className="bg-white border border-[#E5E0D8] rounded-3xl p-6 shadow-2xs space-y-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#D95D39]" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#1B231B]">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#18181B]">
                   Custom Creator Avatars
                 </h3>
               </div>
@@ -342,43 +342,43 @@ export default function ContactPage() {
                   setSubject("Custom AI Creator Actor Request");
                   setMessage("Hi AutoUGC team, I would like to request a custom creator actor trained for our software...");
                 }}
-                className="text-xs font-semibold text-[#1F3824] hover:underline inline-flex items-center gap-1"
+                className="text-xs font-semibold text-[#D95D39] hover:underline inline-flex items-center gap-1"
               >
                 <span>Request custom avatar training &rarr;</span>
               </button>
             </div>
 
             {/* Quick Answers / Help */}
-            <div className="bg-white border border-[#CBD5C4]/80 rounded-3xl p-6 shadow-xs space-y-3.5">
+            <div className="bg-white border border-[#E5E0D8] rounded-3xl p-6 shadow-2xs space-y-3.5">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#18181B]">
-                <HelpCircle className="w-4 h-4 text-[#1F3824]" />
+                <HelpCircle className="w-4 h-4 text-[#D95D39]" />
                 <span>Frequently Asked</span>
               </div>
 
               <div className="space-y-3 text-xs">
                 <div>
-                  <h4 className="font-semibold text-[#1B231B]">
+                  <h4 className="font-semibold text-[#18181B]">
                     How do 1-hour pre-publish email approvals work?
                   </h4>
-                  <p className="text-[11px] text-[#717E6C] mt-0.5">
+                  <p className="text-[11px] text-[#8E8B85] mt-0.5">
                     Before any video publishes to your TikTok or Instagram, we email you a 1-click approval button. If you don't approve or edit, it stays paused.
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-[#1B231B]">
+                  <h4 className="font-semibold text-[#18181B]">
                     Can I edit the generated video scripts and voices?
                   </h4>
-                  <p className="text-[11px] text-[#717E6C] mt-0.5">
+                  <p className="text-[11px] text-[#8E8B85] mt-0.5">
                     Yes! Click "Launch Studio" anytime to edit hook angles, change creator voices, customize captions, or re-render video ads.
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-[#1B231B]">
+                  <h4 className="font-semibold text-[#18181B]">
                     Can I connect burner / satellite TikTok accounts?
                   </h4>
-                  <p className="text-[11px] text-[#717E6C] mt-0.5">
+                  <p className="text-[11px] text-[#8E8B85] mt-0.5">
                     Yes. On Growth (up to 5 accounts) and Scale (up to 15 accounts), you can connect multiple satellite accounts to test different viral angles.
                   </p>
                 </div>

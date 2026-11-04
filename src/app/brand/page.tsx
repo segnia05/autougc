@@ -130,10 +130,10 @@ export default function BrandKnowledgePage() {
     <AppShell brandName={brandName}>
       <div className="max-w-5xl mx-auto space-y-8 select-none pb-16">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#CBD5C4]/70 pb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-6">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1B231B]">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#18181B]">
                 Brand Knowledge & Creative Assets
               </h1>
               <Badge variant="emerald" size="sm">
@@ -146,8 +146,8 @@ export default function BrandKnowledgePage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-[#717E6C] flex items-center gap-1 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#1F3824]" />
+            <span className="text-[11px] text-[#8E8B85] flex items-center gap-1 font-medium">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#D95D39]" />
               <span>Synced with Neon PostgreSQL</span>
             </span>
           </div>
@@ -163,8 +163,8 @@ export default function BrandKnowledgePage() {
         <form onSubmit={handleSave} className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left Column (span 7): Core Positioning & Copy */}
-            <div className="lg:col-span-7 bg-white border border-[#CBD5C4]/80 rounded-3xl p-6 sm:p-8 shadow-xs space-y-5">
-              <h2 className="text-base font-bold text-[#1B231B] tracking-tight">
+            <div className="lg:col-span-7 bg-white border border-[#E5E0D8] rounded-3xl p-6 sm:p-8 shadow-2xs space-y-5">
+              <h2 className="text-base font-bold text-[#18181B] tracking-tight">
                 Brand Identity & Narrative Anchors
               </h2>
 
@@ -179,7 +179,7 @@ export default function BrandKnowledgePage() {
                     required
                     value={brandName}
                     onChange={(e) => setBrandName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/50 focus:bg-white text-xs font-semibold text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white text-xs font-semibold text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39]"
                   />
                 </div>
 
@@ -191,7 +191,7 @@ export default function BrandKnowledgePage() {
                         href={targetUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[10px] text-[#1F3824] hover:underline flex items-center gap-0.5"
+                        className="text-[10px] text-[#D95D39] hover:underline flex items-center gap-0.5"
                       >
                         <Globe className="w-2.5 h-2.5" />
                         <span>Visit</span>
@@ -203,7 +203,7 @@ export default function BrandKnowledgePage() {
                     value={targetUrl}
                     onChange={(e) => setTargetUrl(e.target.value)}
                     placeholder="https://yourproduct.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39]"
                   />
                 </div>
               </div>
@@ -211,28 +211,28 @@ export default function BrandKnowledgePage() {
               {/* Target Audience */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-[#18181B] flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-[#1F3824]" />
+                  <Users className="w-3.5 h-3.5 text-[#D95D39]" />
                   <span>Target Audience Persona (Extracted by Gemini)</span>
                 </label>
                 <textarea
                   rows={2}
                   value={audience}
                   onChange={(e) => setAudience(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824] resize-none leading-relaxed"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39] resize-none leading-relaxed"
                 />
               </div>
 
               {/* Core Value Proposition (USP) */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-[#18181B] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#1F3824]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
                   <span>Core Value Proposition & What It Does</span>
                 </label>
                 <textarea
                   rows={3}
                   value={usp}
                   onChange={(e) => setUsp(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824] resize-none leading-relaxed"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF8F5]/50 focus:bg-white text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39] resize-none leading-relaxed"
                 />
               </div>
 
@@ -251,12 +251,12 @@ export default function BrandKnowledgePage() {
               </div>
 
               {/* Competitors List */}
-              <div className="space-y-2 pt-2 border-t border-[#CBD5C4]/60">
+              <div className="space-y-2 pt-2 border-t border-[#E5E0D8]">
                 <label className="text-xs font-semibold text-[#18181B] flex items-center gap-1.5">
                   <Swords className="w-3.5 h-3.5 text-[#D95D39]" />
                   <span>Competitor Counter-Angles (Rival Products)</span>
                 </label>
-                <p className="text-[11px] text-[#717E6C]">
+                <p className="text-[11px] text-[#8E8B85]">
                   Our script generator uses these rival names to formulate high-converting "Why I switched from..." comparison hooks.
                 </p>
 
@@ -264,7 +264,7 @@ export default function BrandKnowledgePage() {
                   {competitors.map((comp) => (
                     <span
                       key={comp}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FDF3EF] border border-[#F3CEBE] text-xs font-medium text-[#D95D39]"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FFF2ED] border border-[#FCD4C7] text-xs font-medium text-[#D95D39]"
                     >
                       <span>{comp}</span>
                       <button
@@ -290,12 +290,12 @@ export default function BrandKnowledgePage() {
                         handleAddCompetitor();
                       }
                     }}
-                    className="flex-1 px-3 py-2 rounded-xl border border-[#CBD5C4] text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#1F3824]/20 focus:border-[#1F3824]"
+                    className="flex-1 px-3 py-2 rounded-xl border border-[#E5E0D8] text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#D95D39]/20 focus:border-[#D95D39]"
                   />
                   <button
                     type="button"
                     onClick={handleAddCompetitor}
-                    className="px-3.5 py-2 rounded-xl bg-[#F6F7F2] hover:bg-[#E8F0E6] border border-[#CBD5C4] text-xs font-semibold text-[#1F3824] transition-colors flex items-center gap-1"
+                    className="px-3.5 py-2 rounded-xl bg-[#FAF8F5] hover:bg-[#FFF2ED] border border-[#E5E0D8] text-xs font-semibold text-[#D95D39] transition-colors flex items-center gap-1"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add</span>
@@ -306,21 +306,21 @@ export default function BrandKnowledgePage() {
 
             {/* Right Column (span 5): Live Software Mockup & Assets */}
             <div className="lg:col-span-5 space-y-6">
-              <div className="bg-white border border-[#CBD5C4]/80 rounded-3xl p-6 shadow-xs space-y-4">
+              <div className="bg-white border border-[#E5E0D8] rounded-3xl p-6 shadow-2xs space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#1B231B]">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#18181B]">
                     Live Software Proof UI
                   </h3>
                   <Badge variant="emerald" size="sm">
                     macOS Window
                   </Badge>
                 </div>
-                <p className="text-[11px] text-[#717E6C] leading-relaxed">
+                <p className="text-[11px] text-[#8E8B85] leading-relaxed">
                   Automatically extracted from your website. Floats dynamically over creator selfie video ads in Remotion to prove your product actually works.
                 </p>
 
                 {screenshotUrl ? (
-                  <div className="relative aspect-video rounded-2xl overflow-hidden border border-[#CBD5C4] bg-[#18181B] shadow-inner group">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden border border-[#E5E0D8] bg-[#18181B] shadow-inner group">
                     <Image
                       src={screenshotUrl}
                       alt={`${brandName} Software UI`}
@@ -331,12 +331,12 @@ export default function BrandKnowledgePage() {
                     <div className="absolute inset-0 bg-black/10" />
                   </div>
                 ) : (
-                  <div className="p-8 rounded-2xl border border-dashed border-[#CBD5C4] bg-[#FAF8F5] flex flex-col items-center justify-center text-center space-y-2">
-                    <Globe className="w-6 h-6 text-[#717E6C]" />
-                    <p className="text-xs text-[#1B231B] font-semibold">
+                  <div className="p-8 rounded-2xl border border-dashed border-[#E5E0D8] bg-[#FAF8F5] flex flex-col items-center justify-center text-center space-y-2">
+                    <Globe className="w-6 h-6 text-[#8E8B85]" />
+                    <p className="text-xs text-[#18181B] font-semibold">
                       No software screenshot captured
                     </p>
-                    <p className="text-[10px] text-[#717E6C]">
+                    <p className="text-[10px] text-[#8E8B85]">
                       Captured automatically when onboarding with a valid URL.
                     </p>
                   </div>
@@ -344,12 +344,12 @@ export default function BrandKnowledgePage() {
               </div>
 
               {/* Tips Callout */}
-              <div className="p-5 rounded-3xl bg-[#F6F7F2] border border-[#CBD5C4] space-y-2 text-xs">
-                <div className="font-bold text-[#1F3824] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
+              <div className="p-5 rounded-3xl bg-[#FAF8F5] border border-[#E5E0D8] space-y-2 text-xs">
+                <div className="font-bold text-[#18181B] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
                   <span>Pro Tip for Viral UGC</span>
                 </div>
-                <p className="text-[11px] text-[#4A544A] leading-relaxed">
+                <p className="text-[11px] text-[#52525B] leading-relaxed">
                   Keeping your target audience specific (e.g. "college students writing essays under deadline") yields 3.4x higher watch retention than broad labels like "everyone".
                 </p>
               </div>
@@ -357,7 +357,7 @@ export default function BrandKnowledgePage() {
           </div>
 
           {/* Footer Save Action */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#CBD5C4]/70">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E5E0D8]">
             {isSaved && (
               <span className="flex items-center gap-1.5 text-xs text-emerald-800 font-bold bg-[#E8F0E6] px-3 py-1.5 rounded-xl border border-emerald-300">
                 <Check className="w-3.5 h-3.5" />
@@ -368,7 +368,7 @@ export default function BrandKnowledgePage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-all hover:scale-[1.01] disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#18181B] hover:bg-[#27272A] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-all hover:scale-[1.01] disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

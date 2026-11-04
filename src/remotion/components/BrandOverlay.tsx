@@ -65,7 +65,7 @@ export const BrandOverlay: React.FC<BrandOverlayProps> = ({
         )}
         <span
           style={{
-            color: "#1B231B",
+            color: "#18181B",
             fontSize: "20px",
             fontWeight: 800,
             fontFamily: "Plus Jakarta Sans, sans-serif",
@@ -77,9 +77,9 @@ export const BrandOverlay: React.FC<BrandOverlayProps> = ({
         <span
           style={{
             fontSize: "14px",
-            color: "#1F3824",
+            color: "#D95D39",
             fontWeight: 700,
-            backgroundColor: "#E2E9DC",
+            backgroundColor: "#FFF9F6",
             padding: "2px 8px",
             borderRadius: "9999px",
             letterSpacing: "0.04em",
@@ -99,7 +99,7 @@ export const BrandOverlay: React.FC<BrandOverlayProps> = ({
             border: "1px solid rgba(27, 35, 27, 0.15)",
             padding: "8px 16px",
             borderRadius: "9999px",
-            color: "#1B231B",
+            color: "#18181B",
             fontSize: "15px",
             fontWeight: 700,
             fontFamily: "Geist Mono, monospace",

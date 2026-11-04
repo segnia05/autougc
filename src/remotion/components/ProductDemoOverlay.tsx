@@ -70,7 +70,7 @@ export const ProductDemoOverlay: React.FC<ProductDemoOverlayProps> = ({
             fontWeight: 800,
             textTransform: "uppercase",
             letterSpacing: "0.1em",
-            color: "#1F3824",
+            color: "#D95D39",
           }}
         >
           LIVE DEMO · {brandName}

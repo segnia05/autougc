@@ -28,6 +28,8 @@ const isPublicRoute = createRouteMatcher([
   "/api/v1/workspace(.*)",
   "/api/v1/social(.*)",
   "/api/v1/campaigns(.*)",
+  "/api/v1/analytics(.*)",
+  "/api/v1/videos(.*)",
   "/api/v1/audio/synthesize",
   "/api/v1/scripts/generate",
   "/api/v1/videos/render/status(.*)",

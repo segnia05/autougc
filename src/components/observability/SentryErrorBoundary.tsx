@@ -78,11 +78,11 @@ export class SentryErrorBoundary extends Component<Props, State> {
               <AlertTriangle className="w-6 h-6" aria-hidden="true" />
             </div>
 
-            <h2 className="text-xl font-bold text-[#1B231B] mb-2">
+            <h2 className="text-xl font-bold text-[#18181B] mb-2">
               Something went wrong
             </h2>
 
-            <p className="text-sm text-[#4A544A] mb-6 leading-relaxed">
+            <p className="text-sm text-[#52525B] mb-6 leading-relaxed">
               An unexpected application error occurred. An incident diagnostic report has
               been logged to Sentry for our engineering team.
             </p>

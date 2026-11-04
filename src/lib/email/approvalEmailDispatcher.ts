@@ -58,16 +58,16 @@ export async function dispatchApprovalNotification({ postId }: DispatchApprovalP
       <head>
         <meta charset="utf-8">
         <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F6F7F2; margin: 0; padding: 32px 16px; color: #1B231B; }
-          .container { max-width: 560px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; border: 1px solid #E2E8D8; padding: 32px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-          .badge { display: inline-block; background: #E8F5E9; color: #1F3824; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 10px; border-radius: 999px; margin-bottom: 16px; border: 1px solid #C8E6C9; }
-          h1 { font-size: 24px; font-weight: 800; color: #1F3824; margin: 0 0 12px 0; letter-spacing: -0.02em; }
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #FAF8F5; margin: 0; padding: 32px 16px; color: #18181B; }
+          .container { max-width: 560px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; border: 1px solid #E5E0D8; padding: 32px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+          .badge { display: inline-block; background: #FFF9F6; color: #D95D39; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 10px; border-radius: 999px; margin-bottom: 16px; border: 1px solid #F5E2DA; }
+          h1 { font-size: 24px; font-weight: 800; color: #D95D39; margin: 0 0 12px 0; letter-spacing: -0.02em; }
           p { font-size: 15px; line-height: 1.6; color: #4A5568; margin: 0 0 20px 0; }
-          .video-card { background: #F6F7F2; border-radius: 12px; border: 1px solid #E2E8D8; padding: 18px; margin-bottom: 24px; }
+          .video-card { background: #FAF8F5; border-radius: 12px; border: 1px solid #E5E0D8; padding: 18px; margin-bottom: 24px; }
           .caption-text { font-size: 14px; font-style: italic; color: #2D3748; line-height: 1.5; margin-bottom: 8px; }
           .meta-row { font-size: 12px; color: #718096; }
-          .btn-primary { display: block; text-align: center; background: #1F3824; color: #FFFFFF !important; font-weight: 700; font-size: 16px; text-decoration: none; padding: 14px 24px; border-radius: 10px; margin-bottom: 12px; }
-          .btn-secondary { display: block; text-align: center; background: #F6F7F2; color: #1F3824 !important; font-weight: 600; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 10px; border: 1px solid #CBD5C4; }
+          .btn-primary { display: block; text-align: center; background: #D95D39; color: #FFFFFF !important; font-weight: 700; font-size: 16px; text-decoration: none; padding: 14px 24px; border-radius: 10px; margin-bottom: 12px; }
+          .btn-secondary { display: block; text-align: center; background: #FAF8F5; color: #D95D39 !important; font-weight: 600; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 10px; border: 1px solid #E5E0D8; }
           .footer { font-size: 12px; color: #A0AEC0; text-align: center; margin-top: 24px; }
         </style>
       </head>

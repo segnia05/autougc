@@ -66,7 +66,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               "w-full h-11 px-3.5 bg-[var(--bg-surface)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] text-sm rounded-lg border border-subtle shadow-tactile transition-all outline-none",
               "focus:border-[var(--accent-primary)] focus:ring-2 focus:ring-[var(--accent-primary)] focus:bg-[var(--bg-surface-elevated)]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] focus-visible:ring-offset-2",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               leftIcon && "pl-10",
               rightElement && "pr-12",

@@ -73,7 +73,7 @@ export default function RootLayout({
         {/* Skip to Main Content Link for Keyboard & Screen Reader Users (WCAG 2.4.1 Bypass Blocks) */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-[#1F3824] focus:text-white focus:rounded-full focus:shadow-2xl focus:ring-2 focus:ring-[#10B981] focus:ring-offset-2 text-xs font-bold uppercase tracking-wider transition-all"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-[#18181B] focus:text-white focus:rounded-full focus:shadow-2xl focus:ring-2 focus:ring-[#D95D39] focus:ring-offset-2 text-xs font-bold uppercase tracking-wider transition-all"
         >
           Skip to main content
         </a>

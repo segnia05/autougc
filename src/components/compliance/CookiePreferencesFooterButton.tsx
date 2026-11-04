@@ -11,7 +11,7 @@ export function CookiePreferencesFooterButton() {
           window.dispatchEvent(new CustomEvent("open_cookie_preferences"));
         }
       }}
-      className="hover:text-[#1F3824] font-medium transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] rounded-sm"
+      className="hover:text-[#D95D39] font-medium transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] rounded-sm"
     >
       Cookie Preferences
     </button>

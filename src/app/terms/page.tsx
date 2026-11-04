@@ -9,23 +9,23 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#18181B] selection:bg-[#D95D39] selection:text-white">
       <Navbar />
 
       <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 pt-16 pb-24 w-full">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4] mb-4 text-xs font-semibold uppercase tracking-wider">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F4F1EA] text-[#D95D39] border border-[#E5E0D8] mb-4 text-xs font-semibold uppercase tracking-wider">
           Legal & Compliance
         </div>
-        <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B] mb-3">
+        <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-[family-name:var(--font-display)] text-[#18181B] mb-3">
           Terms of Service
         </h1>
-        <p className="text-xs text-[#717E6C] font-mono mb-8">
+        <p className="text-xs text-[#8E8B85] font-mono mb-8">
           Last updated: October 2026 • Effective Date: January 1, 2026
         </p>
 
-        <div className="bg-white border border-[#CBD5C4]/70 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8 text-xs text-[#4A544A] leading-relaxed">
+        <div className="bg-white border border-[#E5E0D8]/70 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8 text-xs text-[#52525B] leading-relaxed">
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[#1B231B]">
+            <h2 className="text-base font-bold text-[#18181B]">
               1. Acceptance of Terms
             </h2>
             <p>
@@ -34,7 +34,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[#1B231B]">
+            <h2 className="text-base font-bold text-[#18181B]">
               2. Commercial Usage Rights & Video Ownership
             </h2>
             <p>
@@ -46,7 +46,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[#1B231B]">
+            <h2 className="text-base font-bold text-[#18181B]">
               3. Subscription Billing, 14-Day Money-Back Guarantee & Cancellation
             </h2>
             <p>
@@ -58,7 +58,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[#1B231B]">
+            <h2 className="text-base font-bold text-[#18181B]">
               4. 99.9% Uptime Service Level Agreement (SLA)
             </h2>
             <p>
@@ -67,7 +67,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[#1B231B]">
+            <h2 className="text-base font-bold text-[#18181B]">
               5. Prohibited Uses
             </h2>
             <p>
@@ -76,7 +76,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-base font-bold text-[#1B231B]">
+            <h2 className="text-base font-bold text-[#18181B]">
               6. Limitation of Liability
             </h2>
             <p>

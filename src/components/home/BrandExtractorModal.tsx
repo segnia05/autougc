@@ -52,7 +52,7 @@ export function BrandExtractorModal({
   const [keyFeatures, setKeyFeatures] = useState<string[]>([]);
   const [newFeatureInput, setNewFeatureInput] = useState("");
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
-  const [primaryColor, setPrimaryColor] = useState("#1F3824");
+  const [primaryColor, setPrimaryColor] = useState("#D95D39");
   const [targetUrl, setTargetUrl] = useState(initialUrl);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -197,33 +197,33 @@ export function BrandExtractorModal({
       title=""
       maxWidth="xl"
     >
-      <div className="p-2 sm:p-5 text-[#1B231B]">
+      <div className="p-2 sm:p-5 text-[#18181B]">
         {/* Loading Phase */}
         {phase === "loading" && (
           <div className="flex flex-col items-center justify-center py-16 text-center gap-6">
             <div className="relative">
-              <div className="h-16 w-16 rounded-3xl bg-[#1F3824] flex items-center justify-center text-white shadow-xl">
-                <Globe className="h-8 w-8 text-[#E2E9DC] animate-pulse" />
+              <div className="h-16 w-16 rounded-3xl bg-[#D95D39] flex items-center justify-center text-white shadow-xl">
+                <Globe className="h-8 w-8 text-[#F4F1EA] animate-pulse" />
               </div>
               <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-[#FFE600] flex items-center justify-center shadow-md">
-                <Sparkles className="h-3.5 w-3.5 text-[#1F3824]" />
+                <Sparkles className="h-3.5 w-3.5 text-[#D95D39]" />
               </div>
             </div>
 
             <div className="flex flex-col gap-2 max-w-md">
-              <h3 className="text-xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
+              <h3 className="text-xl font-normal font-[family-name:var(--font-display)] text-[#18181B]">
                 Extracting Brand Intelligence
               </h3>
-              <p className="text-xs text-[#4A544A] leading-relaxed">
+              <p className="text-xs text-[#52525B] leading-relaxed">
                 {statusMessage}
               </p>
             </div>
 
-            <div className="w-64 bg-[#E2E9DC] h-1.5 rounded-full overflow-hidden">
-              <div className="bg-[#1F3824] h-full w-2/3 animate-pulse rounded-full" />
+            <div className="w-64 bg-[#F4F1EA] h-1.5 rounded-full overflow-hidden">
+              <div className="bg-[#D95D39] h-full w-2/3 animate-pulse rounded-full" />
             </div>
 
-            <p className="text-[11px] text-[#717E6C] font-mono">
+            <p className="text-[11px] text-[#8E8B85] font-mono">
               Target: {targetUrl}
             </p>
           </div>
@@ -233,24 +233,24 @@ export function BrandExtractorModal({
         {phase === "review" && (
           <div className="flex flex-col gap-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#CBD5C4]/60 gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#E5E0D8]/60 gap-3">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-[#1F3824] flex items-center justify-center text-white shrink-0 shadow-sm">
-                  <Sliders className="h-5 w-5 text-[#E2E9DC]" />
+                <div className="h-10 w-10 rounded-2xl bg-[#D95D39] flex items-center justify-center text-white shrink-0 shadow-sm">
+                  <Sliders className="h-5 w-5 text-[#F4F1EA]" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
+                  <h2 className="text-xl font-normal font-[family-name:var(--font-display)] text-[#18181B]">
                     Brand Intelligence Review
                   </h2>
-                  <p className="text-xs text-[#4A544A]">
+                  <p className="text-xs text-[#52525B]">
                     Review and customize your extracted product positioning before generating video ads.
                   </p>
                 </div>
               </div>
 
               {targetUrl && (
-                <div className="flex items-center gap-1.5 text-[11px] text-[#4A544A] bg-[#ECEFE7] px-3 py-1 rounded-full border border-[#CBD5C4] self-start sm:self-auto">
-                  <Globe className="h-3.5 w-3.5 text-[#1F3824]" />
+                <div className="flex items-center gap-1.5 text-[11px] text-[#52525B] bg-[#FAF8F5] px-3 py-1 rounded-full border border-[#E5E0D8] self-start sm:self-auto">
+                  <Globe className="h-3.5 w-3.5 text-[#D95D39]" />
                   <span className="font-mono truncate max-w-[200px]">{targetUrl}</span>
                 </div>
               )}
@@ -263,7 +263,7 @@ export function BrandExtractorModal({
                 {/* Brand Name & Audience */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#1F3824] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-semibold text-[#D95D39] uppercase tracking-wider mb-1.5">
                       Brand Name
                     </label>
                     <input
@@ -271,12 +271,12 @@ export function BrandExtractorModal({
                       value={brandName}
                       onChange={(e) => setBrandName(e.target.value)}
                       placeholder="e.g. Linear"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-white text-xs text-[#1B231B] font-semibold focus:outline-none focus:border-[#1F3824] focus:ring-1 focus:ring-[#1F3824]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-white text-xs text-[#18181B] font-semibold focus:outline-none focus:border-[#D95D39] focus:ring-1 focus:ring-[#D95D39]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#1F3824] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-semibold text-[#D95D39] uppercase tracking-wider mb-1.5">
                       Target Audience / Niche
                     </label>
                     <input
@@ -284,7 +284,7 @@ export function BrandExtractorModal({
                       value={targetAudience}
                       onChange={(e) => setTargetAudience(e.target.value)}
                       placeholder="e.g. Software Engineers, Founders"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-white text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824] focus:ring-1 focus:ring-[#1F3824]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-white text-xs text-[#18181B] focus:outline-none focus:border-[#D95D39] focus:ring-1 focus:ring-[#D95D39]"
                     />
                   </div>
                 </div>
@@ -292,36 +292,36 @@ export function BrandExtractorModal({
                 {/* Core Value Proposition */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-semibold text-[#1F3824] uppercase tracking-wider">
+                    <label className="block text-xs font-semibold text-[#D95D39] uppercase tracking-wider">
                       Core Value Proposition & Hook USP
                     </label>
-                    <span className="text-[10px] text-[#717E6C]">Used in script body & proof</span>
+                    <span className="text-[10px] text-[#8E8B85]">Used in script body & proof</span>
                   </div>
                   <textarea
                     rows={3}
                     value={coreValueProp}
                     onChange={(e) => setCoreValueProp(e.target.value)}
                     placeholder="What painful problem does this software solve in 30 seconds?"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-white text-xs text-[#1B231B] leading-relaxed focus:outline-none focus:border-[#1F3824] focus:ring-1 focus:ring-[#1F3824]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-white text-xs text-[#18181B] leading-relaxed focus:outline-none focus:border-[#D95D39] focus:ring-1 focus:ring-[#D95D39]"
                   />
                 </div>
 
                 {/* Key Features / Hook Angles */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#1F3824] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-[#D95D39] uppercase tracking-wider mb-1.5">
                     Key Features / Talking Points
                   </label>
                   <div className="flex flex-wrap gap-2 mb-2.5">
                     {keyFeatures.map((feat, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E2E9DC] border border-[#CBD5C4] text-xs font-medium text-[#1F3824]"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F4F1EA] border border-[#E5E0D8] text-xs font-medium text-[#D95D39]"
                       >
                         <span>{feat}</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveFeature(feat)}
-                          className="hover:text-rose-700 text-[#717E6C] font-bold text-xs"
+                          className="hover:text-rose-700 text-[#8E8B85] font-bold text-xs"
                           title="Remove feature"
                         >
                           ×
@@ -342,7 +342,7 @@ export function BrandExtractorModal({
                         }
                       }}
                       placeholder="Add talking point (press Enter)..."
-                      className="flex-1 px-3.5 py-2 rounded-xl border border-[#CBD5C4] bg-white text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824]"
+                      className="flex-1 px-3.5 py-2 rounded-xl border border-[#E5E0D8] bg-white text-xs text-[#18181B] focus:outline-none focus:border-[#D95D39]"
                     />
                     <Button
                       type="button"
@@ -359,7 +359,7 @@ export function BrandExtractorModal({
                 {/* Manual URL Input Option if started without one */}
                 {!initialUrl && (
                   <div>
-                    <label className="block text-xs font-semibold text-[#1F3824] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-semibold text-[#D95D39] uppercase tracking-wider mb-1.5">
                       Website URL (Optional)
                     </label>
                     <input
@@ -367,16 +367,16 @@ export function BrandExtractorModal({
                       value={targetUrl}
                       onChange={(e) => setTargetUrl(e.target.value)}
                       placeholder="https://yourproduct.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5C4] bg-white text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E0D8] bg-white text-xs text-[#18181B] focus:outline-none focus:border-[#D95D39]"
                     />
                   </div>
                 )}
               </div>
 
               {/* Right Column: Visual Proof & Mockup Preview (5 cols) */}
-              <div className="lg:col-span-5 flex flex-col gap-4 bg-[#F6F7F2] p-4 rounded-2xl border border-[#CBD5C4]">
+              <div className="lg:col-span-5 flex flex-col gap-4 bg-[#FAF8F5] p-4 rounded-2xl border border-[#E5E0D8]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#1F3824] uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-[#D95D39] uppercase tracking-wider">
                     Visual Proof Demonstration
                   </span>
                   <Badge variant="neutral" className="text-[10px]">
@@ -385,14 +385,14 @@ export function BrandExtractorModal({
                 </div>
 
                 {/* macOS Mockup Device Frame */}
-                <div className="rounded-2xl overflow-hidden border border-[#CBD5C4] bg-white shadow-md">
-                  <div className="bg-[#E2E9DC] px-3 py-2 flex items-center justify-between border-b border-[#CBD5C4]">
+                <div className="rounded-2xl overflow-hidden border border-[#E5E0D8] bg-white shadow-md">
+                  <div className="bg-[#F4F1EA] px-3 py-2 flex items-center justify-between border-b border-[#E5E0D8]">
                     <div className="flex items-center gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
                       <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
                       <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
                     </div>
-                    <span className="text-[10px] font-mono text-[#4A544A] font-semibold truncate max-w-[150px]">
+                    <span className="text-[10px] font-mono text-[#52525B] font-semibold truncate max-w-[150px]">
                       {brandName || "Product Demo"}
                     </span>
                     <div className="w-4" />
@@ -408,24 +408,24 @@ export function BrandExtractorModal({
                         unoptimized
                       />
                     ) : (
-                      <div className="flex flex-col items-center gap-2 p-6 text-center text-[#717E6C]">
-                        <ImageIcon className="h-8 w-8 text-[#CBD5C4]" />
+                      <div className="flex flex-col items-center gap-2 p-6 text-center text-[#8E8B85]">
+                        <ImageIcon className="h-8 w-8 text-[#E5E0D8]" />
                         <span className="text-xs">No screenshot captured</span>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <p className="text-[11px] text-[#4A544A] leading-relaxed">
+                <p className="text-[11px] text-[#52525B] leading-relaxed">
                   This viewport screenshot will slide into the ad at seconds 3.5–9 as proof of your product while creator Sarah or Alex narrates your value proposition.
                 </p>
 
                 {/* Ready Angles Pill */}
-                <div className="p-3 rounded-xl bg-white border border-[#CBD5C4] flex flex-col gap-1.5">
-                  <span className="text-[11px] font-bold text-[#1F3824]">
+                <div className="p-3 rounded-xl bg-white border border-[#E5E0D8] flex flex-col gap-1.5">
+                  <span className="text-[11px] font-bold text-[#D95D39]">
                     5 Multi-Angle Video Ads Ready:
                   </span>
-                  <div className="grid grid-cols-2 gap-1 text-[10px] text-[#4A544A]">
+                  <div className="grid grid-cols-2 gap-1 text-[10px] text-[#52525B]">
                     <span>• The Secret Hack</span>
                     <span>• The $5,000 Mistake</span>
                     <span>• Pattern Interrupt</span>
@@ -437,11 +437,11 @@ export function BrandExtractorModal({
             </div>
 
             {/* Footer Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-[#CBD5C4]/60 gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-[#E5E0D8]/60 gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="text-xs text-[#717E6C] hover:text-[#1B231B] transition-colors"
+                className="text-xs text-[#8E8B85] hover:text-[#18181B] transition-colors"
               >
                 Cancel & Return
               </button>

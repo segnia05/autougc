@@ -11,7 +11,7 @@ interface CallToActionStickerProps {
 export const CallToActionSticker: React.FC<CallToActionStickerProps> = ({
   ctaText,
   brandName,
-  brandColor = "#1F3824",
+  brandColor = "#D95D39",
   totalDurationSeconds = 15,
 }) => {
   const frame = useCurrentFrame();

@@ -103,7 +103,7 @@ export function Modal({
     >
       {/* Soft Organic Backdrop */}
       <div
-        className="fixed inset-0 bg-[#1B231B]/45 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+        className="fixed inset-0 bg-[#18181B]/40 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -117,23 +117,23 @@ export function Modal({
         aria-describedby={description ? "modal-description" : undefined}
         tabIndex={-1}
         className={cn(
-          "relative w-full max-h-[92vh] flex flex-col bg-white border border-[#CBD5C4] rounded-3xl shadow-2xl p-6 text-[#1B231B] z-10 animate-in zoom-in-95 duration-200 overflow-hidden focus:outline-none",
+          "relative w-full max-h-[92vh] flex flex-col bg-white border border-[#E5E0D8] rounded-2xl shadow-xl p-6 text-[#18181B] z-10 animate-in zoom-in-95 duration-200 overflow-hidden focus:outline-none",
           maxWidthStyles[maxWidth],
           className
         )}
       >
-        <div className="flex items-start justify-between pb-3 shrink-0 border-b border-[#CBD5C4]/40">
+        <div className="flex items-start justify-between pb-3 shrink-0 border-b border-[#E5E0D8]">
           <div className="flex flex-col gap-1 pr-4">
             {title && (
               <h3
                 id="modal-title"
-                className="text-lg font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B]"
+                className="text-lg font-semibold tracking-tight font-display text-[#18181B]"
               >
                 {title}
               </h3>
             )}
             {description && (
-              <p id="modal-description" className="text-xs text-[#4A544A]">
+              <p id="modal-description" className="text-xs text-[#52525B]">
                 {description}
               </p>
             )}
@@ -141,7 +141,7 @@ export function Modal({
           <button
             onClick={onClose}
             type="button"
-            className="p-1.5 rounded-full text-[#717E6C] hover:text-[#1B231B] hover:bg-[#ECEFE7] transition-colors cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2"
+            className="p-1.5 rounded-full text-[#8E8B85] hover:text-[#18181B] hover:bg-[#F4F1EA] transition-colors cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] focus-visible:ring-offset-2"
             aria-label="Close dialog"
           >
             <X className="h-4 w-4" aria-hidden="true" />

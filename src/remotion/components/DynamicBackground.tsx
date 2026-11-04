@@ -10,7 +10,7 @@ interface DynamicBackgroundProps {
 export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
   productImageUrl,
   videoUrl,
-  brandColor = "#1F3824",
+  brandColor = "#D95D39",
 }) => {
   const frame = useCurrentFrame();
 
@@ -34,7 +34,7 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
       style={{
         position: "absolute",
         inset: 0,
-        backgroundColor: "#F6F7F2",
+        backgroundColor: "#FAF8F5",
         overflow: "hidden",
       }}
     >

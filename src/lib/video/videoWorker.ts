@@ -95,7 +95,7 @@ export function registerVideoRenderWorker(): void {
         hookText,
         bodyText,
         ctaText,
-        brandColor: "#1F3824",
+        brandColor: "#D95D39",
         productImageUrl: productImageUrl || "/images/creator-sarah.jpg",
         videoUrl: activeVideoUrl,
         hookStickerType: hookStickerType || "tiktok_question",

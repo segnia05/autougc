@@ -28,7 +28,7 @@ export const UgcAdComposition: React.FC<UgcAdCompositionProps> = (props) => {
   });
 
   return (
-    <AbsoluteFill style={{ backgroundColor: "#F6F7F2", overflow: "hidden" }}>
+    <AbsoluteFill style={{ backgroundColor: "#FAF8F5", overflow: "hidden" }}>
       {/* Track 1: Dynamic Visual Background / Real Creator Video Motion */}
       <DynamicBackground
         productImageUrl={mergedProps.productImageUrl}
@@ -77,7 +77,7 @@ export const UgcAdComposition: React.FC<UgcAdCompositionProps> = (props) => {
               fontWeight: 800,
               textTransform: "uppercase",
               letterSpacing: "0.1em",
-              color: "#1F3824",
+              color: "#D95D39",
               marginBottom: "12px",
             }}
           >

@@ -120,22 +120,22 @@ export default function CookieConsentBanner() {
           aria-label="Cookie and Privacy Consent Banner"
           className="fixed bottom-4 left-4 right-4 md:left-8 md:right-auto md:max-w-xl z-50 animate-in fade-in slide-in-from-bottom-5 duration-300"
         >
-          <div className="bg-white/95 backdrop-blur-md border border-[#CBD5C4] rounded-2xl p-5 shadow-2xl text-[#1B231B] space-y-4">
+          <div className="bg-white/95 backdrop-blur-md border border-[#E5E0D8] rounded-2xl p-5 shadow-2xl text-[#18181B] space-y-4">
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-[#F4F1EA] text-[#D95D39] flex items-center justify-center shrink-0">
                 <Cookie className="w-5 h-5" aria-hidden="true" />
               </div>
-              <div className="flex-1 text-xs leading-relaxed text-[#4A544A]">
-                <h3 className="text-sm font-bold text-[#1B231B] mb-1">
+              <div className="flex-1 text-xs leading-relaxed text-[#52525B]">
+                <h3 className="text-sm font-bold text-[#18181B] mb-1">
                   We respect your privacy
                 </h3>
                 <p>
                   AutoUGC uses strictly necessary cookies for authentication and optional analytics cookies to measure video generation speed. See our{" "}
-                  <Link href="/cookies" className="text-[#1F3824] underline font-medium hover:text-black">
+                  <Link href="/cookies" className="text-[#D95D39] underline font-medium hover:text-black">
                     Cookie Policy
                   </Link>{" "}
                   and{" "}
-                  <Link href="/privacy" className="text-[#1F3824] underline font-medium hover:text-black">
+                  <Link href="/privacy" className="text-[#D95D39] underline font-medium hover:text-black">
                     Privacy Policy
                   </Link>.
                 </p>
@@ -163,7 +163,7 @@ export default function CookieConsentBanner() {
               <Button
                 variant="ghost"
                 onClick={() => setIsPreferencesOpen(true)}
-                className="text-xs px-3 py-2 text-[#4A544A] hover:text-[#1B231B] flex items-center gap-1"
+                className="text-xs px-3 py-2 text-[#52525B] hover:text-[#18181B] flex items-center gap-1"
               >
                 <Sliders className="w-3.5 h-3.5" aria-hidden="true" />
                 Customize
@@ -187,8 +187,8 @@ export default function CookieConsentBanner() {
           <div className="bg-white rounded-3xl max-w-lg w-full border border-neutral-200 p-6 sm:p-8 shadow-2xl space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-neutral-200">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-[#1F3824]" aria-hidden="true" />
-                <h2 id="cookie-modal-title" className="text-lg font-bold text-[#1B231B]">
+                <ShieldCheck className="w-5 h-5 text-[#D95D39]" aria-hidden="true" />
+                <h2 id="cookie-modal-title" className="text-lg font-bold text-[#18181B]">
                   Cookie Consent Preferences
                 </h2>
               </div>
@@ -202,7 +202,7 @@ export default function CookieConsentBanner() {
               </button>
             </div>
 
-            <p className="text-xs text-[#4A544A] leading-relaxed">
+            <p className="text-xs text-[#52525B] leading-relaxed">
               Customize which categories of cookies you permit AutoUGC to store on your device in accordance with GDPR and the ePrivacy Directive.
             </p>
 
@@ -211,12 +211,12 @@ export default function CookieConsentBanner() {
               <div className="p-4 rounded-xl border border-neutral-200 bg-neutral-50/70 flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-[#1B231B]">Strictly Necessary</span>
+                    <span className="font-bold text-xs text-[#18181B]">Strictly Necessary</span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-200 text-neutral-700 font-semibold">
                       Always Active
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#717E6C] leading-relaxed">
+                  <p className="text-[11px] text-[#8E8B85] leading-relaxed">
                     Essential for authentication, CSRF origin verification, and system security. Cannot be disabled.
                   </p>
                 </div>
@@ -225,7 +225,7 @@ export default function CookieConsentBanner() {
                   checked
                   disabled
                   aria-label="Strictly Necessary Cookies (Always Active)"
-                  className="mt-1 h-4 w-4 rounded accent-[#1F3824] cursor-not-allowed opacity-70"
+                  className="mt-1 h-4 w-4 rounded accent-[#D95D39] cursor-not-allowed opacity-70"
                 />
               </div>
 
@@ -233,12 +233,12 @@ export default function CookieConsentBanner() {
               <div className="p-4 rounded-xl border border-neutral-200 bg-white flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-[#1B231B]">Analytics & Performance</span>
+                    <span className="font-bold text-xs text-[#18181B]">Analytics & Performance</span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">
                       Optional
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#717E6C] leading-relaxed">
+                  <p className="text-[11px] text-[#8E8B85] leading-relaxed">
                     Enables PostHog and Datadog to gather anonymized telemetry regarding video render latencies and app stability.
                   </p>
                 </div>
@@ -248,7 +248,7 @@ export default function CookieConsentBanner() {
                   checked={analyticsAllowed}
                   onChange={(e) => setAnalyticsAllowed(e.target.checked)}
                   aria-label="Allow Analytics & Performance Cookies"
-                  className="mt-1 h-4 w-4 rounded accent-[#1F3824] cursor-pointer"
+                  className="mt-1 h-4 w-4 rounded accent-[#D95D39] cursor-pointer"
                 />
               </div>
 
@@ -256,12 +256,12 @@ export default function CookieConsentBanner() {
               <div className="p-4 rounded-xl border border-neutral-200 bg-white flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-[#1B231B]">Marketing & Attribution</span>
+                    <span className="font-bold text-xs text-[#18181B]">Marketing & Attribution</span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">
                       Optional
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#717E6C] leading-relaxed">
+                  <p className="text-[11px] text-[#8E8B85] leading-relaxed">
                     Tracks referral campaign performance and partnership attribution.
                   </p>
                 </div>
@@ -271,7 +271,7 @@ export default function CookieConsentBanner() {
                   checked={marketingAllowed}
                   onChange={(e) => setMarketingAllowed(e.target.checked)}
                   aria-label="Allow Marketing & Attribution Cookies"
-                  className="mt-1 h-4 w-4 rounded accent-[#1F3824] cursor-pointer"
+                  className="mt-1 h-4 w-4 rounded accent-[#D95D39] cursor-pointer"
                 />
               </div>
             </div>

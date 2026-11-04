@@ -131,7 +131,7 @@ export const NativeHookSticker: React.FC<NativeHookStickerProps> = ({
               width: "40px",
               height: "40px",
               borderRadius: "9999px",
-              backgroundColor: "#1F3824",
+              backgroundColor: "#D95D39",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

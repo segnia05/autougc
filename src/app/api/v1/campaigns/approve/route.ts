@@ -126,8 +126,8 @@ function renderSuccessHtml(data: {
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: #F6F7F2;
-      color: #1B231B;
+      background-color: #FAF8F5;
+      color: #18181B;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       min-height: 100vh;
       display: flex;
@@ -137,7 +137,7 @@ function renderSuccessHtml(data: {
     }
     .card {
       background: #FFFFFF;
-      border: 1px solid #CBD5C4;
+      border: 1px solid #E5E0D8;
       border-radius: 24px;
       max-width: 520px;
       width: 100%;
@@ -149,21 +149,21 @@ function renderSuccessHtml(data: {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #E2E9DC;
-      color: #1F3824;
+      background: #F4F1EA;
+      color: #D95D39;
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       padding: 6px 14px;
       border-radius: 9999px;
-      border: 1px solid #CBD5C4;
+      border: 1px solid #E5E0D8;
       margin-bottom: 16px;
     }
     h1 {
       font-size: 24px;
       font-weight: 800;
-      color: #1B231B;
+      color: #18181B;
       margin-bottom: 8px;
     }
     p.subtitle {
@@ -180,7 +180,7 @@ function renderSuccessHtml(data: {
       border-radius: 18px;
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      border: 2px solid #1F3824;
+      border: 2px solid #D95D39;
       background: #000;
     }
     video {
@@ -191,7 +191,7 @@ function renderSuccessHtml(data: {
     }
     .meta-banner {
       background: #FAFBF9;
-      border: 1px solid #CBD5C4;
+      border: 1px solid #E5E0D8;
       border-radius: 14px;
       padding: 12px 16px;
       display: flex;
@@ -201,14 +201,14 @@ function renderSuccessHtml(data: {
       font-size: 12px;
       text-align: left;
     }
-    .meta-banner strong { color: #1F3824; }
+    .meta-banner strong { color: #D95D39; }
     .btn-download {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       width: 100%;
-      background: #1F3824;
+      background: #D95D39;
       color: #FFFFFF !important;
       text-decoration: none;
       font-weight: 700;
@@ -221,7 +221,7 @@ function renderSuccessHtml(data: {
     .btn-download:hover { background: #162B1B; }
     .copy-section {
       background: #F9FAF7;
-      border: 1px solid #CBD5C4;
+      border: 1px solid #E5E0D8;
       border-radius: 16px;
       padding: 16px;
       text-align: left;
@@ -231,7 +231,7 @@ function renderSuccessHtml(data: {
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      color: #717E6C;
+      color: #8E8B85;
       letter-spacing: 0.05em;
       margin-bottom: 6px;
     }
@@ -243,15 +243,15 @@ function renderSuccessHtml(data: {
       border: 1px solid #D6DEC8;
       font-family: inherit;
       font-size: 12px;
-      color: #1B231B;
+      color: #18181B;
       background: #FFFFFF;
       resize: none;
       margin-bottom: 8px;
     }
     .btn-copy {
       background: #FFFFFF;
-      border: 1px solid #CBD5C4;
-      color: #1F3824;
+      border: 1px solid #E5E0D8;
+      color: #D95D39;
       font-size: 12px;
       font-weight: 600;
       padding: 8px 14px;
@@ -264,13 +264,13 @@ function renderSuccessHtml(data: {
     .btn-copy:hover { background: #F0F4EC; }
     .footer-links {
       font-size: 12px;
-      color: #717E6C;
+      color: #8E8B85;
       display: flex;
       justify-content: center;
       gap: 16px;
       margin-top: 16px;
     }
-    .footer-links a { color: #1F3824; font-weight: 600; text-decoration: none; }
+    .footer-links a { color: #D95D39; font-weight: 600; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -287,11 +287,11 @@ function renderSuccessHtml(data: {
 
     <div class="meta-banner">
       <div>
-        <div style="color: #717E6C; font-size: 11px;">Optimal Post Time:</div>
+        <div style="color: #8E8B85; font-size: 11px;">Optimal Post Time:</div>
         <strong>⏰ ${escapeHtml(data.scheduledTime)}</strong>
       </div>
       <div>
-        <div style="color: #717E6C; font-size: 11px;">Target:</div>
+        <div style="color: #8E8B85; font-size: 11px;">Target:</div>
         <strong>${escapeHtml(data.channelHandle)}</strong>
       </div>
     </div>
@@ -343,8 +343,8 @@ function renderErrorHtml(message: string) {
   <title>AutoUGC • Link Expired</title>
   <style>
     body {
-      background-color: #F6F7F2;
-      color: #1B231B;
+      background-color: #FAF8F5;
+      color: #18181B;
       font-family: -apple-system, sans-serif;
       min-height: 100vh;
       display: flex;
@@ -354,7 +354,7 @@ function renderErrorHtml(message: string) {
     }
     .card {
       background: #FFFFFF;
-      border: 1px solid #CBD5C4;
+      border: 1px solid #E5E0D8;
       border-radius: 24px;
       max-width: 440px;
       width: 100%;
@@ -366,11 +366,11 @@ function renderErrorHtml(message: string) {
       color: #991b1b;
       margin-bottom: 12px;
     }
-    p { font-size: 13px; color: #4A544A; line-height: 1.5; margin-bottom: 24px; }
+    p { font-size: 13px; color: #52525B; line-height: 1.5; margin-bottom: 24px; }
     .btn {
       display: inline-block;
       width: 100%;
-      background: #1F3824;
+      background: #D95D39;
       color: #FFFFFF;
       text-decoration: none;
       font-weight: 600;

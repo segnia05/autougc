@@ -83,19 +83,19 @@ export default function BlogIndexPage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B] selection:bg-[#1F3824] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#18181B] selection:bg-[#D95D39] selection:text-white">
       <Navbar />
 
       <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-24 w-full focus:outline-none">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E2E9DC] text-[#1F3824] border border-[#CBD5C4] mb-4 text-xs font-semibold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F4F1EA] text-[#D95D39] border border-[#E5E0D8] mb-4 text-xs font-semibold uppercase tracking-wider">
             AutoUGC Performance Journal
           </div>
-          <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-[family-name:var(--font-serif)] text-[#1B231B] mb-4">
+          <h1 className="text-3xl sm:text-5xl font-normal tracking-tight font-display text-[#18181B] mb-4">
             Field notes on <span className="italic">algorithmic distribution</span> and ad creative.
           </h1>
-          <p className="text-sm sm:text-base text-[#4A544A] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#52525B] leading-relaxed">
             Data-backed breakdowns of viral hook mechanics, auction psychology, video retention math, and autonomous multi-account growth.
           </p>
         </div>
@@ -117,8 +117,8 @@ export default function BlogIndexPage() {
                 aria-selected={selectedTag === tab.id}
                 onClick={() => setSelectedTag(tab.id)}
                 className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${selectedTag === tab.id
-                  ? "bg-[#1F3824] text-white shadow-sm"
-                  : "bg-white border border-[#CBD5C4]/70 text-[#4A544A] hover:text-[#1B231B] hover:border-[#1F3824]"
+                  ? "bg-[#18181B] text-white shadow-sm"
+                  : "bg-white border border-[#E5E0D8]/70 text-[#52525B] hover:text-[#18181B] hover:border-[#D95D39]"
                   }`}
               >
                 {tab.label}
@@ -127,14 +127,14 @@ export default function BlogIndexPage() {
           </div>
 
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#717E6C]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#8E8B85]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search research notes..."
               aria-label="Search research articles"
-              className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-[#CBD5C4] rounded-full text-[#1B231B] placeholder-[#717E6C] focus:outline-none focus:border-[#1F3824]"
+              className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-[#E5E0D8] rounded-full text-[#18181B] placeholder-[#8E8B85] focus:outline-none focus:border-[#18181B]"
             />
           </div>
         </div>
@@ -145,38 +145,38 @@ export default function BlogIndexPage() {
           if (!featured) return null;
           return (
             <div className="max-w-5xl mx-auto mb-14">
-              <div className="rounded-3xl bg-white border border-[#CBD5C4]/70 p-8 sm:p-12 shadow-sm flex flex-col lg:flex-row gap-8 items-start justify-between">
+              <div className="rounded-3xl bg-white border border-[#E5E0D8]/70 p-8 sm:p-12 shadow-sm flex flex-col lg:flex-row gap-8 items-start justify-between">
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#E2E9DC] text-[#1F3824]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#F4F1EA] text-[#18181B]">
                       Featured Research
                     </span>
-                    <span className="text-xs text-[#717E6C]">•</span>
-                    <span className="text-xs text-[#717E6C] font-mono">{featured.readTime}</span>
+                    <span className="text-xs text-[#8E8B85]">•</span>
+                    <span className="text-xs text-[#8E8B85] font-mono">{featured.readTime}</span>
                   </div>
 
-                  <h2 className="text-2xl sm:text-3xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B] hover:text-[#1F3824] transition-colors">
+                  <h2 className="text-2xl sm:text-3xl font-normal font-[family-name:var(--font-display)] text-[#18181B] hover:text-[#D95D39] transition-colors">
                     {featured.title}
                   </h2>
 
-                  <p className="text-xs sm:text-sm text-[#4A544A] leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#52525B] leading-relaxed">
                     {featured.excerpt}
                   </p>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-[#CBD5C4]/60">
+                  <div className="flex items-center justify-between pt-4 border-t border-[#E5E0D8]/60">
                     <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-[#1F3824] text-white flex items-center justify-center font-bold text-xs">
+                      <div className="h-8 w-8 rounded-full bg-[#18181B] text-white flex items-center justify-center font-bold text-xs">
                         AR
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-[#1B231B]">{featured.author}</div>
-                        <div className="text-[10px] text-[#717E6C]">{featured.authorRole}</div>
+                        <div className="text-xs font-semibold text-[#18181B]">{featured.author}</div>
+                        <div className="text-[10px] text-[#8E8B85]">{featured.authorRole}</div>
                       </div>
                     </div>
 
                     <Link
                       href="/tools"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1F3824] hover:underline"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D95D39] hover:underline"
                     >
                       <span>Read Study</span>
                       <ArrowRight className="h-3.5 w-3.5" />
@@ -193,28 +193,28 @@ export default function BlogIndexPage() {
           {filteredArticles.map((art) => (
             <div
               key={art.id}
-              className="rounded-3xl bg-white border border-[#CBD5C4]/70 p-7 shadow-sm flex flex-col justify-between hover:border-[#1F3824]/60 transition-all group"
+              className="rounded-3xl bg-white border border-[#E5E0D8]/70 p-7 shadow-sm flex flex-col justify-between hover:border-[#18181B]/60 transition-all group"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#ECEFE7] text-[#4A544A]">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#FAF8F5] text-[#52525B]">
                     {art.category}
                   </span>
-                  <span className="text-[11px] text-[#717E6C] font-mono">{art.readTime}</span>
+                  <span className="text-[11px] text-[#8E8B85] font-mono">{art.readTime}</span>
                 </div>
 
-                <h3 className="text-lg font-bold text-[#1B231B] group-hover:text-[#1F3824] transition-colors mb-3 leading-snug">
+                <h3 className="text-lg font-bold text-[#18181B] group-hover:text-[#D95D39] transition-colors mb-3 leading-snug">
                   {art.title}
                 </h3>
 
-                <p className="text-xs text-[#4A544A] leading-relaxed mb-6">
+                <p className="text-xs text-[#52525B] leading-relaxed mb-6">
                   {art.excerpt}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-[#CBD5C4]/60 text-xs text-[#717E6C]">
+              <div className="flex items-center justify-between pt-4 border-t border-[#E5E0D8]/60 text-xs text-[#8E8B85]">
                 <span>{art.author}</span>
-                <span className="font-semibold text-[#1F3824] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                <span className="font-semibold text-[#D95D39] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
                   Read <ArrowRight className="h-3 w-3" />
                 </span>
               </div>
@@ -224,25 +224,25 @@ export default function BlogIndexPage() {
 
         {/* Newsletter Signup in Organic Sage Container */}
         <section className="max-w-4xl mx-auto">
-          <div className="rounded-3xl bg-[#ECEFE7] border border-[#CBD5C4] p-8 sm:p-12 text-center space-y-4">
-            <span className="text-[11px] font-sans uppercase tracking-widest text-[#1F3824] font-bold block">
+          <div className="rounded-3xl bg-[#FAF8F5] border border-[#E5E0D8] p-8 sm:p-12 text-center space-y-4">
+            <span className="text-[11px] font-sans uppercase tracking-widest text-[#D95D39] font-bold block">
               Bi-Weekly Ad Dispatch
             </span>
-            <h2 className="text-2xl sm:text-3xl font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
+            <h2 className="text-2xl sm:text-3xl font-normal font-[family-name:var(--font-display)] text-[#18181B]">
               Get the top 3 converting UGC hooks sent to your inbox
             </h2>
-            <p className="text-xs sm:text-sm text-[#4A544A] max-w-md mx-auto">
+            <p className="text-xs sm:text-sm text-[#52525B] max-w-md mx-auto">
               Every other Tuesday, we break down high-performing video ads across TikTok and Meta with exact retention curves.
             </p>
             <div className="flex flex-col sm:flex-row gap-2.5 max-w-md mx-auto pt-2">
               <input
                 type="email"
                 placeholder="founder@yourcompany.com"
-                className="flex-1 bg-white border border-[#CBD5C4] px-4 py-2.5 rounded-full text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824]"
+                className="flex-1 bg-white border border-[#E5E0D8] px-4 py-2.5 rounded-full text-xs text-[#18181B] focus:outline-none focus:border-[#18181B]"
               />
               <button
                 type="button"
-                className="px-6 py-2.5 rounded-full bg-[#1F3824] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm cursor-pointer shrink-0"
+                className="px-6 py-2.5 rounded-full bg-[#18181B] hover:bg-[#162B1B] text-white text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm cursor-pointer shrink-0"
               >
                 Subscribe
               </button>
