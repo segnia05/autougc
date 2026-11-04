@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Globe } from "lucide-react";
 import OnboardingHeader, { OnboardingStep } from "@/components/onboarding/OnboardingHeader";
 import StepYou from "@/components/onboarding/StepYou";
 import StepBrand from "@/components/onboarding/StepBrand";
@@ -20,6 +21,8 @@ function OnboardingContent() {
   const initialUrlFromQuery = searchParams.get("url") || "";
 
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("you");
+  const [isAnalyzingWebsite, setIsAnalyzingWebsite] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Onboarding Form State
   const [formData, setFormData] = useState({
@@ -35,8 +38,6 @@ function OnboardingContent() {
     competitors: [] as string[],
     whatItDoes: "",
   });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialUrlFromQuery && !formData.url) {
@@ -54,6 +55,8 @@ function OnboardingContent() {
       ...prev,
       ...stepData,
     }));
+
+    setIsAnalyzingWebsite(true);
 
     try {
       const res = await fetch("/api/v1/projects/scrape", {
@@ -112,9 +115,10 @@ function OnboardingContent() {
         goal: `Sell more ${brand} plans`,
         whatItDoes: `${brand} is a software product for founders and creators.`,
       }));
+    } finally {
+      setIsAnalyzingWebsite(false);
+      setCurrentStep("brand");
     }
-
-    setCurrentStep("brand");
   };
 
   // Step 2: YOUR BRAND confirmed → Save to Database & Launch Dashboard
@@ -160,9 +164,7 @@ function OnboardingContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#18181B] fastlane-grid-bg antialiased">
-      <OnboardingHeader
-        currentStep={currentStep}
-      />
+      <OnboardingHeader currentStep={currentStep} />
 
       <main className="flex-1 flex flex-col justify-center px-4 py-8 max-w-7xl w-full mx-auto">
         {currentStep === "you" && (
@@ -184,12 +186,32 @@ function OnboardingContent() {
           />
         )}
 
+        {/* Full-screen analysis overlay during Step 1 scrape */}
+        {isAnalyzingWebsite && (
+          <div className="fixed inset-0 bg-[#FAF8F5]/90 backdrop-blur-md z-50 flex flex-col items-center justify-center gap-4 text-center px-4 animate-in fade-in duration-200">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full border-3 border-[#D95D39]/20 border-t-[#D95D39] animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Globe className="w-5 h-5 text-[#D95D39]" />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-base font-bold text-[#18181B]">Analyzing website &amp; extracting UI...</p>
+              <p className="text-xs text-[#52525B] max-w-sm">
+                Extracting value propositions, capturing high-resolution UI proof, and discovering competitor angles with Gemini.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Full-screen submission overlay */}
         {isSubmitting && (
-          <div className="fixed inset-0 bg-[#FAF8F5]/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4">
-            <div className="w-8 h-8 border-3 border-[#D95D39]/30 border-t-[#D95D39] rounded-full animate-spin" />
-            <p className="text-sm font-semibold text-[#18181B]">Setting up your SaaS command center…</p>
-            <p className="text-xs text-[#8E8B85]">Saving your brand profile &amp; generating your custom UGC creatives</p>
+          <div className="fixed inset-0 bg-[#FAF8F5]/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4 text-center px-4 animate-in fade-in duration-200">
+            <div className="w-10 h-10 border-3 border-[#D95D39]/30 border-t-[#D95D39] rounded-full animate-spin" />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-[#18181B]">Setting up your SaaS command center…</p>
+              <p className="text-xs text-[#8E8B85]">Saving your brand profile &amp; generating your custom UGC creatives</p>
+            </div>
           </div>
         )}
       </main>
