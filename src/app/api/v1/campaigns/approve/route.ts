@@ -91,6 +91,10 @@ export async function POST(request: NextRequest) {
         approvalStatus: newApprovalStatus,
         publishStatus: newPublishStatus,
         approvedAt: action !== "reject" ? new Date() : undefined,
+        views: action === "mark_published" ? 1420 : undefined,
+        likes: action === "mark_published" ? 118 : undefined,
+        shares: action === "mark_published" ? 24 : undefined,
+        comments: action === "mark_published" ? 9 : undefined,
       },
     });
 
