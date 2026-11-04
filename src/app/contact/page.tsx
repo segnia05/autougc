@@ -162,11 +162,11 @@ export default function ContactPage() {
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {[
-                      { id: "ad_strategy", label: "Ad Strategy & Hooks" },
-                      { id: "custom_creator", label: "Custom Creator Actors" },
-                      { id: "enterprise_bulk", label: "Enterprise & High Volume" },
-                      { id: "billing", label: "Billing & Plans" },
-                      { id: "feedback", label: "Bug / Feature Request" },
+                      { id: "ad_strategy", label: "Ad Strategy" },
+                      { id: "custom_creator", label: "Custom Creator" },
+                      { id: "enterprise_bulk", label: "Enterprise Bulk" },
+                      { id: "billing", label: "Billing" },
+                      { id: "feedback", label: "Feedback" },
                     ].map((cat) => (
                       <button
                         key={cat.id}
