@@ -59,47 +59,47 @@ describe("Calendar Day Inspector & Post Scheduling (Step 5)", () => {
   });
 
   it("2. Extracts exact 9:16 video creative specifications", () => {
-    const post = samplePosts[0];
+    const post = samplePosts[0]!;
     assert.strictEqual(post.video?.videoUrl, "/videos/creator-sarah.mp4");
     assert.strictEqual(post.video?.thumbnailUrl, "/images/creator-sarah.jpg");
     assert.strictEqual(post.video?.durationSeconds, 22);
   });
 
   it("3. Resolves creator persona appropriately", () => {
-    const post = samplePosts[0];
+    const post = samplePosts[0]!;
     const voice = (post.video?.voiceId || "").toLowerCase();
     const isSarah = voice.includes("sarah");
     assert.ok(isSarah, "Should resolve to Sarah for casual DTC");
     
-    const post2 = samplePosts[1];
+    const post2 = samplePosts[1]!;
     const voice2 = (post2.video?.voiceId || "").toLowerCase();
     const isAlex = voice2.includes("alex");
     assert.ok(isAlex, "Should resolve to Alex for founder proof");
   });
 
   it("4. Formats target social account handle and fleet platform", () => {
-    const post = samplePosts[0];
+    const post = samplePosts[0]!;
     assert.strictEqual(post.socialAccount.accountHandle, "@debotifytext_official");
     assert.strictEqual(post.socialAccount.platform, "tiktok");
   });
 
   it("5. Formats exact posting time with Peak Reach indicator", () => {
-    const post = samplePosts[0];
+    const post = samplePosts[0]!;
     assert.strictEqual(post.localScheduledTime, "4:15 PM EST");
     const formatted = `${post.localScheduledTime} — Peak Reach`;
     assert.strictEqual(formatted, "4:15 PM EST — Peak Reach");
   });
 
   it("6. Parses viral caption and hashtags into structured badges", () => {
-    const post = samplePosts[0];
-    const hashtags = post.caption.match(/#[a-zA-Z0-9_]+/g) || [];
+    const post = samplePosts[0]!;
+    const hashtags: string[] = post.caption.match(/#[a-zA-Z0-9_]+/g) || [];
     assert.ok(hashtags.includes("#UGC"), "Must contain #UGC");
     assert.ok(hashtags.includes("#Productivity"), "Must contain #Productivity");
     assert.ok(hashtags.includes("#DebotifyText"), "Must contain #DebotifyText");
   });
 
   it("7. Supports Download MP4 and Drop Package concierge actions", () => {
-    const post = samplePosts[0];
+    const post = samplePosts[0]!;
     let dropPackageTriggered = false;
     const onOpenDropPackage = (p: ScheduledCalendarPost) => {
       dropPackageTriggered = true;
