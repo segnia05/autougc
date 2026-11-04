@@ -73,9 +73,9 @@ export default function WorkspaceCreditBadge({
           </div>
         </div>
 
-        {/* Right: Credits in Digital LCD Font & Chevron */}
+        {/* Right: Credits in Clean Mono Font & Chevron */}
         <div className="flex flex-col items-end pl-2">
-          <div className="text-xs font-bold text-[#18181B] font-digital tracking-tight">
+          <div className="text-xs font-bold text-[#18181B] font-mono tracking-tight">
             {credits} cr
           </div>
           <ChevronUp
@@ -98,7 +98,7 @@ export default function WorkspaceCreditBadge({
               <span className="text-xs font-bold uppercase tracking-wider text-[#8E8B85]">
                 Creative Credits
               </span>
-              <span className="text-xs font-digital font-bold text-[#D95D39]">
+              <span className="text-xs font-mono font-bold text-[#D95D39]">
                 {credits} / {maxCredits} cr
               </span>
             </div>

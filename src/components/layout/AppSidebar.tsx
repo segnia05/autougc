@@ -8,9 +8,7 @@ import {
   Layers,
   Sparkles,
   Fingerprint,
-  Radar,
   BarChart3,
-  Plus,
   MessageSquare,
 } from "lucide-react";
 import WorkspaceSelector from "./WorkspaceSelector";
@@ -25,7 +23,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Home", href: "/dashboard", icon: Home, badge: "1" },
+  { label: "Home", href: "/dashboard", icon: Home },
   { label: "Campaigns", href: "/campaigns", icon: Layers },
   { label: "Studio", href: "/studio", icon: Sparkles, isSpecial: true },
   { label: "Brand", href: "/brand", icon: Fingerprint },
@@ -82,35 +80,15 @@ export default function AppSidebar({ brandName, credits = 50 }: AppSidebarProps)
                   <span>{item.label}</span>
                 </div>
 
-                {/* Badge Indicator (e.g. "• 1") */}
-                {item.badge && (
-                  <div className="flex items-center gap-1 text-[11px] font-semibold text-[#D95D39]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#D95D39]" />
-                    <span>{item.badge}</span>
-                  </div>
+                {item.isSpecial && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#FDF3EF] text-[#D95D39] border border-[#F3CEBE]">
+                    Editor
+                  </span>
                 )}
               </Link>
             );
           })}
         </nav>
-
-        {/* Conversational Copilot Threads Section */}
-        <div className="pt-2">
-          <div className="flex items-center justify-between px-3 py-1">
-            <span className="text-xs font-semibold text-[#52525B]">Chats</span>
-            <button
-              type="button"
-              title="New thread"
-              className="w-5 h-5 rounded-md border border-[#E5E0D8] bg-white hover:bg-[#FAF8F5] text-[#D95D39] flex items-center justify-center transition-all shadow-2xs"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="mt-2 px-3">
-            <p className="text-xs text-[#8E8B85]">No threads yet.</p>
-          </div>
-        </div>
       </div>
 
       {/* Bottom Section: Credit Consumption Badge */}
@@ -125,4 +103,3 @@ export default function AppSidebar({ brandName, credits = 50 }: AppSidebarProps)
     </aside>
   );
 }
-

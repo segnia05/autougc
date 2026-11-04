@@ -64,7 +64,6 @@
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
-  --font-digital: var(--font-digital);
 }
 
 /* Base Styles */
@@ -146,12 +145,7 @@ body {
   border-color: var(--border-active);
 }
 
-/* Fastlane Digital LCD Font Utility */
-.font-digital {
-  font-family: var(--font-digital), var(--font-mono), monospace;
-  font-feature-settings: "tnum";
-  letter-spacing: 0.02em;
-}
+
 
 /* Fastlane Terracotta Glow Utility */
 .glow-terracotta-top {
