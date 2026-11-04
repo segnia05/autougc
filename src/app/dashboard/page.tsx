@@ -178,7 +178,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell brandName={brandName}>
-      <main id="main-content" tabIndex={-1} className="space-y-8 focus:outline-none pb-12">
+      <div className="space-y-8 pb-12">
         {/* 1. SaaS Profile Header & Quick Studio Launch */}
         <BrandProfileHeader
           brandName={brandName}
@@ -224,7 +224,7 @@ export default function DashboardPage() {
           onRefreshPosts={fetchScheduledPosts}
           onOpenScheduleModal={() => setIsScheduleModalOpen(true)}
         />
-      </main>
+      </div>
 
       {/* Schedule Post Modal */}
       <SchedulePostModal
