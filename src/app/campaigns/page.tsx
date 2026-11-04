@@ -5,6 +5,7 @@ import AppShell from "@/components/layout/AppShell";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import SchedulePostModal from "@/components/dashboard/SchedulePostModal";
+import DropConciergeModal, { DropPackageData } from "@/components/dashboard/DropConciergeModal";
 import { ConnectedSocialAccount } from "@/components/dashboard/ConnectedAccountsSection";
 import Link from "next/link";
 import Image from "next/image";
@@ -69,6 +70,22 @@ export default function CampaignsPage() {
   const [previewingVideo, setPreviewingVideo] = useState<CreatorVideo | null>(null);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [videoToSchedule, setVideoToSchedule] = useState<CreatorVideo | null>(null);
+  const [selectedDropPackage, setSelectedDropPackage] = useState<DropPackageData | null>(null);
+
+  const handleOpenDropPackage = (video: CreatorVideo) => {
+    setSelectedDropPackage({
+      videoId: video.id,
+      videoUrl: video.videoUrl,
+      thumbnailUrl: video.thumbnailUrl,
+      brandName: video.brandName,
+      hookAngle: video.hookAngle.replace(/_/g, " "),
+      hookHeadline: video.hookText,
+      caption: video.caption,
+      hashtags: video.hashtags || [],
+      optimalPostingTime: video.scheduledSlot?.localScheduledTime || "Today at 4:15 PM EST (Peak Reach)",
+      channelHandle: video.scheduledSlot?.accountHandle,
+    });
+  };
 
   // Fetch videos
   const fetchVideos = useCallback(async () => {
@@ -382,13 +399,23 @@ export default function CampaignsPage() {
 
                   {/* Actions Footer */}
                   <div className="p-4 pt-0 space-y-2">
+                    {/* Primary Drop Concierge Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleOpenDropPackage(video)}
+                      className="w-full py-2.5 px-3 rounded-xl bg-[#E2E9DC] hover:bg-[#D4DFCC] border border-[#CBD5C4] text-[11px] font-bold text-[#1F3824] flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-[#1F3824]" />
+                      <span>Ready to Drop • Get Package</span>
+                    </button>
+
                     <div className="grid grid-cols-2 gap-2">
                       <Link
                         href={`/studio?videoId=${video.id}`}
                         className="py-2 px-3 rounded-xl bg-[#F6F7F2] hover:bg-white border border-[#CBD5C4] text-[11px] font-bold text-[#1B231B] text-center hover:border-[#1F3824] transition-colors flex items-center justify-center gap-1"
                       >
                         <Sparkles className="w-3 h-3 text-[#1F3824]" />
-                        <span>Edit in Studio</span>
+                        <span>Studio</span>
                       </Link>
 
                       <button
@@ -486,6 +513,16 @@ export default function CampaignsPage() {
           </div>
         </Modal>
       )}
+
+      {/* Drop Concierge Modal */}
+      <DropConciergeModal
+        isOpen={!!selectedDropPackage}
+        onClose={() => setSelectedDropPackage(null)}
+        dropData={selectedDropPackage}
+        onMarkPublished={() => {
+          fetchVideos();
+        }}
+      />
 
       {/* Schedule Post Modal */}
       <SchedulePostModal

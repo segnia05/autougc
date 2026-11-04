@@ -19,11 +19,13 @@ import { ScheduledCalendarPost } from "./InteractiveMonthlyCalendar";
 interface PrePublishApprovalQueueProps {
   posts: ScheduledCalendarPost[];
   onRefresh: () => void;
+  onOpenDropPackage?: (post: ScheduledCalendarPost) => void;
 }
 
 export default function PrePublishApprovalQueue({
   posts,
   onRefresh,
+  onOpenDropPackage,
 }: PrePublishApprovalQueueProps) {
   const [approvingId, setApprovingId] = useState<string | null>(null);
 
@@ -124,14 +126,25 @@ export default function PrePublishApprovalQueue({
                 </div>
               </div>
 
-              {/* Actions: 1-Click Approve or Edit in Studio */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#CBD5C4]/40">
+              {/* Actions: Get Drop Package, Edit in Studio, or 1-Click Approve */}
+              <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-[#CBD5C4]/40">
+                {onOpenDropPackage && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenDropPackage(post)}
+                    className="px-3 py-1.5 rounded-xl border border-[#CBD5C4] hover:bg-[#E2E9DC] bg-[#FAF8F5] text-xs font-semibold text-[#1F3824] inline-flex items-center gap-1.5 transition-colors"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-[#1F3824]" />
+                    <span>Drop Package</span>
+                  </button>
+                )}
+
                 <Link
                   href={`/studio?scheduledPostId=${post.id}`}
                   className="px-3 py-1.5 rounded-xl border border-[#CBD5C4] hover:border-[#1F3824] bg-white text-xs font-semibold text-[#1B231B] inline-flex items-center gap-1.5 transition-colors"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-[#1F3824]" />
-                  <span>Edit in Studio</span>
+                  <span>Studio</span>
                 </Link>
 
                 <button

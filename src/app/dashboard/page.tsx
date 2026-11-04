@@ -11,6 +11,7 @@ import InteractiveMonthlyCalendar, {
   ScheduledCalendarPost,
 } from "@/components/dashboard/InteractiveMonthlyCalendar";
 import SchedulePostModal from "@/components/dashboard/SchedulePostModal";
+import DropConciergeModal, { DropPackageData } from "@/components/dashboard/DropConciergeModal";
 import { UpgradePaywallModal, PaywallTriggerReason } from "@/components/billing/UpgradePaywallModal";
 import { useRouter } from "next/navigation";
 
@@ -37,6 +38,24 @@ export default function DashboardPage() {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [upgradeTriggerReason, setUpgradeTriggerReason] = useState<PaywallTriggerReason>("general");
+  const [selectedDropPackage, setSelectedDropPackage] = useState<DropPackageData | null>(null);
+
+  const handleOpenDropPackageFromPost = (post: ScheduledCalendarPost) => {
+    setSelectedDropPackage({
+      postId: post.id,
+      videoId: post.video?.id,
+      videoUrl: post.video?.videoUrl || "/videos/creator-sarah.mp4",
+      thumbnailUrl: post.video?.thumbnailUrl || "/images/creator-sarah.jpg",
+      brandName: brandName || "Your Brand",
+      hookAngle: post.hookAngle || "Pattern Interrupt",
+      hookHeadline: post.hookAngle || "Viral UGC Hook",
+      caption: post.caption,
+      hashtags: ["UGC", "AI", "Marketing", brandName.replace(/\s+/g, "")],
+      optimalPostingTime: post.localScheduledTime || "Today at 4:15 PM EST (Peak Reach)",
+      targetPlatform: post.socialAccount.platform,
+      channelHandle: post.socialAccount.accountHandle,
+    });
+  };
 
   // Fetch Connected Accounts
   const fetchAccounts = useCallback(async () => {
@@ -179,13 +198,14 @@ export default function DashboardPage() {
           }}
         />
 
-        {/* 2. Pre-Publish 1-Hour Approval Queue (With 1-click approve & Studio link) */}
+        {/* 2. Pre-Publish 1-Hour Approval Queue (With 1-click approve, Drop Package & Studio link) */}
         <PrePublishApprovalQueue
           posts={posts}
           onRefresh={() => {
             fetchScheduledPosts();
             fetchAccounts();
           }}
+          onOpenDropPackage={handleOpenDropPackageFromPost}
         />
 
         {/* 3. Connected Social Accounts / Devices Section */}
@@ -231,6 +251,17 @@ export default function DashboardPage() {
         onUpgradeSuccess={(newTier) => {
           setPlanTier(newTier);
           setIsUpgradeModalOpen(false);
+          fetchAccounts();
+        }}
+      />
+
+      {/* Drop Concierge Modal */}
+      <DropConciergeModal
+        isOpen={!!selectedDropPackage}
+        onClose={() => setSelectedDropPackage(null)}
+        dropData={selectedDropPackage}
+        onMarkPublished={() => {
+          fetchScheduledPosts();
           fetchAccounts();
         }}
       />

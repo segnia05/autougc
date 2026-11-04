@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/db/client";
 import { getAuthContext } from "@/lib/auth/getAuthContext";
+import { generateViralHooksWithAi } from "@/lib/ai/hookEngine";
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
         take: 50,
       });
 
-      // Auto-seed initial creator UGC videos if none exist
+      // Auto-generate initial creator UGC videos using Gemini Hook Engine if none exist
       if (dbVideos.length === 0) {
         const project = await prisma.project.findFirst({
           where: { organizationId: orgId },
@@ -43,12 +44,20 @@ export async function GET(request: NextRequest) {
 
         if (project) {
           const brand = project.brandName || "Your Brand";
-          const seeds = [
+          
+          // Generate customized viral hooks using brand intelligence
+          const generatedHooks = await generateViralHooksWithAi({
+            brandName: brand,
+            targetUrl: project.targetUrl,
+            whatItDoes: project.whatItDoes || project.summary || "",
+            targetAudience: project.targetAudience || "Target users and customers",
+            coreUsp: project.summary || "",
+            competitors: project.competitors || [],
+            count: 4,
+          });
+
+          const creatorProfiles = [
             {
-              angle: "problem_agitation" as const,
-              hook: `Why is nobody talking about this insane hack for ${brand}?!`,
-              body: `If you use AI for writing or content creation, this saves hours every single day.`,
-              cta: `Tap the link in bio to test ${brand} free!`,
               creator: "Sarah Miller (Handheld Organic)",
               voiceId: "sarah_dtc_founder",
               thumbnailUrl: project.screenshotUrl || "/images/creator-sarah.jpg",
@@ -56,10 +65,6 @@ export async function GET(request: NextRequest) {
               duration: 21.4,
             },
             {
-              angle: "secret_hack" as const,
-              hook: `Watch how ${brand} rewrites and humanizes 1,000 words in 3 seconds flat.`,
-              body: `It bypasses every major detector with 0% AI detection score, no prompt engineering needed.`,
-              cta: `Try it free with the link in bio!`,
               creator: "Alex Vance (DTC Software Demo)",
               voiceId: "alex_casual_dtc",
               thumbnailUrl: "/images/creator-alex.jpg",
@@ -67,10 +72,6 @@ export async function GET(request: NextRequest) {
               duration: 24.8,
             },
             {
-              angle: "negative_hook" as const,
-              hook: `Stop paying for 5 different clunky rewrite tools in 2026.`,
-              body: `I tested every competitor so you don't have to. Here's why ${brand} is dominating right now.`,
-              cta: `Bookmark this and check ${brand} out!`,
               creator: "Marcus Chen (Minimalist Tech Review)",
               voiceId: "alex_casual_dtc",
               thumbnailUrl: "/images/creator-sarah.jpg",
@@ -78,10 +79,6 @@ export async function GET(request: NextRequest) {
               duration: 19.5,
             },
             {
-              angle: "problem_agitation" as const,
-              hook: `The reason professors and editors flag your text even when you didn't use AI...`,
-              body: `Standard AI patterns trigger false positives. ${brand} creates authentic human tone and rhythm.`,
-              cta: `Get started with ${brand} today!`,
               creator: "Maya Lin (Viral Confession)",
               voiceId: "sarah_dtc_founder",
               thumbnailUrl: "/images/creator-alex.jpg",
@@ -90,17 +87,28 @@ export async function GET(request: NextRequest) {
             },
           ];
 
-          for (const s of seeds) {
+          for (let i = 0; i < generatedHooks.length; i++) {
+            const h = generatedHooks[i]!;
+            const profile = creatorProfiles[i % creatorProfiles.length]!;
+
+            // Map hook angle to valid AngleType enum
+            const angleType =
+              h.angleType === "pattern_interrupt"
+                ? "negative_hook"
+                : h.angleType === "secret_hack"
+                ? "secret_hack"
+                : "problem_agitation";
+
             const script = await prisma.script.create({
               data: {
                 projectId: project.id,
-                angleType: s.angle,
-                hookText: s.hook,
-                bodyText: s.body,
-                ctaText: s.cta,
-                fullScriptText: `${s.hook} ${s.body} ${s.cta}`,
-                captionCopy: `${s.hook} Link in bio to try ${brand}! 🚀 #${brand.replace(/\s+/g, "")} #UGC #AI`,
-                hashtags: ["UGC", "AI", brand.replace(/\s+/g, "")],
+                angleType,
+                hookText: h.hookHeadline,
+                bodyText: h.spokenBodyText,
+                ctaText: h.spokenCtaText,
+                fullScriptText: h.fullScript,
+                captionCopy: h.captionCopy,
+                hashtags: h.viralHashtags,
               },
             });
 
@@ -109,16 +117,16 @@ export async function GET(request: NextRequest) {
                 projectId: project.id,
                 organizationId: orgId,
                 scriptId: script.id,
-                voiceId: s.voiceId,
-                thumbnailUrl: s.thumbnailUrl,
-                videoUrl: s.videoUrl,
+                voiceId: profile.voiceId,
+                thumbnailUrl: profile.thumbnailUrl,
+                videoUrl: profile.videoUrl,
                 renderStatus: "completed",
-                durationSeconds: s.duration,
+                durationSeconds: profile.duration,
               },
             });
           }
 
-          // Refetch newly seeded creator videos
+          // Refetch newly generated creator videos
           dbVideos = await prisma.video.findMany({
             where: { organizationId: orgId },
             include: {

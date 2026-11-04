@@ -42,11 +42,15 @@ yarn-error.log*
 next-env.d.ts
 .neon
 
-# renders
+# renders & uploads
 public/renders/*.mp4
 public/renders/*.jpg
 public/renders/*.png
 !public/renders/.gitkeep
+public/uploads/screenshots/*
+!public/uploads/screenshots/.gitkeep
+public/uploads/*
+!public/uploads/.gitkeep
 
 # video assets
 public/videos/*.mp4

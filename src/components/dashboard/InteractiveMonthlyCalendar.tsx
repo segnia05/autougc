@@ -19,6 +19,9 @@ import {
   Plus,
   ArrowRight,
   Trash2,
+  Download,
+  Copy,
+  Check,
 } from "lucide-react";
 
 export interface ScheduledCalendarPost {
@@ -432,7 +435,17 @@ export default function InteractiveMonthlyCalendar({
                 <span>Remove from Calendar</span>
               </button>
 
-              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+                {/* Download MP4 */}
+                <a
+                  href={selectedPost.video?.videoUrl || "/videos/creator-sarah.mp4"}
+                  download={`autougc_post_${selectedPost.id}.mp4`}
+                  className="px-4 py-2.5 rounded-xl border border-[#CBD5C4] hover:bg-[#E2E9DC] bg-[#FAF8F5] text-xs font-semibold text-[#1F3824] inline-flex items-center gap-1.5 transition-colors shadow-2xs"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download MP4</span>
+                </a>
+
                 {/* Edit in Studio */}
                 <Link
                   href={`/studio?scheduledPostId=${selectedPost.id}`}
