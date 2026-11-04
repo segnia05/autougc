@@ -21,8 +21,7 @@ export default function WorkspaceSelector({
 }: WorkspaceSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [workspaces] = useState<Workspace[]>([
-    { id: "1", name: currentBrand, plan: "Growth Plan", credits: 50 },
-    { id: "2", name: "AutoUGC Alpha", plan: "Starter", credits: 15 },
+    { id: "1", name: currentBrand || "Your Brand", plan: "Free Plan", credits: 0 },
   ]);
 
   return (

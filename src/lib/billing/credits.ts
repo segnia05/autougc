@@ -49,9 +49,9 @@ export async function getOrganizationCredits(
 
   const devBal = devBalances[orgId];
   return {
-    creditsRemaining: devBal !== undefined ? devBal : 20,
-    monthlyAllowance: 20,
-    planTier: "starter",
+    creditsRemaining: devBal !== undefined ? devBal : 0,
+    monthlyAllowance: 0,
+    planTier: "free",
     status: "active",
   };
 }

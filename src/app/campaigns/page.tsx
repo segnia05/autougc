@@ -58,7 +58,7 @@ interface CreatorVideo {
 export default function CampaignsPage() {
   const router = useRouter();
   const [brandName, setBrandName] = useState("");
-  const [credits, setCredits] = useState(50);
+  const [credits, setCredits] = useState(0);
   const [videos, setVideos] = useState<CreatorVideo[]>([]);
   const [accounts, setAccounts] = useState<ConnectedSocialAccount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -126,7 +126,7 @@ export default function CampaignsPage() {
       const storedBrand = localStorage.getItem("autougc_brand_name");
       const storedCredits = localStorage.getItem("autougc_credits");
       if (storedBrand) setBrandName(storedBrand);
-      if (storedCredits) setCredits(parseInt(storedCredits, 10));
+      if (storedCredits !== null) setCredits(parseInt(storedCredits, 10));
     }
 
     fetchVideos();

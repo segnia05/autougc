@@ -145,7 +145,7 @@ export default function BrandProfileHeader({
                 <span>{credits} Video Credits</span>
               </div>
               <div className="text-[10px] text-[#8E8B85] capitalize">
-                {planTier} monthly allowance
+                {planTier === "free" ? "Free Tier (0 Allowance)" : `${planTier} monthly allowance`}
               </div>
             </div>
             {onUpgrade ? (

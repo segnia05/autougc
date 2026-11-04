@@ -151,7 +151,8 @@ function OnboardingContent() {
           localStorage.setItem("autougc_brand_name", json.brandName || finalData.brandName);
           localStorage.setItem("autougc_brand_goal", json.goal || finalData.goal);
           localStorage.setItem("autougc_screenshot_url", json.screenshotUrl || finalData.screenshotUrl);
-          localStorage.setItem("autougc_credits", String(json.credits || 50));
+          localStorage.setItem("autougc_credits", String(json.credits ?? 0));
+          localStorage.setItem("autougc_plan_tier", json.planTier || "free");
         }
       }
     } catch (err) {

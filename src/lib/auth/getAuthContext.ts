@@ -145,8 +145,8 @@ async function resolveAuthContextFromDb(
                 stripeCustomerId: `cus_${resolvedOrgId.slice(-12)}`,
                 planTier: "free",
                 status: "active",
-                creditsMonthlyAllowance: 3,
-                creditsRemaining: 3,
+                creditsMonthlyAllowance: 0,
+                creditsRemaining: 0,
                 currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
               },
             },
@@ -203,8 +203,8 @@ async function resolveAuthContextFromDb(
                 stripeCustomerId: `cus_${userId.slice(-12)}`,
                 planTier: "free",
                 status: "active",
-                creditsMonthlyAllowance: 3,
-                creditsRemaining: 3,
+                creditsMonthlyAllowance: 0,
+                creditsRemaining: 0,
                 currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
               },
             },
@@ -232,16 +232,16 @@ async function resolveAuthContextFromDb(
           stripeCustomerId: `cus_${resolvedOrgId.slice(-12)}`,
           planTier: "free",
           status: "active",
-          creditsMonthlyAllowance: 3,
-          creditsRemaining: 3,
+          creditsMonthlyAllowance: 0,
+          creditsRemaining: 0,
           currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       });
     }
 
     const planTier = (orgSubscription?.planTier || "free") as "free" | "starter" | "growth" | "scale";
-    const creditsRemaining = orgSubscription?.creditsRemaining ?? 3;
-    const creditsMonthlyAllowance = orgSubscription?.creditsMonthlyAllowance ?? 3;
+    const creditsRemaining = orgSubscription?.creditsRemaining ?? 0;
+    const creditsMonthlyAllowance = orgSubscription?.creditsMonthlyAllowance ?? 0;
 
     return {
       userId: dbUser.id,
@@ -263,8 +263,8 @@ async function resolveAuthContextFromDb(
       email: `creator_${userId.slice(-6)}@autougc.com`,
       fullName: "AutoUGC Creator",
       planTier: "free",
-      creditsRemaining: 3,
-      creditsMonthlyAllowance: 3,
+      creditsRemaining: 0,
+      creditsMonthlyAllowance: 0,
     };
   }
 }

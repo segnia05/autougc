@@ -13,7 +13,7 @@ interface TopHeaderBarProps {
 
 export default function TopHeaderBar({
   brandName = "Your Brand",
-  credits = 50,
+  credits = 0,
   title,
 }: TopHeaderBarProps) {
   const [liveCredits, setLiveCredits] = useState<number>(credits);
@@ -21,8 +21,10 @@ export default function TopHeaderBar({
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("autougc_credits");
-      if (stored) {
+      if (stored !== null) {
         setLiveCredits(parseInt(stored, 10));
+      } else {
+        setLiveCredits(credits);
       }
     }
   }, [credits]);

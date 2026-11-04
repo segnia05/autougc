@@ -26,8 +26,8 @@ export default function DashboardPage() {
   const [targetAudience, setTargetAudience] = useState("");
   const [competitors, setCompetitors] = useState<string[]>([]);
   const [whatItDoes, setWhatItDoes] = useState("");
-  const [credits, setCredits] = useState(50);
-  const [planTier, setPlanTier] = useState("starter");
+  const [credits, setCredits] = useState(0);
+  const [planTier, setPlanTier] = useState("free");
   const [screenshotUrl, setScreenshotUrl] = useState("");
 
   // Social Channels & Scheduled Posts State
@@ -102,8 +102,8 @@ export default function DashboardPage() {
             setCompetitors(Array.isArray(json.competitors) ? json.competitors : []);
             setWhatItDoes(json.whatItDoes || json.summary || "");
             setScreenshotUrl(json.screenshotUrl || "");
-            setCredits(json.credits ?? 50);
-            setPlanTier(json.planTier || "starter");
+            setCredits(json.credits ?? 0);
+            setPlanTier(json.planTier || "free");
             setIsLoading(false);
 
             // Fetch accounts and scheduled calendar posts in parallel
@@ -118,13 +118,15 @@ export default function DashboardPage() {
           const storedBrand = localStorage.getItem("autougc_brand_name");
           const storedName = localStorage.getItem("autougc_founder_name");
           const storedCredits = localStorage.getItem("autougc_credits");
+          const storedPlan = localStorage.getItem("autougc_plan_tier");
           const storedShot = localStorage.getItem("autougc_screenshot_url");
 
           if (storedBrand) {
             setBrandName(storedBrand);
             setFounderName(storedName || "Founder");
             setScreenshotUrl(storedShot || "");
-            if (storedCredits) setCredits(parseInt(storedCredits, 10));
+            if (storedCredits !== null) setCredits(parseInt(storedCredits, 10));
+            if (storedPlan) setPlanTier(storedPlan);
             setIsLoading(false);
             fetchAccounts();
             fetchScheduledPosts();
