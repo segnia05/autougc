@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import AppShell from "@/components/layout/AppShell";
 import { Badge } from "@/components/ui/Badge";
+import { Modal } from "@/components/ui/Modal";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -21,6 +22,7 @@ import {
   Calendar,
   Layers,
   Zap,
+  Play,
 } from "lucide-react";
 
 interface AnalyticsOverview {
@@ -44,6 +46,7 @@ interface AnalyticsAccount {
   likes: number;
   shares: number;
   comments: number;
+  engagementRate?: string;
   status: string;
 }
 
@@ -51,8 +54,10 @@ interface AnalyticsPost {
   id: string;
   caption: string;
   hookAngle: string;
+  hookText?: string;
   scheduledFor: string;
   postUrl: string;
+  videoUrl?: string;
   views: number;
   likes: number;
   shares: number;
@@ -81,6 +86,7 @@ export default function AnalyticsPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("all");
   const [brandName, setBrandName] = useState("");
+  const [previewingPost, setPreviewingPost] = useState<AnalyticsPost | null>(null);
 
   const fetchAnalytics = useCallback(async () => {
     try {
@@ -254,9 +260,14 @@ export default function AnalyticsPage() {
 
         {/* Connected Channels Breakdown Strip */}
         <div className="space-y-3">
-          <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
-            Connected Social Fleet Performance
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
+              Connected Social Fleet Performance
+            </h2>
+            <span className="text-xs text-[#8E8B85]">
+              {accounts.length} active channel{accounts.length !== 1 ? "s" : ""} streaming telemetry
+            </span>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {accounts.length === 0 ? (
@@ -269,28 +280,46 @@ export default function AnalyticsPage() {
               accounts.map((acc) => (
                 <div
                   key={acc.id}
-                  className="bg-white border border-[#E5E0D8] rounded-2xl p-4 shadow-2xs flex items-center justify-between gap-4"
+                  className="bg-white border border-[#E5E0D8] rounded-2xl p-5 shadow-2xs space-y-4 hover:border-[#D95D39]/40 transition-all"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#18181B] flex items-center justify-center text-white shrink-0 font-bold text-sm">
-                      {acc.platform === "tiktok" ? "TT" : "IG"}
-                    </div>
-                    <div className="truncate">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[#18181B] truncate">
-                          {acc.accountHandle}
-                        </span>
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-[#18181B] flex items-center justify-center text-white shrink-0 font-bold text-xs uppercase tracking-wider">
+                        {acc.platform === "tiktok" ? "TikTok" : acc.platform === "instagram" ? "Reels" : "YT"}
                       </div>
-                      <span className="text-[10px] text-[#8E8B85]">
-                        {acc.postsCount} video{acc.postsCount !== 1 ? "s" : ""} live • {acc.views.toLocaleString()} views
-                      </span>
+                      <div className="truncate">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-bold text-[#18181B] truncate">
+                            {acc.accountHandle}
+                          </span>
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                        </div>
+                        <span className="text-[10px] text-[#8E8B85] capitalize">
+                          {acc.platform} Distribution Fleet
+                        </span>
+                      </div>
                     </div>
+
+                    <Badge variant="emerald" size="sm">
+                      Live Sync
+                    </Badge>
                   </div>
 
-                  <Badge variant="emerald" size="sm">
-                    Live Sync
-                  </Badge>
+                  {/* 3 Channel Metrics */}
+                  <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#EFECE6] text-center">
+                    <div className="p-2 rounded-xl bg-[#FAF8F5]">
+                      <span className="text-[9px] uppercase font-bold text-[#8E8B85] block">Live Ads</span>
+                      <span className="text-sm font-bold text-[#18181B]">{acc.postsCount}</span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-[#FAF8F5]">
+                      <span className="text-[9px] uppercase font-bold text-[#8E8B85] block">Views</span>
+                      <span className="text-sm font-bold text-[#18181B]">{acc.views.toLocaleString()}</span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-[#FFF2ED]">
+                      <span className="text-[9px] uppercase font-bold text-[#D95D39] block">Likes</span>
+                      <span className="text-sm font-bold text-[#D95D39]">{acc.likes.toLocaleString()}</span>
+                    </div>
+                  </div>
                 </div>
               ))
             )}
@@ -364,16 +393,22 @@ export default function AnalyticsPage() {
                       {/* Video Hook & Thumbnail */}
                       <td className="py-3.5 pl-1">
                         <div className="flex items-center gap-3">
-                          <div className="relative w-12 h-18 rounded-lg overflow-hidden bg-black shrink-0 border border-[#E5E0D8]">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewingPost(post)}
+                            className="relative w-12 h-18 rounded-lg overflow-hidden bg-black shrink-0 border border-[#E5E0D8] group/thumb cursor-pointer"
+                          >
                             <Image
                               src={post.thumbnailUrl}
                               alt={post.hookAngle}
                               fill
-                              className="object-cover"
+                              className="object-cover group-hover/thumb:scale-105 transition-transform"
                               unoptimized
                             />
-                            <div className="absolute inset-0 bg-black/10" />
-                          </div>
+                            <div className="absolute inset-0 bg-black/20 group-hover/thumb:bg-black/40 flex items-center justify-center transition-colors">
+                              <Play className="w-3.5 h-3.5 text-white fill-white opacity-80 group-hover/thumb:opacity-100" />
+                            </div>
+                          </button>
                           <div className="space-y-0.5 max-w-xs">
                             <span className="text-[10px] font-bold text-[#D95D39] uppercase tracking-wider block">
                               {post.hookAngle}
@@ -420,17 +455,28 @@ export default function AnalyticsPage() {
                         {formatWatchTime(post.watchTimeSeconds)}
                       </td>
 
-                      {/* View Link */}
+                      {/* View Link & Preview Action */}
                       <td className="py-3.5 pr-1 text-right">
-                        <a
-                          href={post.postUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF8F5] hover:bg-[#18181B] text-[#18181B] hover:text-white border border-[#E5E0D8] hover:border-[#18181B] transition-colors text-[11px] font-semibold"
-                        >
-                          <span>View Live</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
+                        <div className="inline-flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewingPost(post)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-[#FAF8F5] text-[#52525B] hover:text-[#18181B] border border-[#E5E0D8] transition-colors text-[11px] font-semibold cursor-pointer"
+                          >
+                            <Play className="w-2.5 h-2.5" />
+                            <span>Preview</span>
+                          </button>
+
+                          <a
+                            href={post.postUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF8F5] hover:bg-[#18181B] text-[#18181B] hover:text-white border border-[#E5E0D8] hover:border-[#18181B] transition-colors text-[11px] font-semibold"
+                          >
+                            <span>View Live</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -440,6 +486,78 @@ export default function AnalyticsPage() {
           )}
         </div>
       </div>
+
+      {/* Published Post Detail Preview Modal */}
+      {previewingPost && (
+        <Modal
+          isOpen={!!previewingPost}
+          onClose={() => setPreviewingPost(null)}
+          title={`Live Ad Telemetry: ${previewingPost.hookAngle}`}
+        >
+          <div className="space-y-4">
+            <div className="relative aspect-[9/16] max-h-[55vh] bg-black rounded-2xl overflow-hidden mx-auto border border-[#E5E0D8]">
+              <video
+                src={previewingPost.videoUrl || "/videos/creator-sarah.mp4"}
+                controls
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5E0D8] space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-[#18181B]">Channel:</span>
+                <span className="font-mono text-[#D95D39] font-bold">{previewingPost.platform.toUpperCase()} • {previewingPost.accountHandle}</span>
+              </div>
+              <div>
+                <span className="font-bold text-[#18181B]">Caption: </span>
+                <span className="text-[#52525B]">{previewingPost.caption}</span>
+              </div>
+            </div>
+
+            {/* Telemetry Stats Grid */}
+            <div className="grid grid-cols-4 gap-2 text-center">
+              <div className="p-2.5 rounded-xl bg-white border border-[#E5E0D8]">
+                <span className="text-[9px] uppercase font-bold text-[#8E8B85] block">Views</span>
+                <span className="text-sm font-bold text-[#18181B]">{previewingPost.views.toLocaleString()}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-[#E5E0D8]">
+                <span className="text-[9px] uppercase font-bold text-[#8E8B85] block">Likes</span>
+                <span className="text-sm font-bold text-[#D95D39]">{previewingPost.likes.toLocaleString()}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-[#E5E0D8]">
+                <span className="text-[9px] uppercase font-bold text-[#8E8B85] block">Shares</span>
+                <span className="text-sm font-bold text-[#18181B]">{previewingPost.shares.toLocaleString()}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-[#E5E0D8]">
+                <span className="text-[9px] uppercase font-bold text-[#8E8B85] block">Comments</span>
+                <span className="text-sm font-bold text-[#18181B]">{previewingPost.comments.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#E5E0D8]">
+              <Link
+                href="/studio"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-[#E5E0D8] text-xs font-semibold text-[#18181B] hover:border-[#18181B]"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#D95D39]" />
+                <span>Iterate in Studio</span>
+              </Link>
+
+              <a
+                href={previewingPost.postUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-fastlane-black text-xs py-2 px-4 font-bold inline-flex items-center gap-1.5"
+              >
+                <span>Open Live on {previewingPost.platform === "tiktok" ? "TikTok" : "Instagram"}</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+        </Modal>
+      )}
     </AppShell>
   );
 }
