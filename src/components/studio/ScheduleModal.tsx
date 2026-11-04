@@ -116,11 +116,11 @@ export function ScheduleModal({
     >
       {isSuccess ? (
         <div className="py-8 flex flex-col items-center justify-center text-center gap-3">
-          <div className="h-12 w-12 rounded-full bg-[#E2E9DC] text-[#1F3824] flex items-center justify-center border border-[#CBD5C4]">
+          <div className="h-12 w-12 rounded-full bg-[#FFF2ED] text-[#D95D39] flex items-center justify-center border border-[#FCD4C7]">
             <CheckCircle2 className="h-6 w-6" />
           </div>
-          <h4 className="text-base font-bold text-[#1B231B]">Scheduled for Automated Publishing!</h4>
-          <p className="text-xs text-[#4A544A] max-w-sm">
+          <h4 className="text-base font-bold text-[#18181B]">Scheduled for Automated Publishing!</h4>
+          <p className="text-xs text-[#52525B] max-w-sm">
             AutoUGC background queue will render your high-res 1080x1920 MP4 and dispatch to{" "}
             {selectedPlatforms.map((p) => p.toUpperCase()).join(", ")} at the exact scheduled time.
           </p>
@@ -136,7 +136,7 @@ export function ScheduleModal({
 
           {/* Platform Multi-Selector */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[#1B231B]">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[#18181B]">
               Target Channels
             </label>
             <div className="grid grid-cols-3 gap-2.5">
@@ -156,16 +156,16 @@ export function ScheduleModal({
                     onClick={() => togglePlatform(p.id)}
                     className={`p-3 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                       isSelected
-                        ? "border-[#1F3824] bg-[#E2E9DC] text-[#1F3824] font-semibold"
-                        : "border-[#CBD5C4]/70 bg-[#F6F7F2] text-[#4A544A] hover:border-[#1F3824]/60"
+                        ? "border-[#D95D39] bg-[#FFF2ED] text-[#D95D39] font-semibold"
+                        : "border-[#E5E0D8] bg-[#FAF8F5] text-[#52525B] hover:border-[#D95D39]/60"
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <IconComponent className="h-4 w-4 text-[#1F3824]" />
+                      <IconComponent className="h-4 w-4 text-[#D95D39]" />
                       <span className="text-xs">{p.label}</span>
                     </div>
                     {isSelected && (
-                      <span className="h-2 w-2 rounded-full bg-[#1F3824]" />
+                      <span className="h-2 w-2 rounded-full bg-[#D95D39]" />
                     )}
                   </button>
                 );
@@ -176,10 +176,10 @@ export function ScheduleModal({
           {/* Schedule Date & Time Picker */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold uppercase tracking-wider text-[#1B231B]">
+              <label className="text-xs font-semibold uppercase tracking-wider text-[#18181B]">
                 Publish Date & Time
               </label>
-              <span className="text-[11px] text-[#1F3824] font-mono font-medium">
+              <span className="text-[11px] text-[#D95D39] font-mono font-medium">
                 Auto-timezone adjusted
               </span>
             </div>
@@ -189,31 +189,31 @@ export function ScheduleModal({
                 type="datetime-local"
                 value={scheduledDateTime}
                 onChange={(e) => setScheduledDateTime(e.target.value)}
-                className="w-full bg-[#F6F7F2] border border-[#CBD5C4] rounded-2xl px-3 py-2 text-xs text-[#1B231B] focus:outline-none focus:border-[#1F3824] transition-colors"
+                className="w-full bg-[#FAF8F5] border border-[#E5E0D8] rounded-2xl px-3 py-2 text-xs text-[#18181B] focus:outline-none focus:border-[#D95D39] transition-colors"
               />
             </div>
 
             {/* Quick Timing Presets */}
             <div className="flex items-center gap-2 pt-1 flex-wrap">
-              <span className="text-[11px] text-[#717E6C]">Quick presets:</span>
+              <span className="text-[11px] text-[#8E8B85]">Quick presets:</span>
               <button
                 type="button"
                 onClick={() => handleQuickTimePreset(2)}
-                className="text-[11px] px-3 py-1 rounded-full bg-[#ECEFE7] border border-[#CBD5C4] hover:bg-white text-[#1B231B] transition-colors cursor-pointer"
+                className="text-[11px] px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#E5E0D8] hover:bg-[#FFF2ED] hover:border-[#D95D39] text-[#18181B] transition-colors cursor-pointer"
               >
                 In 2 hours
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickTimePreset(12)}
-                className="text-[11px] px-3 py-1 rounded-full bg-[#ECEFE7] border border-[#CBD5C4] hover:bg-white text-[#1B231B] transition-colors cursor-pointer"
+                className="text-[11px] px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#E5E0D8] hover:bg-[#FFF2ED] hover:border-[#D95D39] text-[#18181B] transition-colors cursor-pointer"
               >
                 Tonight (Peak UGC)
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickTimePreset(24)}
-                className="text-[11px] px-3 py-1 rounded-full bg-[#ECEFE7] border border-[#CBD5C4] hover:bg-white text-[#1B231B] transition-colors cursor-pointer"
+                className="text-[11px] px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#E5E0D8] hover:bg-[#FFF2ED] hover:border-[#D95D39] text-[#18181B] transition-colors cursor-pointer"
               >
                 Tomorrow 10 AM
               </button>
@@ -223,10 +223,10 @@ export function ScheduleModal({
           {/* Caption Editor & Hashtags */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold uppercase tracking-wider text-[#1B231B]">
+              <label className="text-xs font-semibold uppercase tracking-wider text-[#18181B]">
                 Social Caption & Viral Hashtags
               </label>
-              <span className="text-[11px] font-mono text-[#717E6C]">
+              <span className="text-[11px] font-mono text-[#8E8B85]">
                 {caption.length} / 2200 chars
               </span>
             </div>
@@ -235,13 +235,13 @@ export function ScheduleModal({
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
               rows={3}
-              className="w-full bg-[#F6F7F2] border border-[#CBD5C4] rounded-2xl p-3 text-xs text-[#1B231B] placeholder-[#717E6C] focus:outline-none focus:border-[#1F3824] resize-none"
+              className="w-full bg-[#FAF8F5] border border-[#E5E0D8] rounded-2xl p-3 text-xs text-[#18181B] placeholder-[#8E8B85] focus:outline-none focus:border-[#D95D39] resize-none"
               placeholder="Write high-retention caption with call to action..."
             />
 
             {/* Recommended Hashtags */}
             <div className="flex items-center gap-1.5 flex-wrap pt-1">
-              <span className="text-[11px] text-[#717E6C] flex items-center gap-1">
+              <span className="text-[11px] text-[#8E8B85] flex items-center gap-1">
                 <Hash className="h-3 w-3" /> Insert:
               </span>
               {defaultHashtags.map((tag) => (
@@ -249,7 +249,7 @@ export function ScheduleModal({
                   key={tag}
                   type="button"
                   onClick={() => addHashtag(tag)}
-                  className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#ECEFE7] border border-[#CBD5C4] hover:border-[#1F3824] text-[#1F3824] hover:bg-[#E2E9DC] transition-colors cursor-pointer"
+                  className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#FAF8F5] border border-[#E5E0D8] hover:border-[#D95D39] text-[#D95D39] hover:bg-[#FFF2ED] transition-colors cursor-pointer"
                 >
                   {tag}
                 </button>
@@ -258,7 +258,7 @@ export function ScheduleModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-3 border-t border-[#CBD5C4]/60">
+          <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E0D8]">
             <Button
               variant="ghost"
               size="sm"

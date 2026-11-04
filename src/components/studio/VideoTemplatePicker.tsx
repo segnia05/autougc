@@ -31,21 +31,21 @@ export function VideoTemplatePicker({
   };
 
   return (
-    <div className="flex flex-col gap-4 p-6 rounded-3xl bg-white border border-[#CBD5C4]/70 shadow-sm text-[#1B231B]">
-      <div className="flex items-center justify-between border-b border-[#CBD5C4]/50 pb-3">
+    <div className="flex flex-col gap-4 p-6 rounded-3xl bg-white border border-[#E5E0D8] shadow-2xs text-[#18181B]">
+      <div className="flex items-center justify-between border-b border-[#EFECE6] pb-3">
         <div className="flex items-center gap-2">
-          <Layers className="h-4 w-4 text-[#1F3824]" aria-hidden="true" />
-          <h3 className="text-base font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
-            Video format & template archetype
+          <Layers className="h-4 w-4 text-[#D95D39]" aria-hidden="true" />
+          <h3 className="text-sm font-semibold text-[#18181B]">
+            Video Format & Template Archetype
           </h3>
         </div>
-        <span className="text-xs text-[#1F3824] bg-[#E2E9DC] px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1">
+        <span className="text-xs text-[#D95D39] bg-[#FFF2ED] px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1">
           <Sparkles className="h-3 w-3" aria-hidden="true" />
           3 Core Formats
         </span>
       </div>
 
-      <p className="text-xs text-[#4A544A] leading-relaxed">
+      <p className="text-xs text-[#52525B] leading-relaxed">
         Choose your video ad archetype. Every format guarantees your website name is spoken or highlighted to maximize conversion.
       </p>
 
@@ -60,10 +60,10 @@ export function VideoTemplatePicker({
               role="radio"
               aria-checked={isSelected}
               onClick={() => onSelectTemplate(tmpl)}
-              className={`p-3.5 sm:p-4 rounded-2xl border text-left cursor-pointer transition-all flex flex-col gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
+              className={`p-3.5 sm:p-4 rounded-2xl border text-left cursor-pointer transition-all flex flex-col gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] focus-visible:ring-offset-2 ${
                 isSelected
-                  ? "bg-[#E2E9DC] border-2 border-[#1F3824] shadow-xs"
-                  : "bg-[#F6F7F2] border-[#CBD5C4]/70 hover:border-[#1F3824]/50 hover:bg-[#FAFBF9]"
+                  ? "bg-[#FFF2ED] border-2 border-[#D95D39] shadow-xs"
+                  : "bg-[#FAF8F5] border-[#E5E0D8] hover:border-[#D95D39]/50 hover:bg-[#F4F1EA]"
               }`}
             >
               <div className="flex items-center justify-between">
@@ -71,21 +71,21 @@ export function VideoTemplatePicker({
                   <div
                     className={`h-7 w-7 rounded-lg flex items-center justify-center shrink-0 border ${
                       isSelected
-                        ? "bg-[#1F3824] text-white border-[#1F3824]"
-                        : "bg-white text-[#1F3824] border-[#CBD5C4]"
+                        ? "bg-[#D95D39] text-white border-[#D95D39]"
+                        : "bg-white text-[#D95D39] border-[#E5E0D8]"
                     }`}
                   >
                     {getTemplateIcon(tmpl.id)}
                   </div>
-                  <span className="text-xs sm:text-sm font-bold text-[#1B231B]">
+                  <span className="text-xs sm:text-sm font-bold text-[#18181B]">
                     {tmpl.name}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
                   {tmpl.hasVoiceover ? (
-                    <span className="text-[10px] font-mono text-[#1F3824] bg-white px-2 py-0.5 rounded-full border border-[#CBD5C4] flex items-center gap-1">
-                      <Mic className="h-2.5 w-2.5" aria-hidden="true" /> Vocal Speech
+                    <span className="text-[10px] font-mono text-[#18181B] bg-white px-2 py-0.5 rounded-full border border-[#E5E0D8] flex items-center gap-1">
+                      <Mic className="h-2.5 w-2.5 text-[#D95D39]" aria-hidden="true" /> Vocal Speech
                     </span>
                   ) : (
                     <span className="text-[10px] font-mono text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300 flex items-center gap-1 font-semibold">
@@ -95,7 +95,7 @@ export function VideoTemplatePicker({
                 </div>
               </div>
 
-              <p className="text-xs text-[#4A544A] leading-relaxed pl-9">
+              <p className="text-xs text-[#52525B] leading-relaxed pl-9">
                 {tmpl.description}
               </p>
             </button>

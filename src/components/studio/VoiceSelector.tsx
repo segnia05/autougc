@@ -14,15 +14,15 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
   onVoiceChange,
 }) => {
   return (
-    <div className="flex flex-col gap-4 p-6 rounded-3xl bg-white border border-[#CBD5C4]/70 shadow-sm text-[#1B231B]">
-      <div className="flex items-center justify-between border-b border-[#CBD5C4]/50 pb-3">
+    <div className="flex flex-col gap-4 p-6 rounded-3xl bg-white border border-[#E5E0D8] shadow-2xs text-[#18181B]">
+      <div className="flex items-center justify-between border-b border-[#EFECE6] pb-3">
         <div className="flex items-center gap-2">
-          <Mic className="h-4 w-4 text-[#1F3824]" aria-hidden="true" />
-          <h3 className="text-base font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
-            Creator voice persona
+          <Mic className="h-4 w-4 text-[#D95D39]" aria-hidden="true" />
+          <h3 className="text-sm font-semibold text-[#18181B]">
+            Creator Voice Persona
           </h3>
         </div>
-        <span className="text-xs text-[#717E6C] font-mono">
+        <span className="text-xs text-[#8E8B85] font-mono">
           Hyper-realistic Neural TTS
         </span>
       </div>
@@ -37,22 +37,22 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
               role="radio"
               aria-checked={isSelected}
               onClick={() => onVoiceChange(voice.id)}
-              className={`p-4 rounded-2xl border text-left cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
+              className={`p-4 rounded-2xl border text-left cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] focus-visible:ring-offset-2 ${
                 isSelected
-                  ? "bg-[#E2E9DC] border-2 border-[#1F3824] shadow-xs"
-                  : "bg-[#F6F7F2] border-[#CBD5C4]/60 hover:border-[#1F3824]/50"
+                  ? "bg-[#FFF2ED] border-2 border-[#D95D39] shadow-xs"
+                  : "bg-[#FAF8F5] border-[#E5E0D8] hover:border-[#D95D39]/50"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-bold text-[#1B231B] flex items-center gap-1.5">
+                <span className="text-sm font-bold text-[#18181B] flex items-center gap-1.5">
                   {voice.name}
-                  {isSelected && <Volume2 className="h-3.5 w-3.5 text-[#1F3824] animate-pulse" aria-hidden="true" />}
+                  {isSelected && <Volume2 className="h-3.5 w-3.5 text-[#D95D39] animate-pulse" aria-hidden="true" />}
                 </span>
-                <span className="text-[11px] font-mono text-[#717E6C] capitalize">
+                <span className="text-[11px] font-mono text-[#8E8B85] capitalize">
                   {voice.gender}
                 </span>
               </div>
-              <p className="text-xs text-[#4A544A] line-clamp-1 leading-snug">
+              <p className="text-xs text-[#52525B] line-clamp-1 leading-snug">
                 {voice.style}
               </p>
             </button>

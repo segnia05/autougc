@@ -91,24 +91,24 @@ export function CreatorVisualPicker({
   });
 
   return (
-    <div className="flex flex-col gap-4 p-6 rounded-3xl bg-white border border-[#CBD5C4]/70 shadow-sm text-[#1B231B]">
-      <div className="flex flex-wrap items-center justify-between border-b border-[#CBD5C4]/50 pb-3 gap-2">
+    <div className="flex flex-col gap-4 p-6 rounded-3xl bg-white border border-[#E5E0D8] shadow-2xs text-[#18181B]">
+      <div className="flex flex-wrap items-center justify-between border-b border-[#EFECE6] pb-3 gap-2">
         <div className="flex items-center gap-2">
-          <UserCheck className="h-4 w-4 text-[#1F3824]" aria-hidden="true" />
-          <h3 className="text-base font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
+          <UserCheck className="h-4 w-4 text-[#D95D39]" aria-hidden="true" />
+          <h3 className="text-sm font-semibold text-[#18181B]">
             Creator & Character Library
           </h3>
         </div>
 
         {/* Filter Toggle: All vs Real Creators vs AI Avatars */}
-        <div className="flex items-center gap-1 bg-[#F6F7F2] p-1 rounded-full border border-[#CBD5C4]/60 text-xs">
+        <div className="flex items-center gap-1 bg-[#FAF8F5] p-1 rounded-full border border-[#E5E0D8] text-xs">
           <button
             type="button"
             onClick={() => setFilter("all")}
             className={`px-3 py-1 rounded-full transition-all font-semibold ${
               filter === "all"
-                ? "bg-[#1F3824] text-white shadow-xs"
-                : "text-[#4A544A] hover:text-[#1B231B]"
+                ? "bg-[#18181B] text-white shadow-xs"
+                : "text-[#52525B] hover:text-[#18181B]"
             }`}
           >
             All ({CREATOR_PERSONAS.length})
@@ -118,8 +118,8 @@ export function CreatorVisualPicker({
             onClick={() => setFilter("real_creator")}
             className={`px-3 py-1 rounded-full transition-all font-semibold flex items-center gap-1 ${
               filter === "real_creator"
-                ? "bg-[#1F3824] text-white shadow-xs"
-                : "text-[#4A544A] hover:text-[#1B231B]"
+                ? "bg-[#18181B] text-white shadow-xs"
+                : "text-[#52525B] hover:text-[#18181B]"
             }`}
           >
             <Video className="h-3 w-3" />
@@ -130,8 +130,8 @@ export function CreatorVisualPicker({
             onClick={() => setFilter("ai_avatar")}
             className={`px-3 py-1 rounded-full transition-all font-semibold flex items-center gap-1 ${
               filter === "ai_avatar"
-                ? "bg-[#1F3824] text-white shadow-xs"
-                : "text-[#4A544A] hover:text-[#1B231B]"
+                ? "bg-[#18181B] text-white shadow-xs"
+                : "text-[#52525B] hover:text-[#18181B]"
             }`}
           >
             <Bot className="h-3 w-3" />
@@ -140,7 +140,7 @@ export function CreatorVisualPicker({
         </div>
       </div>
 
-      <p className="text-xs text-[#4A544A] leading-relaxed">
+      <p className="text-xs text-[#52525B] leading-relaxed">
         Choose between <strong>Real-Person Creators</strong> (real humans moving, holding phones, and reacting) or <strong>AI Avatars</strong> (digital synthetic presenters).
       </p>
 
@@ -156,14 +156,14 @@ export function CreatorVisualPicker({
               onClick={() => onSelectPersona(persona)}
               role="radio"
               aria-checked={isSelected}
-              className={`group relative p-3 rounded-2xl border text-left cursor-pointer transition-all flex items-center gap-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
+              className={`group relative p-3 rounded-2xl border text-left cursor-pointer transition-all flex items-center gap-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] focus-visible:ring-offset-2 ${
                 isSelected
-                  ? "border-[#1F3824] bg-[#FAFBF9] ring-1 ring-[#1F3824] shadow-xs"
-                  : "border-[#CBD5C4]/70 hover:border-[#1F3824]/50 bg-white"
+                  ? "border-[#D95D39] bg-[#FFF2ED]/30 ring-1 ring-[#D95D39] shadow-xs"
+                  : "border-[#E5E0D8] hover:border-[#D95D39]/50 bg-white"
               }`}
             >
               {/* Creator Headshot */}
-              <div className="relative h-14 w-14 shrink-0 rounded-xl overflow-hidden border border-[#CBD5C4]/70 shadow-xs">
+              <div className="relative h-14 w-14 shrink-0 rounded-xl overflow-hidden border border-[#E5E0D8] shadow-xs">
                 <Image
                   src={persona.imageUrl}
                   alt={persona.name}
@@ -181,16 +181,16 @@ export function CreatorVisualPicker({
               {/* Creator Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-sm font-semibold text-[#1B231B] truncate">
+                  <span className="text-sm font-semibold text-[#18181B] truncate">
                     {persona.name}
                   </span>
                   {isSelected && (
-                    <span className="h-4 w-4 rounded-full bg-[#1F3824] text-white flex items-center justify-center shrink-0">
+                    <span className="h-4 w-4 rounded-full bg-[#D95D39] text-white flex items-center justify-center shrink-0">
                       <Check className="h-2.5 w-2.5" />
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-[#4A544A] truncate mb-1">
+                <p className="text-[11px] text-[#52525B] truncate mb-1">
                   {persona.role}
                 </p>
                 <div className="flex flex-wrap gap-1">
@@ -200,7 +200,7 @@ export function CreatorVisualPicker({
                     {isReal ? "Real Creator" : "AI Avatar"}
                   </span>
                   {persona.tags.slice(0, 1).map((t) => (
-                    <span key={t} className="text-[9px] text-[#717E6C] bg-[#F6F7F2] px-1.5 py-0.5 rounded border border-[#CBD5C4]/50">
+                    <span key={t} className="text-[9px] text-[#71717A] bg-[#FAF8F5] px-1.5 py-0.5 rounded border border-[#E5E0D8]">
                       {t}
                     </span>
                   ))}

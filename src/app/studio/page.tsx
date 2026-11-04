@@ -41,7 +41,7 @@ export default function StudioPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#F6F7F2] flex items-center justify-center text-xs font-mono text-[#717E6C]">
+        <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center text-xs font-mono text-[#8E8B85]">
           Loading AutoUGC Creative Studio...
         </div>
       }
@@ -108,15 +108,15 @@ function StudioContent() {
     }
   };
 
-  const [brandName, setBrandName] = useState(() => searchParams.get("brand") || "Lumina");
+  const [brandName, setBrandName] = useState(() => searchParams.get("brand") || (typeof window !== "undefined" ? localStorage.getItem("autougc_brand_name") : null) || "Your Brand");
   const [hookText, setHookText] = useState(() => searchParams.get("hook") || "Stop coding under harsh fluorescent lights in 2026.");
-  const [bodyText, setBodyText] = useState(() => searchParams.get("body") || "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour deep work sprints.");
+  const [bodyText, setBodyText] = useState(() => searchParams.get("body") || "AutoUGC auto-matches natural daylight so your eyes feel rested even after 10-hour deep work sprints.");
   const [ctaText, setCtaText] = useState(() => searchParams.get("cta") || "Click the link below and get $30 off your setup today.");
-  const [brandColor, setBrandColor] = useState("#1F3824");
+  const [brandColor, setBrandColor] = useState("#D95D39");
   const [selectedVoiceId, setSelectedVoiceId] = useState("sarah_dtc_founder");
   const [selectedTrackId, setSelectedTrackId] = useState("lofi_focus");
   const [selectedVisualUrl, setSelectedVisualUrl] = useState(
-    () => searchParams.get("productImage") || searchParams.get("screenshotUrl") || searchParams.get("image") || "/images/creator-sarah.jpg"
+    () => searchParams.get("productImage") || searchParams.get("screenshotUrl") || searchParams.get("image") || (typeof window !== "undefined" ? localStorage.getItem("autougc_screenshot_url") : null) || "/images/creator-sarah.jpg"
   );
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>(
     () => searchParams.get("video") || "/videos/creator-sarah.mp4"
@@ -134,12 +134,12 @@ function StudioContent() {
   });
 
   const [compositionProps, setCompositionProps] = useState<UgcAdCompositionProps>({
-    brandName: searchParams.get("brand") || "Lumina",
+    brandName: searchParams.get("brand") || (typeof window !== "undefined" ? localStorage.getItem("autougc_brand_name") : null) || "Your Brand",
     hookText: searchParams.get("hook") || "Stop coding under harsh fluorescent lights in 2026.",
-    bodyText: searchParams.get("body") || "Lumina auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
+    bodyText: searchParams.get("body") || "AutoUGC auto-matches natural daylight so your eyes feel rested even after 10-hour sprints.",
     ctaText: searchParams.get("cta") || "Click the link below and get $30 off your setup today.",
-    brandColor: "#1F3824",
-    productImageUrl: searchParams.get("productImage") || searchParams.get("screenshotUrl") || searchParams.get("image") || "/images/creator-sarah.jpg",
+    brandColor: "#D95D39",
+    productImageUrl: searchParams.get("productImage") || searchParams.get("screenshotUrl") || searchParams.get("image") || (typeof window !== "undefined" ? localStorage.getItem("autougc_screenshot_url") : null) || "/images/creator-sarah.jpg",
     videoUrl: searchParams.get("video") || "/videos/creator-sarah.mp4",
     hookStickerType: "tiktok_question",
     showHookSticker: true,
@@ -563,24 +563,24 @@ function StudioContent() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#1B231B]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#18181B]">
       {/* Studio Top Navigation Bar */}
-      <header className="sticky top-0 z-40 border-b border-[#CBD5C4]/80 bg-[#F6F7F2]/95 backdrop-blur-md px-4 sm:px-6 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-40 border-b border-[#EFECE6] bg-[#FAF8F5]/95 backdrop-blur-md px-4 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3 sm:gap-4">
           <Link
             href="/dashboard"
-            className="flex items-center gap-1.5 text-xs font-semibold text-[#4A544A] hover:text-[#1F3824] transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#52525B] hover:text-[#18181B] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="hidden sm:inline">Command Center</span>
           </Link>
-          <div className="h-4 w-[1px] bg-[#CBD5C4] hidden sm:block" />
+          <div className="h-4 w-[1px] bg-[#E5E0D8] hidden sm:block" />
           <div className="flex items-center gap-2">
-            <span className="text-[#1F3824] text-lg font-bold">✻</span>
-            <span className="text-sm font-bold text-[#1B231B] font-[family-name:var(--font-serif)]">
+            <span className="text-[#D95D39] text-lg font-bold">✻</span>
+            <span className="text-sm font-bold text-[#18181B]">
               AutoUGC Studio
             </span>
-            <span className="hidden md:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-[#E2E9DC] text-[#1F3824]">
+            <span className="hidden md:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-[#FFF2ED] text-[#D95D39] border border-[#FCD4C7]">
               {selectedTemplate === "organic_selfie"
                 ? "Organic Handheld"
                 : selectedTemplate === "studio_minimalist"
@@ -597,7 +597,7 @@ function StudioContent() {
                 variant="emerald"
                 size="sm"
                 pulse
-                className="font-mono text-[10px] sm:text-xs cursor-pointer hover:bg-[#E2E9DC] transition-colors"
+                className="font-mono text-[10px] sm:text-xs cursor-pointer hover:bg-[#FFF2ED] transition-colors"
                 onClick={() => {
                   setPaywallReason("general");
                   setIsPaywallOpen(true);
@@ -620,7 +620,7 @@ function StudioContent() {
               </Badge>
             )
           ) : (
-            <div className="h-6 w-24 bg-[#E2E9DC] rounded animate-pulse" />
+            <div className="h-6 w-24 bg-[#E5E0D8] rounded animate-pulse" />
           )}
 
           <Button
@@ -647,7 +647,7 @@ function StudioContent() {
                 setIsExportModalOpen(true);
               }
             }}
-            leftIcon={<Sparkles className="h-3.5 w-3.5 text-emerald-300" />}
+            leftIcon={<Sparkles className="h-3.5 w-3.5 text-white" />}
             className="text-xs px-2.5 sm:px-3 font-semibold shadow-xs"
           >
             <span className="hidden sm:inline">Generate Video (1 Credit)</span>
@@ -658,21 +658,21 @@ function StudioContent() {
 
       {/* Scheduled Post Live Edit & Approval Notification Banner */}
       {scheduledPostMeta && (
-        <div className="bg-[#E2E9DC] border-b border-[#CBD5C4] px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+        <div className="bg-[#FFF2ED] border-b border-[#FCD4C7] px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-[#1F3824] text-white flex items-center justify-center shrink-0">
+            <div className="h-9 w-9 rounded-full bg-[#D95D39] text-white flex items-center justify-center shrink-0">
               <Sparkles className="h-4 w-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#1B231B]">
+                <span className="text-xs font-bold text-[#18181B]">
                   Editing Scheduled Post for {scheduledPostMeta.channelHandle}
                 </span>
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#1F3824] text-white font-semibold">
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#D95D39] text-white font-semibold">
                   {scheduledPostMeta.approvalStatus === "approved" ? "Approved" : "Awaiting Approval"}
                 </span>
               </div>
-              <p className="text-[11px] text-[#4A544A]">
+              <p className="text-[11px] text-[#52525B]">
                 Due: {scheduledPostMeta.scheduledTime} • Customize hooks, body, voice, or format, then approve below
               </p>
             </div>
@@ -681,7 +681,7 @@ function StudioContent() {
           <div className="flex items-center gap-2 self-end sm:self-center">
             <Link
               href="/dashboard?tab=calendar"
-              className="text-xs font-semibold text-[#4A544A] hover:text-[#1F3824] px-3 py-1.5 rounded-full border border-[#CBD5C4] bg-white transition-colors"
+              className="text-xs font-semibold text-[#52525B] hover:text-[#18181B] px-3 py-1.5 rounded-full border border-[#E5E0D8] bg-white transition-colors"
             >
               Cancel
             </Link>
@@ -700,7 +700,7 @@ function StudioContent() {
       )}
 
       {saveSuccessMessage && (
-        <div className="bg-[#1F3824] text-white text-xs py-2 px-4 text-center font-semibold">
+        <div className="bg-[#18181B] text-white text-xs py-2 px-4 text-center font-semibold">
           {saveSuccessMessage}
         </div>
       )}
@@ -724,16 +724,16 @@ function StudioContent() {
               </button>
             </div>
           ) : (
-            <div className="w-full max-w-[360px] bg-[#ECEFE7] border border-[#CBD5C4] rounded-xl px-3 py-1.5 flex items-center justify-between text-[11px] text-[#4A544A] font-semibold">
+            <div className="w-full max-w-[360px] bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl px-3 py-1.5 flex items-center justify-between text-[11px] text-[#52525B] font-semibold">
               <span className="flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-[#1F3824]" />
+                <Sparkles className="h-3.5 w-3.5 text-[#D95D39]" />
                 Live Remotion Preview (Interactive)
               </span>
               {renderedVideoUrl && (
                 <button
                   type="button"
                   onClick={() => setSelectedVideoUrl(renderedVideoUrl)}
-                  className="text-[10px] text-[#1F3824] hover:underline font-bold cursor-pointer"
+                  className="text-[10px] text-[#D95D39] hover:underline font-bold cursor-pointer"
                 >
                   Play Rendered MP4
                 </button>
@@ -744,7 +744,7 @@ function StudioContent() {
             compositionProps={compositionProps}
             onSelectMedia={handleSelectMedia}
           />
-          <p className="text-[11px] text-[#717E6C] font-mono text-center">
+          <p className="text-[11px] text-[#8E8B85] font-mono text-center">
             1080x1920 9:16 Vertical • Remotion 30 FPS • TikTok & Reels Safe Zone
           </p>
         </div>
@@ -752,7 +752,7 @@ function StudioContent() {
         {/* Right Column: Tabbed Precision Creative Suite (7 cols) */}
         <div className="lg:col-span-7 flex flex-col gap-4">
           {/* Segmented Inspector Tab Bar */}
-          <div role="tablist" aria-label="Studio creative tools" className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-1.5 shadow-xs flex items-center justify-between gap-1">
+          <div role="tablist" aria-label="Studio creative tools" className="bg-white border border-[#E5E0D8] rounded-2xl p-1.5 shadow-2xs flex items-center justify-between gap-1">
             {[
               { id: "script", label: "Script & Hooks", icon: FileText },
               { id: "creator", label: "Creator & Style", icon: Layers },
@@ -770,10 +770,10 @@ function StudioContent() {
                   aria-selected={isActive}
                   aria-controls={`studio-panel-${tab.id}`}
                   onClick={() => setActiveTab(tab.id as StudioTab)}
-                  className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
+                  className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] focus-visible:ring-offset-2 ${
                     isActive
-                      ? "bg-[#1F3824] text-white shadow-xs"
-                      : "text-[#4A544A] hover:bg-[#F6F7F2] hover:text-[#1B231B]"
+                      ? "bg-[#18181B] text-white shadow-xs"
+                      : "text-[#52525B] hover:bg-[#FAF8F5] hover:text-[#18181B]"
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5 shrink-0" />
@@ -793,20 +793,20 @@ function StudioContent() {
               className="flex flex-col gap-4 focus:outline-none"
             >
               {/* In-Studio Magic AI Script Assistant */}
-              <div className="bg-gradient-to-r from-[#1F3824] to-[#2B4E32] rounded-2xl p-4 text-white shadow-sm flex flex-col gap-3">
+              <div className="bg-[#18181B] rounded-2xl p-4 text-white shadow-2xs flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-emerald-300 animate-pulse" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-100">
+                    <Sparkles className="h-4 w-4 text-[#D95D39] animate-pulse" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-white">
                       Magic AI Script Generator
                     </span>
                   </div>
-                  <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-emerald-200 font-mono">
-                    Gemini AI
+                  <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-[#E5E0D8] font-mono">
+                    Gemini 2.5 Flash
                   </span>
                 </div>
                 <p className="text-[11px] text-white/80 leading-relaxed">
-                  Generate 1 custom ad: Enter a product URL or describe what you want to sell. AI will instantly write 3 viral hooks tailored to your brand.
+                  Generate high-converting scripts: Describe your product or offer. Gemini will write 3 viral hooks tailored to your brand.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <input
@@ -814,15 +814,15 @@ function StudioContent() {
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
                     placeholder="e.g. Ergonomic desk lamp with zero screen glare"
-                    className="flex-1 bg-white/10 border border-white/20 rounded-xl px-3.5 py-2 text-xs text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white/15"
+                    className="flex-1 bg-white/10 border border-white/20 rounded-xl px-3.5 py-2 text-xs text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#D95D39] focus:bg-white/15"
                   />
                   <Button
                     variant="primary"
                     size="sm"
                     onClick={handleGenerateAiScripts}
                     isLoading={isGeneratingAiScripts}
-                    leftIcon={<Zap className="h-3.5 w-3.5 text-emerald-300" />}
-                    className="bg-emerald-500 hover:bg-emerald-400 text-[#1F3824] font-bold text-xs shrink-0 cursor-pointer"
+                    leftIcon={<Zap className="h-3.5 w-3.5 text-white" />}
+                    className="bg-[#D95D39] hover:bg-[#C24E2B] text-white font-bold text-xs shrink-0 cursor-pointer"
                   >
                     Generate Scripts
                   </Button>
@@ -831,7 +831,7 @@ function StudioContent() {
                 {/* Display AI Generated Variations if available */}
                 {aiGeneratedScripts.length > 0 && (
                   <div className="flex flex-col gap-2 pt-2 border-t border-white/15">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#FCD4C7]">
                       AI Generated Hooks (Click to Apply):
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -846,11 +846,11 @@ function StudioContent() {
                           }}
                           className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                             hookText === s.hook
-                              ? "bg-white/20 border-emerald-400 shadow-xs"
+                              ? "bg-white/20 border-[#D95D39] shadow-xs"
                               : "bg-white/5 border-white/10 hover:bg-white/10"
                           }`}
                         >
-                          <span className="text-[10px] font-mono font-bold text-emerald-300 uppercase block">
+                          <span className="text-[10px] font-mono font-bold text-[#D95D39] uppercase block">
                             {s.angleType.replace("_", " ")}
                           </span>
                           <p className="text-[11px] text-white/90 line-clamp-2 mt-1 leading-snug">
@@ -864,13 +864,13 @@ function StudioContent() {
               </div>
 
               {/* Brand Identity Card */}
-              <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="bg-white border border-[#E5E0D8] rounded-2xl p-4 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex flex-col">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#1F3824] flex items-center gap-1.5">
-                    <Palette className="h-3.5 w-3.5 text-[#1F3824]" />
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#18181B] flex items-center gap-1.5">
+                    <Palette className="h-3.5 w-3.5 text-[#D95D39]" />
                     Brand / Product Name
                   </label>
-                  <p className="text-[11px] text-[#717E6C]">
+                  <p className="text-[11px] text-[#8E8B85]">
                     Spoken in voiceovers and highlighted in kinetic subtitles
                   </p>
                 </div>
@@ -880,16 +880,16 @@ function StudioContent() {
                     type="text"
                     value={brandName}
                     onChange={(e) => setBrandName(e.target.value)}
-                    className="bg-[#F6F7F2] border border-[#CBD5C4] rounded-xl px-3.5 py-1.5 text-xs text-[#1B231B] font-bold focus:outline-none focus:border-[#1F3824] focus:bg-white w-full sm:w-36 transition-all"
+                    className="bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl px-3.5 py-1.5 text-xs text-[#18181B] font-bold focus:outline-none focus:border-[#D95D39] focus:bg-white w-full sm:w-36 transition-all"
                     placeholder="e.g. Lumina"
                   />
 
                   {/* Accent Color Swatches */}
                   <div className="flex items-center gap-1.5 shrink-0">
                     {[
-                      { name: "Forest", hex: "#1F3824" },
-                      { name: "Emerald", hex: "#10B981" },
-                      { name: "Cyan", hex: "#06B6D4" },
+                      { name: "Terracotta", hex: "#D95D39" },
+                      { name: "Charcoal", hex: "#18181B" },
+                      { name: "Sunset Orange", hex: "#F97316" },
                       { name: "Amber", hex: "#F59E0B" },
                     ].map((c) => (
                       <button
@@ -900,8 +900,8 @@ function StudioContent() {
                         title={c.name}
                         className={`h-5 w-5 rounded-full border transition-all cursor-pointer ${
                           brandColor === c.hex
-                            ? "ring-2 ring-[#1F3824] ring-offset-2 ring-offset-white scale-110"
-                            : "border-[#CBD5C4] opacity-80 hover:opacity-100"
+                            ? "ring-2 ring-[#D95D39] ring-offset-2 ring-offset-white scale-110"
+                            : "border-[#E5E0D8] opacity-80 hover:opacity-100"
                         }`}
                       />
                     ))}
@@ -941,13 +941,13 @@ function StudioContent() {
               </div>
 
               {/* 5 1-Click Viral Hook Angles Presets */}
-              <div className="bg-white border border-[#CBD5C4]/80 rounded-2xl p-4 shadow-xs flex flex-col gap-2">
+              <div className="bg-white border border-[#E5E0D8] rounded-2xl p-4 shadow-2xs flex flex-col gap-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#1B231B] flex items-center gap-1.5">
-                    <Zap className="h-3.5 w-3.5 text-[#1F3824]" />
+                  <span className="font-bold text-[#18181B] flex items-center gap-1.5">
+                    <Zap className="h-3.5 w-3.5 text-[#D95D39]" />
                     Viral Hook Angles (1-Click Switch):
                   </span>
-                  <span className="text-[10px] text-[#717E6C] font-mono">
+                  <span className="text-[10px] text-[#8E8B85] font-mono">
                     Psychological Frameworks
                   </span>
                 </div>
@@ -958,7 +958,7 @@ function StudioContent() {
                       key={preset.id}
                       type="button"
                       onClick={() => setHookText(preset.text)}
-                      className="px-2.5 py-1 rounded-lg text-[10px] font-bold border border-[#CBD5C4] bg-[#F6F7F2] text-[#4A544A] hover:bg-[#1F3824] hover:text-white hover:border-[#1F3824] transition-all cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg text-[10px] font-bold border border-[#E5E0D8] bg-[#FAF8F5] text-[#52525B] hover:bg-[#18181B] hover:text-white hover:border-[#18181B] transition-all cursor-pointer"
                     >
                       {preset.label}
                     </button>
@@ -1069,36 +1069,36 @@ function StudioContent() {
         <div className="flex flex-col gap-5 py-2">
           {!exportComplete ? (
             <>
-              <div className="p-4 rounded-2xl bg-[#ECEFE7] border border-[#CBD5C4]/70 flex flex-col gap-2.5 text-[#1B231B]">
+              <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5E0D8] flex flex-col gap-2.5 text-[#18181B]">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#4A544A]">Resolution:</span>
-                  <span className="font-mono text-[#1B231B] font-bold">1080 x 1920 (9:16 Vertical)</span>
+                  <span className="text-[#52525B]">Resolution:</span>
+                  <span className="font-mono text-[#18181B] font-bold">1080 x 1920 (9:16 Vertical)</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#4A544A]">Framerate:</span>
-                  <span className="font-mono text-[#1B231B] font-bold">30 FPS (H.264 / AAC)</span>
+                  <span className="text-[#52525B]">Framerate:</span>
+                  <span className="font-mono text-[#18181B] font-bold">30 FPS (H.264 / AAC)</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#4A544A]">Credit Cost:</span>
-                  <span className="font-mono text-[#1F3824] font-bold bg-[#E2E9DC] px-2 py-0.5 rounded-full">
+                  <span className="text-[#52525B]">Credit Cost:</span>
+                  <span className="font-mono text-[#D95D39] font-bold bg-[#FFF2ED] px-2 py-0.5 rounded-full border border-[#FCD4C7]">
                     1 Video Credit
                   </span>
                 </div>
               </div>
 
               {isExporting && (
-                <div className="flex flex-col gap-2.5 p-4 rounded-2xl bg-[#E2E9DC]/60 border border-[#CBD5C4] transition-all">
-                  <div className="flex items-center justify-between text-xs font-semibold text-[#1F3824]">
+                <div className="flex flex-col gap-2.5 p-4 rounded-2xl bg-[#FFF2ED]/60 border border-[#FCD4C7] transition-all">
+                  <div className="flex items-center justify-between text-xs font-semibold text-[#D95D39]">
                     <span>{renderStage || "Rendering video creative..."}</span>
                     <span className="font-mono">{renderProgress}%</span>
                   </div>
-                  <div className="w-full bg-[#CBD5C4]/60 h-2.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-[#E5E0D8] h-2.5 rounded-full overflow-hidden">
                     <div
-                      className="bg-[#1F3824] h-full transition-all duration-300 rounded-full"
+                      className="bg-[#D95D39] h-full transition-all duration-300 rounded-full"
                       style={{ width: `${Math.max(renderProgress, 5)}%` }}
                     />
                   </div>
-                  <p className="text-[11px] text-[#4A544A] italic">
+                  <p className="text-[11px] text-[#52525B] italic">
                     Rendered via async background queue. Zero Vercel timeouts.
                   </p>
                 </div>
@@ -1130,20 +1130,20 @@ function StudioContent() {
             </>
           ) : (
             <div className="flex flex-col items-center gap-4 py-4 text-center">
-              <div className="h-12 w-12 rounded-full bg-[#E2E9DC] border border-[#CBD5C4] flex items-center justify-center text-[#1F3824]">
+              <div className="h-12 w-12 rounded-full bg-[#FFF2ED] border border-[#FCD4C7] flex items-center justify-center text-[#D95D39]">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <div className="flex flex-col gap-1">
-                <h4 className="text-base font-bold text-[#1B231B]">
+                <h4 className="text-base font-bold text-[#18181B]">
                   Video Render Complete!
                 </h4>
-                <p className="text-xs text-[#4A544A]">
+                <p className="text-xs text-[#52525B]">
                   Your 1080x1920 vertical ad has been generated and saved to your Video Vault.
                 </p>
               </div>
 
               {renderedVideoUrl && (
-                <div className="w-full max-w-xs aspect-[9/16] max-h-60 bg-[#ECEFE7] rounded-3xl overflow-hidden border border-[#CBD5C4] my-2 mx-auto flex items-center justify-center p-2 shadow-inner">
+                <div className="w-full max-w-xs aspect-[9/16] max-h-60 bg-[#FAF8F5] rounded-3xl overflow-hidden border border-[#E5E0D8] my-2 mx-auto flex items-center justify-center p-2 shadow-inner">
                   <div className="w-full h-full rounded-2xl overflow-hidden bg-black flex items-center justify-center">
                     <video
                       src={renderedVideoUrl}
@@ -1190,7 +1190,7 @@ function StudioContent() {
 
               <Link
                 href="/dashboard"
-                className="text-xs text-[#1F3824] hover:underline inline-flex items-center gap-1 pt-1 font-semibold"
+                className="text-xs text-[#D95D39] hover:underline inline-flex items-center gap-1 pt-1 font-semibold"
               >
                 <span>View all videos in Command Center</span>
                 <ExternalLink className="h-3 w-3" />

@@ -19,8 +19,8 @@ const STYLE_PRESETS = [
     fontSize: 54,
   },
   {
-    name: "Fluencify Emerald",
-    highlightColor: "#10B981",
+    name: "AutoUGC Terracotta",
+    highlightColor: "#D95D39",
     primaryColor: "#FFFFFF",
     fontSize: 52,
   },
@@ -43,31 +43,31 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
   onStyleChange,
 }) => {
   const highlightColors = [
+    { name: "AutoUGC Terracotta", hex: "#D95D39" },
     { name: "Viral Yellow", hex: "#FFE600" },
-    { name: "Forest Emerald", hex: "#10B981" },
-    { name: "Electric Cyan", hex: "#06B6D4" },
     { name: "Pure White", hex: "#FFFFFF" },
+    { name: "Electric Cyan", hex: "#06B6D4" },
     { name: "Warm Amber", hex: "#F59E0B" },
   ];
 
   return (
-    <div className="flex flex-col gap-5 p-6 rounded-3xl bg-white border border-[#CBD5C4]/70 shadow-sm text-[#1B231B]">
-      <div className="flex items-center justify-between border-b border-[#CBD5C4]/50 pb-3">
+    <div className="flex flex-col gap-5 p-6 rounded-3xl bg-white border border-[#E5E0D8] shadow-2xs text-[#18181B]">
+      <div className="flex items-center justify-between border-b border-[#EFECE6] pb-3">
         <div className="flex items-center gap-2">
-          <Type className="h-4 w-4 text-[#1F3824]" />
-          <h3 className="text-base font-normal font-[family-name:var(--font-serif)] text-[#1B231B]">
-            Kinetic subtitles & typography
+          <Type className="h-4 w-4 text-[#D95D39]" />
+          <h3 className="text-sm font-semibold text-[#18181B]">
+            Kinetic Subtitles & Typography
           </h3>
         </div>
-        <span className="text-xs text-[#1F3824] bg-[#E2E9DC] px-2.5 py-0.5 rounded-full font-semibold">
+        <span className="text-xs text-[#D95D39] bg-[#FFF2ED] px-2.5 py-0.5 rounded-full font-semibold">
           TikTok & Reels Safe Zone
         </span>
       </div>
 
       {/* Preset Buttons */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-semibold text-[#4A544A] uppercase tracking-wider text-[11px] flex items-center gap-1">
-          <Sparkles className="h-3 w-3 text-[#1F3824]" /> Caption Style Presets:
+        <label className="text-xs font-semibold text-[#52525B] uppercase tracking-wider text-[11px] flex items-center gap-1">
+          <Sparkles className="h-3 w-3 text-[#D95D39]" /> Caption Style Presets:
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {STYLE_PRESETS.map((preset) => {
@@ -88,8 +88,8 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
                 }
                 className={`px-3 py-2 rounded-xl text-left border transition-all cursor-pointer ${
                   isSelected
-                    ? "border-2 border-[#1F3824] bg-[#E2E9DC] text-[#1F3824] font-bold shadow-xs"
-                    : "border-[#CBD5C4]/70 bg-[#F6F7F2] text-[#4A544A] hover:bg-[#ECEFE7]"
+                    ? "border-2 border-[#D95D39] bg-[#FFF2ED] text-[#D95D39] font-bold shadow-xs"
+                    : "border-[#E5E0D8] bg-[#FAF8F5] text-[#52525B] hover:bg-[#F4F1EA]"
                 }`}
               >
                 <div className="flex items-center gap-1.5 mb-1">
@@ -97,11 +97,11 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
                     className="h-3 w-3 rounded-full border border-black/20"
                     style={{ backgroundColor: preset.highlightColor }}
                   />
-                  <span className="text-[11px] font-bold truncate text-[#1B231B]">
+                  <span className="text-[11px] font-bold truncate text-[#18181B]">
                     {preset.name.split(" ")[0]}
                   </span>
                 </div>
-                <span className="text-[10px] text-[#717E6C] font-mono">
+                <span className="text-[10px] text-[#8E8B85] font-mono">
                   {preset.fontSize}px Pop
                 </span>
               </button>
@@ -111,9 +111,9 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
       </div>
 
       {/* Highlight Color & Live Word Preview */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#F6F7F2] border border-[#CBD5C4]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5E0D8]">
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-[#4A544A] uppercase tracking-wider text-[11px]">
+          <label className="text-xs font-semibold text-[#52525B] uppercase tracking-wider text-[11px]">
             Active Word Color
           </label>
           <div className="flex items-center gap-2.5">
@@ -128,10 +128,10 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
                 style={{ backgroundColor: c.hex }}
                 aria-label={`Select ${c.name} subtitle highlight color`}
                 aria-pressed={subtitleStyle.highlightColor === c.hex}
-                className={`h-7 w-7 rounded-full border transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824] focus-visible:ring-offset-2 ${
+                className={`h-7 w-7 rounded-full border transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39] focus-visible:ring-offset-2 ${
                   subtitleStyle.highlightColor === c.hex
-                    ? "ring-2 ring-[#1F3824] ring-offset-2 ring-offset-white scale-110 shadow-sm"
-                    : "border-[#CBD5C4] opacity-80 hover:opacity-100"
+                    ? "ring-2 ring-[#D95D39] ring-offset-2 ring-offset-white scale-110 shadow-sm"
+                    : "border-[#E5E0D8] opacity-80 hover:opacity-100"
                 }`}
               />
             ))}
@@ -139,7 +139,7 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
         </div>
 
         {/* Live Typography Preview Pill */}
-        <div className="px-4 py-2.5 rounded-xl bg-[#1B231B] text-white flex items-center gap-1.5 shadow-sm">
+        <div className="px-4 py-2.5 rounded-xl bg-[#18181B] text-white flex items-center gap-1.5 shadow-sm">
           <span className="text-xs font-black uppercase text-white/50">Stop</span>
           <span
             className="text-xs font-black uppercase tracking-tight scale-105"
@@ -154,10 +154,10 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
       {/* Font Scale Slider */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between text-xs">
-          <label className="text-xs font-semibold text-[#4A544A] uppercase tracking-wider text-[11px]">
+          <label className="text-xs font-semibold text-[#52525B] uppercase tracking-wider text-[11px]">
             Font Scale
           </label>
-          <span className="font-mono text-xs text-[#1F3824] font-bold">
+          <span className="font-mono text-xs text-[#D95D39] font-bold">
             {subtitleStyle.fontSize}px
           </span>
         </div>
@@ -174,7 +174,7 @@ export const SubtitleStyler: React.FC<SubtitleStylerProps> = ({
           aria-valuemax={66}
           aria-valuenow={subtitleStyle.fontSize}
           aria-valuetext={`${subtitleStyle.fontSize} pixels`}
-          className="w-full accent-[#1F3824] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3824]"
+          className="w-full accent-[#D95D39] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D95D39]"
         />
       </div>
     </div>
