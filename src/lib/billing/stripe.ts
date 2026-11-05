@@ -27,7 +27,7 @@ export const BILLING_PLANS: Record<SubscriptionTier, PlanConfig> = {
     id: "free",
     name: "Subscription Required",
     priceUsd: 0,
-    monthlyCredits: 3,
+    monthlyCredits: 0,
     maxConnectedAccounts: 1,
     postingCadence: "Manual export only",
     stripePriceId: "",

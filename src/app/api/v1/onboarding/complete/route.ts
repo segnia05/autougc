@@ -137,7 +137,8 @@ export async function POST(req: NextRequest) {
       targetAudience: audience || "",
       competitors: Array.isArray(competitors) ? competitors : [],
       whatItDoes: whatItDoes || usp || "",
-      credits: organization.subscription?.creditsRemaining ?? 50,
+      credits: organization.subscription?.creditsRemaining ?? 0,
+      planTier: organization.subscription?.planTier ?? "free",
       projectId: project.id,
       campaignId: project.campaigns[0]?.id,
     });

@@ -98,10 +98,10 @@ export async function POST(request: NextRequest) {
             subscription: {
               create: {
                 stripeCustomerId: `cus_${user.id.slice(-12)}`,
-                planTier: "starter",
+                planTier: "free",
                 status: "active",
-                creditsMonthlyAllowance: 20,
-                creditsRemaining: 20,
+                creditsMonthlyAllowance: 0,
+                creditsRemaining: 0,
                 currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
               },
             },
@@ -163,10 +163,10 @@ export async function POST(request: NextRequest) {
             subscription: {
               create: {
                 stripeCustomerId: `cus_${orgId.slice(-12)}`,
-                planTier: "starter",
+                planTier: "free",
                 status: "active",
-                creditsMonthlyAllowance: 20,
-                creditsRemaining: 20,
+                creditsMonthlyAllowance: 0,
+                creditsRemaining: 0,
                 currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
               },
             },
