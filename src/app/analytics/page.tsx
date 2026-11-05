@@ -86,6 +86,7 @@ export default function AnalyticsPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("all");
   const [brandName, setBrandName] = useState("");
+  const [credits, setCredits] = useState(0);
   const [previewingPost, setPreviewingPost] = useState<AnalyticsPost | null>(null);
 
   const fetchAnalytics = useCallback(async () => {
@@ -111,6 +112,15 @@ export default function AnalyticsPage() {
       const storedBrand = localStorage.getItem("autougc_brand_name");
       if (storedBrand) setBrandName(storedBrand);
     }
+
+    fetch("/api/v1/workspace/active")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => {
+        if (json?.brandName) setBrandName(json.brandName);
+        if (json?.credits !== undefined) setCredits(json.credits);
+      })
+      .catch(() => {});
+
     fetchAnalytics();
   }, [fetchAnalytics]);
 
@@ -133,7 +143,7 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <AppShell brandName={brandName}>
+    <AppShell brandName={brandName} credits={credits}>
       <div className="max-w-7xl mx-auto space-y-8 select-none pb-16">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-6">

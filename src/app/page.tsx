@@ -388,8 +388,8 @@ export default function Home() {
                           AU
                         </div>
                         <div className="overflow-hidden">
-                          <div className="text-[11px] font-semibold text-[#18181B] truncate">AutoUGC User</div>
-                          <div className="text-[10px] text-[#8E8B85] truncate">50 credits</div>
+                          <div className="text-[11px] font-semibold text-[#18181B] truncate">Founder Workspace</div>
+                          <div className="text-[10px] text-[#8E8B85] truncate">Growth Plan · 60 credits</div>
                         </div>
                       </div>
                     </div>

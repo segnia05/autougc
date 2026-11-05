@@ -22,6 +22,7 @@ interface IntegrationChannel {
 }
 
 export default function IntegrationsSettingsPage() {
+  const [credits, setCredits] = useState(0);
   const [channels, setChannels] = useState<IntegrationChannel[]>([
     {
       id: "tiktok",
@@ -72,6 +73,15 @@ export default function IntegrationsSettingsPage() {
 
   const [metaConnected, setMetaConnected] = useState(false);
 
+  React.useEffect(() => {
+    fetch("/api/v1/workspace/active")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => {
+        if (json?.credits !== undefined) setCredits(json.credits);
+      })
+      .catch(() => {});
+  }, []);
+
   const handleToggleChannel = (id: string) => {
     setChannels((prev) =>
       prev.map((c) => (c.id === id ? { ...c, isConnected: !c.isConnected } : c))
@@ -81,7 +91,7 @@ export default function IntegrationsSettingsPage() {
   const connectedCount = channels.filter((c) => c.isConnected).length + (metaConnected ? 1 : 0);
 
   return (
-    <AppShell title="Integrations">
+    <AppShell title="Integrations" credits={credits}>
       <div className="max-w-4xl mx-auto space-y-6 select-none">
         {/* Header Breadcrumb & Title (Screenshot 2 Match) */}
         <div>

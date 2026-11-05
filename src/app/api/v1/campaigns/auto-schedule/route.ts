@@ -48,8 +48,8 @@ export async function POST(request: NextRequest) {
       const sub = await prisma.subscription.findUnique({
         where: { organizationId: orgId },
       });
-      const planTier = (request.headers.get("x-plan-tier") || sub?.planTier || "starter") as SubscriptionTier;
-      const planConfig = BILLING_PLANS[planTier] || BILLING_PLANS.starter;
+      const planTier = (request.headers.get("x-plan-tier") || sub?.planTier || "free") as SubscriptionTier;
+      const planConfig = BILLING_PLANS[planTier] || BILLING_PLANS.free;
 
       if (socialAccountIds.length > planConfig.maxConnectedAccounts) {
         return NextResponse.json(

@@ -102,8 +102,14 @@ export default function DashboardPage() {
             setCompetitors(Array.isArray(json.competitors) ? json.competitors : []);
             setWhatItDoes(json.whatItDoes || json.summary || "");
             setScreenshotUrl(json.screenshotUrl || "");
-            setCredits(json.credits ?? 0);
-            setPlanTier(json.planTier || "free");
+            const loadedCredits = json.credits ?? 0;
+            const loadedPlan = json.planTier || "free";
+            setCredits(loadedCredits);
+            setPlanTier(loadedPlan);
+            if (typeof window !== "undefined") {
+              localStorage.setItem("autougc_credits", String(loadedCredits));
+              localStorage.setItem("autougc_plan_tier", loadedPlan);
+            }
             setIsLoading(false);
 
             // Fetch accounts and scheduled calendar posts in parallel
@@ -125,8 +131,10 @@ export default function DashboardPage() {
             setBrandName(storedBrand);
             setFounderName(storedName || "Founder");
             setScreenshotUrl(storedShot || "");
-            if (storedCredits !== null) setCredits(parseInt(storedCredits, 10));
-            if (storedPlan) setPlanTier(storedPlan);
+            const safePlan = storedPlan === "growth" || storedPlan === "scale" ? storedPlan : "free";
+            const safeCredits = safePlan === "free" ? 0 : (storedCredits !== null ? parseInt(storedCredits, 10) : 0);
+            setCredits(safeCredits);
+            setPlanTier(safePlan);
             setIsLoading(false);
             fetchAccounts();
             fetchScheduledPosts();
@@ -179,7 +187,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <AppShell brandName={brandName}>
+    <AppShell brandName={brandName} credits={credits} planTier={planTier}>
       <div className="space-y-8 pb-12">
         {/* 1. SaaS Profile Header & Quick Studio Launch */}
         <BrandProfileHeader

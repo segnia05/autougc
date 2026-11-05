@@ -37,6 +37,7 @@ export default function ContactPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [brandName, setBrandName] = useState("");
+  const [credits, setCredits] = useState(0);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -45,6 +46,14 @@ export default function ContactPage() {
       if (storedBrand) setBrandName(storedBrand);
       if (storedFounder && storedFounder !== "Founder") setName(storedFounder);
     }
+
+    fetch("/api/v1/workspace/active")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => {
+        if (json?.brandName) setBrandName(json.brandName);
+        if (json?.credits !== undefined) setCredits(json.credits);
+      })
+      .catch(() => {});
   }, []);
 
   const handleCopyEmail = () => {
@@ -90,7 +99,7 @@ export default function ContactPage() {
   };
 
   return (
-    <AppShell brandName={brandName}>
+    <AppShell brandName={brandName} credits={credits}>
       <div className="max-w-6xl mx-auto space-y-8 select-none pb-12">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-6">

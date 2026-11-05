@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
       const sub = await prisma.subscription.findUnique({
         where: { organizationId: orgId },
       });
-      const planTier = request.headers.get("x-plan-tier") || sub?.planTier || "starter";
+      const planTier = request.headers.get("x-plan-tier") || sub?.planTier || "free";
       const maxAllowed = PLAN_LIMITS[planTier] ?? 1;
 
       const currentCount = await prisma.socialAccount.count({

@@ -29,6 +29,7 @@ export default function BrandKnowledgePage() {
   const [competitors, setCompetitors] = useState<string[]>([]);
   const [newCompetitor, setNewCompetitor] = useState("");
   const [screenshotUrl, setScreenshotUrl] = useState("");
+  const [credits, setCredits] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -48,6 +49,7 @@ export default function BrandKnowledgePage() {
             setUsp(json.whatItDoes || json.summary || "");
             setCompetitors(Array.isArray(json.competitors) ? json.competitors : []);
             setScreenshotUrl(json.screenshotUrl || "");
+            setCredits(json.credits ?? 0);
             setIsLoading(false);
             return;
           }
@@ -127,7 +129,7 @@ export default function BrandKnowledgePage() {
   };
 
   return (
-    <AppShell brandName={brandName}>
+    <AppShell brandName={brandName} credits={credits}>
       <div className="max-w-5xl mx-auto space-y-8 select-none pb-16">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-6">

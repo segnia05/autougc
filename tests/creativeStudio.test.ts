@@ -100,18 +100,32 @@ describe("Step 8: The Creative Studio (/studio) Verification", () => {
       return;
     }
 
-    const sub = await db.subscription.findUnique({ where: { organizationId: org.id } });
-    const initialCredits = sub ? sub.creditsRemaining : 20;
+    const originalSub = await db.subscription.findUnique({ where: { organizationId: org.id } });
+
+    // Ensure test organization has active credits for render test
+    await db.subscription.upsert({
+      where: { organizationId: org.id },
+      update: { creditsRemaining: 5, planTier: "starter" },
+      create: {
+        organizationId: org.id,
+        stripeCustomerId: `cus_${org.id.slice(-12)}`,
+        planTier: "starter",
+        status: "active",
+        creditsMonthlyAllowance: 20,
+        creditsRemaining: 5,
+        currentPeriodEnd: new Date(Date.now() + 30 * 86400000),
+      },
+    });
 
     const testVideoId = `vid_test_${Date.now()}`;
 
     // 1. Credit deduction
     const deductRes = await deductCredit(org.id, testVideoId, 1, user.id);
-    assert.ok(deductRes.success, "Credit deduction must succeed");
+    assert.ok(deductRes.success, "Credit deduction must succeed for paid user with credits");
     assert.strictEqual(
       deductRes.creditsRemaining,
-      initialCredits - 1,
-      "Balance should decrease by 1 credit"
+      4,
+      "Balance should decrease from 5 to 4 credits"
     );
 
     // 2. Video record creation in library
@@ -163,11 +177,14 @@ describe("Step 8: The Creative Studio (/studio) Verification", () => {
     // Clean up test records
     await db.video.delete({ where: { id: testVideoId } });
     await db.script.delete({ where: { id: script.id } });
-    // Restore deducted credit for clean test hygiene
-    if (sub) {
+    // Restore original credit state for clean test hygiene
+    if (originalSub) {
       await db.subscription.update({
         where: { organizationId: org.id },
-        data: { creditsRemaining: initialCredits },
+        data: {
+          creditsRemaining: originalSub.creditsRemaining,
+          planTier: originalSub.planTier,
+        },
       });
     }
   });

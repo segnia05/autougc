@@ -9,12 +9,16 @@ interface AppShellProps {
   children: React.ReactNode;
   title?: string;
   brandName?: string;
+  credits?: number;
+  planTier?: string;
 }
 
 export default function AppShell({
   children,
   title,
   brandName,
+  credits,
+  planTier,
 }: AppShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const effectiveBrand = brandName || (typeof window !== "undefined" ? localStorage.getItem("autougc_brand_name") : null) || "Your Brand";
@@ -63,7 +67,7 @@ export default function AppShell({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <TopHeaderBar brandName={effectiveBrand} title={title} />
+        <TopHeaderBar brandName={effectiveBrand} title={title} credits={credits} planTier={planTier} />
         <main id="main-content" className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
           {children}
         </main>

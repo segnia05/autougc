@@ -8,24 +8,22 @@ import { UserButton } from "@clerk/nextjs";
 interface TopHeaderBarProps {
   brandName?: string;
   credits?: number;
+  planTier?: string;
   title?: string;
 }
 
 export default function TopHeaderBar({
   brandName = "Your Brand",
   credits = 0,
+  planTier = "free",
   title,
 }: TopHeaderBarProps) {
   const [liveCredits, setLiveCredits] = useState<number>(credits);
 
   useEffect(() => {
+    setLiveCredits(credits);
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("autougc_credits");
-      if (stored !== null) {
-        setLiveCredits(parseInt(stored, 10));
-      } else {
-        setLiveCredits(credits);
-      }
+      localStorage.setItem("autougc_credits", String(credits));
     }
   }, [credits]);
 

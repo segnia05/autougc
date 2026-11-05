@@ -122,13 +122,37 @@ export default function CampaignsPage() {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedBrand = localStorage.getItem("autougc_brand_name");
-      const storedCredits = localStorage.getItem("autougc_credits");
-      if (storedBrand) setBrandName(storedBrand);
-      if (storedCredits !== null) setCredits(parseInt(storedCredits, 10));
+    async function loadWorkspaceCredits() {
+      try {
+        const res = await fetch("/api/v1/workspace/active");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.brandName) setBrandName(json.brandName);
+          const cr = json.credits ?? 0;
+          setCredits(cr);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("autougc_credits", String(cr));
+          }
+          return;
+        }
+      } catch {
+        // fallback to storage below
+      }
+
+      if (typeof window !== "undefined") {
+        const storedBrand = localStorage.getItem("autougc_brand_name");
+        const storedCredits = localStorage.getItem("autougc_credits");
+        const storedPlan = localStorage.getItem("autougc_plan_tier");
+        if (storedBrand) setBrandName(storedBrand);
+        if (storedPlan === "growth" || storedPlan === "scale") {
+          if (storedCredits !== null) setCredits(parseInt(storedCredits, 10));
+        } else {
+          setCredits(0);
+        }
+      }
     }
 
+    loadWorkspaceCredits();
     fetchVideos();
     fetchAccounts();
   }, [fetchVideos, fetchAccounts]);
@@ -163,7 +187,7 @@ export default function CampaignsPage() {
   };
 
   return (
-    <AppShell brandName={brandName}>
+    <AppShell brandName={brandName} credits={credits}>
       <div className="max-w-7xl mx-auto space-y-8 select-none pb-16">
         {/* Header Strip with AutoUGC Warm Canvas & Terracotta Accent */}
         <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 border-b border-[#E5E0D8] pb-6">

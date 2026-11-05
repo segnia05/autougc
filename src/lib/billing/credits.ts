@@ -189,9 +189,9 @@ export async function grantCredits(
         create: {
           organizationId: orgId,
           stripeCustomerId: `cus_${orgId.slice(-12)}`,
-          planTier: "starter",
+          planTier: "free",
           status: "active",
-          creditsMonthlyAllowance: 20,
+          creditsMonthlyAllowance: 0,
           creditsRemaining: amount,
           currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
